@@ -1,8 +1,14 @@
 <?php
-error_log(var_export($_ENV, true));
+
 set_time_limit(0);
 ini_set('memory_limit', '1024M');
-require_once(__DIR__."/../vendor/autoload.php");
+if (isset($_ENV['SERVER_ROOT']) && $_ENV['SERVER_ROOT']) {
+	$PWD = $_ENV['SERVER_ROOT'];
+} else {
+	$PWD = __DIR__."/../../vendor";
+}
+error_log($PWD."/autoload.php");
+require_once($PWD."/autoload.php");
 
 $__worker_sleep = 3600;
 

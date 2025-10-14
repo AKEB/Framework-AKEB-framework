@@ -1,8 +1,12 @@
 <?php
 
-var_export($_ENV);
-
-require_once(__DIR__."/vendor/autoload.php");
+if (isset($_ENV['SERVER_ROOT']) && $_ENV['SERVER_ROOT']) {
+	$PWD = $_ENV['SERVER_ROOT'];
+} else {
+	$PWD = __DIR__."/vendor";
+}
+error_log($PWD."/autoload.php");
+require_once($PWD."/autoload.php");
 set_time_limit(0);
 
 error_log("Migrates Running");
