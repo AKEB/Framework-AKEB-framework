@@ -4,6 +4,8 @@ set_time_limit(0);
 
 error_log("Migrates Running");
 
+error_log(var_export(\Config::getInstance()->toArray(), true));
+
 $migrate = new \DB\Initialize(
 	\Config::getInstance()->mysql_host,
 	\Config::getInstance()->mysql_username,
