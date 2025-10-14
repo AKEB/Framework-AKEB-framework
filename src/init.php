@@ -14,6 +14,11 @@ if (!isset($_GLOBALS) || !is_array($_GLOBALS)) $_GLOBALS = [];
 srand(intval(round(microtime(true)*100)));
 mt_srand(intval(round(microtime(true)*100)));
 
+global $PWD;
+$PWD = __DIR__;
+$PWD = str_replace('/vendor/akeb/framework/src','', $PWD);
+if (!defined('SERVER_ROOT')) define("SERVER_ROOT", $PWD);
+
 \Config::getInstance();
 date_default_timezone_set(\Config::getInstance()->timezone);
 

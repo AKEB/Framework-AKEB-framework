@@ -6,7 +6,6 @@ global $PWD;
 $PWD = __DIR__;
 if (!defined('SERVER_ROOT')) define("SERVER_ROOT", $PWD);
 
-
 require_once($dirname . "../../vendor/autoload.php");
 
 if (!function_exists('glob_recursive')) {
