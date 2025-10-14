@@ -5,7 +5,6 @@ if (isset($_ENV['SERVER_ROOT']) && $_ENV['SERVER_ROOT']) {
 } else {
 	$PWD = __DIR__."/vendor";
 }
-error_log($PWD."/autoload.php");
 require_once($PWD."/autoload.php");
 set_time_limit(0);
 
