@@ -82,7 +82,7 @@ class Migrate {
 	static public function apply(): void {
 		static::$doneMigrations = get_hash(\DB\Migrations::data(), 'migration_name', 'stime');
 
-		$allFiles = glob(constant('SERVER_ROOT').'vendor/akeb/framework/src/migrations/framework_migration_*.php');
+		$allFiles = glob(__DIR__.'/../migrations/framework_migration_*.php');
 		static::applyFiles($allFiles);
 
 		$allFiles = glob(constant('SERVER_ROOT').'/migrations/migration_*.php');
@@ -117,7 +117,7 @@ class Migrate {
 	static public function rollback(array $migrations): void {
 		static::$doneMigrations = get_hash(\DB\Migrations::data(), 'migration_name', 'stime');
 
-		$allFiles = glob(constant('SERVER_ROOT').'vendor/akeb/framework/src/migrations/framework_migration_*.php');
+		$allFiles = glob(__DIR__.'/../migrations/framework_migration_*.php');
 		static::applyFiles($allFiles);
 
 		$allFiles = glob(constant('SERVER_ROOT').'/migrations/migration_*.php');

@@ -1,5 +1,5 @@
 <?php
-require_once("../../../../../autoload.php");
+require_once("./vendor/autoload.php");
 set_time_limit(0);
 
 error_log("Migrates Running");
