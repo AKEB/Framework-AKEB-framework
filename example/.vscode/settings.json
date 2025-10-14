@@ -1,0 +1,108 @@
+{
+	"phpunit.execPath": "./src/vendor/bin/phpunit",
+	"search.useGlobalIgnoreFiles": true,
+	"git.ignoreLimitWarning": true,
+	"files.exclude": {
+		"**/.DS_Store": true,
+	},
+	"editor.formatOnSave": false,
+	"editor.rulers": [
+		79,
+		119
+	],
+	"workbench.colorCustomizations": {
+		"editorRuler.foreground": "#313131"
+	},
+	"phpfmt.exclude": [
+		"PSR2CurlyOpenNextLine"
+	],
+	"phpfmt.indent_with_space": false,
+	"phpfmt.detect_indent": true,
+	"editor.formatOnSaveMode": "modifications",
+	"cSpell.language": "en, ru",
+	"cSpell.words": [
+		"апдейта",
+		"зачекиниться",
+		"Хеллоу",
+		"шардах",
+		"APP_SIGNUP_ACTIVE",
+		"argnum",
+		"autoload",
+		"Ayvrs",
+		"cfos",
+		"chillerlan",
+		"classmap",
+		"curlget",
+		"datatables",
+		"dbhs",
+		"Debugoutput",
+		"emeraldwalk",
+		"ENCRYPTION_SMTPS",
+		"ENCRYPTION_STARTTLS",
+		"fastcgi",
+		"filesize",
+		"InnoDB",
+		"Jumbojett",
+		"laquo",
+		"leng",
+		"mrgs",
+		"mustangostang",
+		"mygoodip",
+		"NGCB",
+		"noerr",
+		"OPENIDCONNECT",
+		"pholder",
+		"Pixonic",
+		"raquo",
+		"runonsave",
+		"selectpicker",
+		"skud",
+		"Sysact",
+		"tbegin",
+		"timeload",
+		"tinyint",
+		"userinfo",
+		"Vadim"
+	],
+	"cSpell.ignoreWords": [
+		"bHchLzC3B99Ss2ghc2gkDdtgCG7vKtoj",
+		"djzygmcjiiw",
+		"krbg",
+		"mhawt",
+		"qyjfcbpii"
+	],
+	
+	"i18n-ally.localesPaths": [
+		"${workspaceFolder}/src/lang/"
+	],
+	"i18n-ally.annotationDelimiter": "_",
+	"i18n-ally.dirStructure": "auto",
+	"i18n-ally.displayLanguage": "ru",
+	"i18n-ally.editor.preferEditor": true,
+	"i18n-ally.enabledFrameworks": [
+		"i18n-tag"
+	],
+	"i18n-ally.enabledParsers": [
+		"yaml"
+	],
+	"i18n-ally.translate.deepl.useFreeApiEntry": true,
+	// "i18n-ally.extract.keyPrefix": "\\T::",
+
+
+	"emeraldwalk.runonsave": {
+		"commands": [
+			{
+				"match": ".yml",
+				"isAsync": true,
+				"cmd": "${workspaceFolder}/src/lang/generateHelper.sh"
+			}
+		]
+	},
+	"atlascode.bitbucket.enabled": false,
+	"code-runner.runInTerminal": true,
+	"code-runner.executorMap": {
+		"php": "$workspaceRoot/run_php_in_docker.sh $workspaceRoot $fullFileName"
+	},
+	"php.version": "8.3",
+	"php.validate.executablePath": "/opt/local/bin/php",
+}

@@ -1,0 +1,8 @@
+/src/vendor/
+.git
+*.log
+*.log.*
+/mysql_data/
+.env
+/logs/nginx/*
+/logs/php/*
