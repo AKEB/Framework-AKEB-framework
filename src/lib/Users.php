@@ -20,9 +20,9 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 	 */
 	static public function flags_hash() {
 		return [
-			self::FLAGS_NEED_CHANGE_PASSWORD => \T::Users_Flags_NeedChangePassword(),
-			// self::FLAGS_SECOND => \T::Users_Flags_Second(),
-			// self::FLAGS_SECOND2 => \T::Users_Flags_Second2(),
+			self::FLAGS_NEED_CHANGE_PASSWORD => \T::Framework_Users_Flags_NeedChangePassword(),
+			// self::FLAGS_SECOND => \T::Framework_Users_Flags_Second(),
+			// self::FLAGS_SECOND2 => \T::Framework_Users_Flags_Second2(),
 		];
 	}
 
@@ -73,10 +73,10 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 
 	static public function permissions_hash(): array {
 		return [
-			\Permissions::MANAGE_USERS => \T::Permissions_ManageUser(),
-			\Permissions::MANAGE_USER_PERMISSIONS => \T::Permissions_ManageUserPermissions(),
-			\Permissions::MANAGE_USER_GROUPS => \T::Permissions_ManageUserGroups(),
-			\Permissions::IMPERSONATE_USER => \T::Permissions_ImpersonateUser(),
+			\Permissions::MANAGE_USERS => \T::Framework_Permissions_ManageUser(),
+			\Permissions::MANAGE_USER_PERMISSIONS => \T::Framework_Permissions_ManageUserPermissions(),
+			\Permissions::MANAGE_USER_GROUPS => \T::Framework_Permissions_ManageUserGroups(),
+			\Permissions::IMPERSONATE_USER => \T::Framework_Permissions_ImpersonateUser(),
 		];
 	}
 }

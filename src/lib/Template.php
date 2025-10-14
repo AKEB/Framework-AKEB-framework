@@ -2,9 +2,22 @@
 
 class Template {
 
+	static public $head_additional = '';
+	static private $project_name = 'AKEB Framework';
+	static private $menu_items = [];
+
+	public static function setProjectName(string $name) {
+		static::$project_name = $name;
+	}
+
+	public static function setMenuItems(array $menu_items) {
+		static::$menu_items = $menu_items;
+	}
+
 	public function __construct(bool $withHeader=true, string $theme='dark') {
 		$theme = $theme == 'dark' ? 'dark' : 'light';
 		$lang = \T::getCurrentLanguage();
+
 		?>
 		<!doctype html>
 		<html lang="<?=$lang;?>" data-bs-theme="<?=$theme;?>" class="h-100">
@@ -12,7 +25,7 @@ class Template {
 				<meta charset="UTF-8" />
 				<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-				<title>MyGoodIP</title>
+				<title><?=static::$project_name;?></title>
 
 				<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
 				<link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
@@ -33,21 +46,27 @@ class Template {
 				<meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
 				<meta name="theme-color" content="#6a11cb">
 
-				<link href="<?=file_anticache('/css/bootstrap-icons.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-				<link href="<?=file_anticache('/css/bootstrap.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-				<link href="<?=file_anticache('/css/datatables.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-				<link href="<?=file_anticache('/css/bootstrap-select.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
+				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/bootstrap-icons.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
+				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/bootstrap.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
+				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/datatables.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
+				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/bootstrap-select.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
+
+				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/main.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
+
+				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/bootstrap.bundle.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
+				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/datatables.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
+
+				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/bootstrap-select.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
+				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/bootstrap-select-'.\T::getCurrentLanguage().'.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
+
+				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/locale_'.\T::getCurrentLanguage().'.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
+				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/main.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
+
 
 				<link href="<?=file_anticache('/css/main.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-
-				<script src="<?=file_anticache('/js/bootstrap.bundle.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-				<script src="<?=file_anticache('/js/datatables.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-
-				<script src="<?=file_anticache('/js/bootstrap-select.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-				<script src="<?=file_anticache('/js/bootstrap-select-'.\T::getCurrentLanguage().'.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-
 				<script src="<?=file_anticache('/js/locale_'.\T::getCurrentLanguage().'.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
 				<script src="<?=file_anticache('/js/main.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
+
 			</head>
 			<body class="d-flex flex-column min-vh-100 min-hw-100 gradient-custom">
 				<div aria-live="polite" aria-atomic="true" class="position-static">
@@ -77,39 +96,29 @@ class Template {
 	public function header() {
 		$current_path = $_SERVER['DOCUMENT_URI'];
 		$current_path = str_replace('index.php', '', $current_path);
-		$menu_items = [
-			[
-				'title' => \T::Menu_Home(),
-				'link'=>'/',
-			],
-			[
-				'title' => \T::Menu_Test(),
-				'link' => '/test/',
-				'icon' => "bi bi-code-square"
-			],
-			[
-				'icon' => "bi bi-lock",
-				'title' => \T::Menu_Admin(),
-				'link'=>'/admin/',
-				'permission' => \Sessions::checkPermission(\Permissions::ADMIN, 0, READ),
-				'items' => [
-					[
-						'icon' => "bi bi-person",
-						'title' => \T::Menu_Users(),
-						'link'=>'/admin/users/',
-						'permission' => \Sessions::checkPermission(\Permissions::MANAGE_USERS, -1, READ)
-									 || \Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE)
-					],
-					[
-						'icon' => "bi bi-people",
-						'title' => \T::Menu_Groups(),
-						'link'=>'/admin/groups/',
-						'permission' => \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, -1, READ)
-									 || \Sessions::checkPermission(\Permissions::CREATE_GROUP, 0, WRITE)
-					],
-				]
+		static::$menu_items[] = [
+			'icon' => "bi bi-lock",
+			'title' => \T::Framework_Menu_Admin(),
+			'link'=>'/admin/',
+			'permission' => \Sessions::checkPermission(\Permissions::ADMIN, 0, READ),
+			'items' => [
+				[
+					'icon' => "bi bi-person",
+					'title' => \T::Framework_Menu_Users(),
+					'link'=>'/admin/users/',
+					'permission' => \Sessions::checkPermission(\Permissions::MANAGE_USERS, -1, READ)
+									|| \Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE)
+				],
+				[
+					'icon' => "bi bi-people",
+					'title' => \T::Framework_Menu_Groups(),
+					'link'=>'/admin/groups/',
+					'permission' => \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, -1, READ)
+									|| \Sessions::checkPermission(\Permissions::CREATE_GROUP, 0, WRITE)
+				],
 			]
 		];
+		$menu_items = static::$menu_items;
 		foreach ($menu_items as $k=>$item) {
 			if (isset($item['permission']) && !$item['permission']) {
 				unset($menu_items[$k]);
@@ -191,7 +200,7 @@ class Template {
 							<?php
 						}
 						?>
-						<span class="badge text-info-emphasis"><?=\T::Version();?>: <?=constant('SERVER_VERSION');?></span>
+						<span class="badge text-info-emphasis"><?=\T::Framework_Version();?>: <?=constant('SERVER_VERSION');?></span>
 					</div>
 					<!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
 						<input type="search" class="form-control" placeholder="Search..." aria-label="Search">
@@ -201,9 +210,9 @@ class Template {
 							<img src="<?=$userAvatar;?>" alt="avatar" width="32" height="32" class="rounded-circle"> <?=$currentUser['name'];?>
 						</a>
 						<ul class="dropdown-menu text-small">
-							<li><a class="dropdown-item" href="/settings/"><i class="bi bi-gear"></i> <?=\T::Profile_Settings();?></a></li>
+							<li><a class="dropdown-item" href="/settings/"><i class="bi bi-gear"></i> <?=\T::Framework_Profile_Settings();?></a></li>
 							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="/logout/"><i class="bi bi-box-arrow-right"></i> <?=\T::SignOut();?></a></li>
+							<li><a class="dropdown-item" href="/logout/"><i class="bi bi-box-arrow-right"></i> <?=\T::Framework_SignOut();?></a></li>
 						</ul>
 					</div>
 				</div>
@@ -286,8 +295,8 @@ class Template {
 		if (!isset($params['invalid-feedback'])) $params['invalid-feedback'] = '';
 
 		if ($required) {
-			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Common_FormRequired();
-			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Common_FormLooksGood();
+			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
+			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Framework_Common_FormLooksGood();
 		}
 		$html = '';
 		$html .= '<div class="mb-3 row">';
@@ -317,8 +326,8 @@ class Template {
 		if (!isset($params['invalid-feedback'])) $params['invalid-feedback'] = '';
 
 		if ($required) {
-			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Common_FormRequired();
-			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Common_FormLooksGood();
+			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
+			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Framework_Common_FormLooksGood();
 		}
 		$html = '';
 
@@ -361,8 +370,8 @@ class Template {
 		if (!isset($params['readonly'])) $params['readonly'] = false;
 
 		if ($required) {
-			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Common_FormRequired();
-			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Common_FormLooksGood();
+			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
+			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Framework_Common_FormLooksGood();
 		}
 
 		$html = '';
@@ -467,8 +476,8 @@ class Template {
 
 
 		if ($required) {
-			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Common_FormRequired();
-			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Common_FormLooksGood();
+			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
+			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Framework_Common_FormLooksGood();
 		}
 
 		$html = '';

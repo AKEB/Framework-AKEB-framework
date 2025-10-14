@@ -74,19 +74,19 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		$newPassword = $newPassword??'';
 		$confirmNewPassword = $confirmNewPassword??'';
 		if (!$oldPassword || !$newPassword || !$confirmNewPassword) {
-			$this->passwordErrorText = \T::Settings_AllFieldsAreRequired();
+			$this->passwordErrorText = \T::Framework_Settings_AllFieldsAreRequired();
 			return;
 		}
 		if ($newPassword !== $confirmNewPassword) {
-			$this->passwordErrorText = \T::Settings_NewPasswordsDoNotMatch();
+			$this->passwordErrorText = \T::Framework_Settings_NewPasswordsDoNotMatch();
 			return;
 		}
 		if (!$this->currentUser || !isset($this->currentUser['id']) && !$this->currentUser['id'] < 1) {
-			$this->passwordErrorText = \T::Settings_UserNotFound();
+			$this->passwordErrorText = \T::Framework_Settings_UserNotFound();
 			return;
 		}
 		if (\Users::check_user_credentials($this->currentUser['email'], $oldPassword) != $this->currentUser['id']) {
-			$this->passwordErrorText = \T::Settings_OldPasswordIsIncorrect();
+			$this->passwordErrorText = \T::Framework_Settings_OldPasswordIsIncorrect();
 			return;
 		}
 		$params = [
@@ -103,7 +103,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		$_POST = [];
 		$this->currentUser['flags'] = $this->currentUser['flags'] & ~\Users::FLAGS_NEED_CHANGE_PASSWORD;
 		\Sessions::set_current_user($this->currentUser['id']);
-		$this->passwordSuccessText = \T::Settings_PasswordChangedSuccessfully();
+		$this->passwordSuccessText = \T::Framework_Settings_PasswordChangedSuccessfully();
 	}
 
 	private function disableTwoFactor() {
@@ -133,11 +133,11 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		$googleAuthenticate = new \GoogleAuthenticator();
 		$check = $googleAuthenticate->checkCode($secret, $totp);
 		if (!$check) {
-			echo json_encode(['error' => \T::Login_InvalidTOTP()]);
+			echo json_encode(['error' => \T::Framework_Login_InvalidTOTP()]);
 		}
 		$user = \Users::get(['id' => $currentUser['id']]);
 		if (!$user || !$user['id']) {
-			echo json_encode(['error' => \T::Settings_UserNotFound()]);
+			echo json_encode(['error' => \T::Framework_Settings_UserNotFound()]);
 		}
 		$user_id = \Users::save([
 			'id' => $user['id'],
@@ -157,21 +157,21 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		$email = trim($data['email']??'');
 		$telegramId = intval(trim($data['telegram_id']??''));
 		if (!$name || !$surname || !$email) {
-			$this->errorText = \T::Settings_AllFieldsAreRequired();
+			$this->errorText = \T::Framework_Settings_AllFieldsAreRequired();
 			return;
 		}
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			$this->errorText = \T::Settings_InvalidEmailFormat();
+			$this->errorText = \T::Framework_Settings_InvalidEmailFormat();
 			return;
 		}
 		if (!$this->currentUser || !isset($this->currentUser['id']) && !$this->currentUser['id'] < 1) {
-			$this->passwordErrorText = \T::Settings_UserNotFound();
+			$this->passwordErrorText = \T::Framework_Settings_UserNotFound();
 			return;
 		}
 		// Check if email is already used by another user
 		$existingUser = \Users::get(['email' => $email], sql_pholder(' AND id <> ?', $this->currentUser['id']));
 		if ($existingUser) {
-			$this->errorText = \T::Settings_EmailAlreadyInUse();
+			$this->errorText = \T::Framework_Settings_EmailAlreadyInUse();
 			return;
 		}
 
@@ -188,19 +188,19 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		\Users::save($params);
 		$new_user = \Users::get(['id' => $this->currentUser['id']]);
 		\Logs::update_log(\Users::LOGS_OBJECT, $this->currentUser['id'], $old_user, $new_user);
-		$this->successText = \T::Settings_ProfileUpdatedSuccessfully();
+		$this->successText = \T::Framework_Settings_ProfileUpdatedSuccessfully();
 		$this->currentUser = \Users::get(['id' => $this->currentUser['id']]);
 	}
 
 	private function print_header() {
-		echo '<h1>'.\T::Settings_Title().'</h1>';
-		echo \T::Settings_Subtitle();
+		echo '<h1>'.\T::Framework_Settings_Title().'</h1>';
+		echo \T::Framework_Settings_Subtitle();
 	}
 
 	private function userProfileCard() {
 		?>
 		<div class="card bg-transparent col-xl-8 p-4 mt-2 mb-3">
-			<div class="card-header bg-transparent"><h3><?=\T::Settings_UserProfile_Title();?></h3></div>
+			<div class="card-header bg-transparent"><h3><?=\T::Framework_Settings_UserProfile_Title();?></h3></div>
 			<form class="card-body" method="post">
 				<?php if ($this->successText) { ?>
 					<div class="alert alert-success d-flex align-items-center fade show alert-dismissible" role="alert">
@@ -215,17 +215,17 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 					</div>
 				<?php } ?>
 				<?php
-				echo $this->template->html_input("name", $this->currentUser['name']??'', \T::Settings_UserProfile_Name(), true);
-				echo $this->template->html_input("surname", $this->currentUser['surname']??'', \T::Settings_UserProfile_Surname(), true);
-				echo $this->template->html_input("email", $this->currentUser['email']??'', \T::Settings_UserProfile_Email(), true, [
+				echo $this->template->html_input("name", $this->currentUser['name']??'', \T::Framework_Settings_UserProfile_Name(), true);
+				echo $this->template->html_input("surname", $this->currentUser['surname']??'', \T::Framework_Settings_UserProfile_Surname(), true);
+				echo $this->template->html_input("email", $this->currentUser['email']??'', \T::Framework_Settings_UserProfile_Email(), true, [
 					'type' => 'email',
 				]);
-				echo $this->template->html_input("telegram_id", $this->currentUser['telegram_id']??'', \T::Settings_UserProfile_TelegramId(), false, [
+				echo $this->template->html_input("telegram_id", $this->currentUser['telegram_id']??'', \T::Framework_Settings_UserProfile_TelegramId(), false, [
 					'type' => 'number',
 				]);
 				?>
 				<div class="d-flex flex-row-reverse">
-					<button type="submit" class="btn btn-primary" name="changeUserProfile" value="true"><?=\T::Settings_UserProfile_Change();?></button>
+					<button type="submit" class="btn btn-primary" name="changeUserProfile" value="true"><?=\T::Framework_Settings_UserProfile_Change();?></button>
 				</div>
 			</form>
 		</div>
@@ -235,7 +235,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 	private function userPasswordCard() {
 		?>
 		<div class="card bg-transparent col-xl-8 p-4 mt-2 mb-3">
-			<div class="card-header bg-transparent <?=$this->need_change_password ? 'text-warning' : '';?>"><h3><?=\T::Settings_ChangePassword();?></h3></div>
+			<div class="card-header bg-transparent <?=$this->need_change_password ? 'text-warning' : '';?>"><h3><?=\T::Framework_Settings_ChangePassword();?></h3></div>
 			<form class="change-password-form card-body needs-validation" method="post" novalidate>
 				<?php if ($this->passwordSuccessText) { ?>
 					<div class="alert alert-success d-flex align-items-center fade show alert-dismissible" role="alert">
@@ -250,21 +250,21 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 					</div>
 				<?php } ?>
 				<?php
-				echo $this->template->html_input("oldPassword", $_POST['oldPassword']??'', \T::Settings_OldPassword(), true, [
+				echo $this->template->html_input("oldPassword", $_POST['oldPassword']??'', \T::Framework_Settings_OldPassword(), true, [
 					'type' => 'password',
 					'password-alert' => false,
 				]);
-				echo $this->template->html_input("newPassword", $_POST['newPassword']??'', \T::Settings_NewPassword(), true, [
+				echo $this->template->html_input("newPassword", $_POST['newPassword']??'', \T::Framework_Settings_NewPassword(), true, [
 					'type' => 'password',
 					'password-alert' => true,
 				]);
-				echo $this->template->html_input("confirmNewPassword", $_POST['confirmNewPassword']??'', \T::Settings_ConfirmNewPassword(), true, [
+				echo $this->template->html_input("confirmNewPassword", $_POST['confirmNewPassword']??'', \T::Framework_Settings_ConfirmNewPassword(), true, [
 					'type' => 'password',
-					'invalid-feedback' => \T::Common_FormPasswordEquals(),
+					'invalid-feedback' => \T::Framework_Common_FormPasswordEquals(),
 				]);
 				?>
 				<div class="d-flex flex-row-reverse">
-					<button type="submit" class="btn btn-primary" name="changePassword" value="true"><?=\T::Settings_Change();?></button>
+					<button type="submit" class="btn btn-primary" name="changePassword" value="true"><?=\T::Framework_Settings_Change();?></button>
 				</div>
 			</form>
 			<script nonce="<?=\CSP::nonceRandom();?>">
@@ -297,14 +297,14 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		<div class="card bg-transparent col-xl-8 p-4 mt-2 mb-3">
 			<div class="card-body bg-transparent">
 				<div class="d-flex justify-content-between flex-wrap">
-					<h3><?=\T::Settings_TwoFactor_Title();?></h3>
+					<h3><?=\T::Framework_Settings_TwoFactor_Title();?></h3>
 					<?php if (!$currentUser['2fa']) { ?>
 						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#twoFactorModal">
-							<?=\T::Settings_TwoFactor_Enable();?>
+							<?=\T::Framework_Settings_TwoFactor_Enable();?>
 						</button>
 					<?php } else { ?>
 						<a href="/settings/?disable_2fa" type="button" class="btn btn-primary btn-danger">
-							<?=\T::Settings_TwoFactor_Disable();?>
+							<?=\T::Framework_Settings_TwoFactor_Disable();?>
 						</a>
 					<?php } ?>
 				</div>
@@ -316,16 +316,16 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 					<div class="modal-content bg-dark">
 						<form method="post" action="" class="enable-two-factor-form needs-validation m-0" novalidate>
 							<div class="modal-header">
-								<h1 class="modal-title fs-5" id="staticBackdropLiveLabel"><?=\T::Settings_TwoFactor_Title();?></h1>
+								<h1 class="modal-title fs-5" id="staticBackdropLiveLabel"><?=\T::Framework_Settings_TwoFactor_Title();?></h1>
 								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">
 								<input type="hidden" name="secret" id="secret" value="<?=$secret;?>">
 								<div class="d-flex justify-content-left align-items-left mb-3">
-									<?=\T::Settings_TwoFactor_Header();?>
+									<?=\T::Framework_Settings_TwoFactor_Header();?>
 								</div>
 								<div class="d-flex justify-content-left align-items-left mb-3">
-									<?=\T::Settings_TwoFactor_Description();?>
+									<?=\T::Framework_Settings_TwoFactor_Description();?>
 								</div>
 								<div class="d-flex justify-content-center align-items-center mb-3">
 									<img src="<?=$url;?>" alt="" title="" width="250" height="250" />
@@ -337,7 +337,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 									<?=$secret;?>
 								</div>
 								<div class="d-flex justify-content-center align-items-center mb-4">
-									<?=\T::Settings_TwoFactor_EnterCode();?>
+									<?=\T::Framework_Settings_TwoFactor_EnterCode();?>
 								</div>
 								<?=$this->template->html_totp('totp');?>
 								<p class="mt-3">
@@ -345,8 +345,8 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 								</p>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Common_Close();?></button>
-								<button type="submit" class="btn btn-primary enableTwoFactorButton" name="enableTwoFactor" id="enableTwoFactor" value="true"><?=\T::Settings_TwoFactor_Enable();?></button>
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Framework_Common_Close();?></button>
+								<button type="submit" class="btn btn-primary enableTwoFactorButton" name="enableTwoFactor" id="enableTwoFactor" value="true"><?=\T::Framework_Settings_TwoFactor_Enable();?></button>
 							</div>
 						</form>
 					</div>
@@ -374,7 +374,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 								},
 								success : function(d) {
 									if (!d) {
-										new bootstrap.Toast(showErrorToast('<?=\T::Settings_TwoFactor_ErrorSetup();?>')).show();
+										new bootstrap.Toast(showErrorToast('<?=\T::Framework_Settings_TwoFactor_ErrorSetup();?>')).show();
 									} else if (d.error) {
 										new bootstrap.Toast(showErrorToast(d.error)).show();
 									} else {
@@ -383,7 +383,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 
 								},
 								error : function(jqXHR, textStatus, errorThrown) {
-									new bootstrap.Toast(showErrorToast('<?=\T::Settings_TwoFactor_ErrorSetup();?>')).show();
+									new bootstrap.Toast(showErrorToast('<?=\T::Framework_Settings_TwoFactor_ErrorSetup();?>')).show();
 								}
 							});
 						}

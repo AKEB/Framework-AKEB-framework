@@ -311,9 +311,9 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 
 	private function access_titles(): array {
 		return [
-			0 => \T::Permission_access_0(),
-			1 => \T::Permission_access_1(),
-			2 => \T::Permission_access_2(),
+			0 => \T::Framework_Permission_access_0(),
+			1 => \T::Framework_Permission_access_1(),
+			2 => \T::Framework_Permission_access_2(),
 		];
 	}
 
@@ -389,9 +389,9 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 		<div class="float-start">
 			<h1><i class="bi bi-file-earmark-lock"></i>
 			<?php if ($this->group_id && $this->group) {
-				echo \T::Menu_GroupPermissions($this->group['title'], $this->group['id']);
+				echo \T::Framework_Menu_GroupPermissions($this->group['title'], $this->group['id']);
 			} elseif ($this->user_id && $this->user) {
-				echo \T::Menu_UserPermissions($this->user['name'], $this->user['surname'], $this->user['id']);
+				echo \T::Framework_Menu_UserPermissions($this->user['name'], $this->user['surname'], $this->user['id']);
 			}
 			?>
 		</div>
@@ -400,7 +400,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 				?>
 				<div class="float-end">
 					<h3 class="pointer text-info">
-						<i class="bi bi-plus-circle addPermissionAction"> <?=\T::Common_Add();?></i>
+						<i class="bi bi-plus-circle addPermissionAction"> <?=\T::Framework_Common_Add();?></i>
 					</h3>
 				</div>
 				<?php
@@ -430,33 +430,33 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 			<table class="table table-transparent table-responsive" id="permissionsTable">
 				<thead>
 					<tr>
-						<th scope="col" class="align-middle"><?=\T::Permission_Table_Title();?></th>
+						<th scope="col" class="align-middle"><?=\T::Framework_Permission_Table_Title();?></th>
 
-						<th scope="col" class="align-middle text-center" title="<?=\T::Permission_Table_Read();?>">
-							<div class="d-none d-md-table-cell"><?=\T::Permission_Table_Read();?></div>
+						<th scope="col" class="align-middle text-center" title="<?=\T::Framework_Permission_Table_Read();?>">
+							<div class="d-none d-md-table-cell"><?=\T::Framework_Permission_Table_Read();?></div>
 							<div class="d-table-cell d-md-none">R</div>
 						</th>
-						<th scope="col" class="align-middle text-center" title="<?=\T::Permission_Table_Write();?>">
-							<div class="d-none d-md-table-cell"><?=\T::Permission_Table_Write();?></div>
+						<th scope="col" class="align-middle text-center" title="<?=\T::Framework_Permission_Table_Write();?>">
+							<div class="d-none d-md-table-cell"><?=\T::Framework_Permission_Table_Write();?></div>
 							<div class="d-table-cell d-md-none">W</div>
 						</th>
-						<th scope="col" class="align-middle text-center" title="<?=\T::Permission_Table_Delete();?>">
-							<div class="d-none d-md-table-cell"><?=\T::Permission_Table_Delete();?></div>
+						<th scope="col" class="align-middle text-center" title="<?=\T::Framework_Permission_Table_Delete();?>">
+							<div class="d-none d-md-table-cell"><?=\T::Framework_Permission_Table_Delete();?></div>
 							<div class="d-table-cell d-md-none">D</div>
 						</th>
 						<?php
 						if ($this->access_change) {
 							?>
-							<th scope="col" class="align-middle text-center" title="<?=\T::Permission_Table_AccessRead();?>">
-								<div class="d-none d-md-table-cell"><?=\T::Permission_Table_AccessRead();?></div>
+							<th scope="col" class="align-middle text-center" title="<?=\T::Framework_Permission_Table_AccessRead();?>">
+								<div class="d-none d-md-table-cell"><?=\T::Framework_Permission_Table_AccessRead();?></div>
 								<div class="d-table-cell d-md-none">AR</div>
 							</th>
-							<th scope="col" class="align-middle text-center" title="<?=\T::Permission_Table_AccessWrite();?>">
-								<div class="d-none d-md-table-cell"><?=\T::Permission_Table_AccessWrite();?></div>
+							<th scope="col" class="align-middle text-center" title="<?=\T::Framework_Permission_Table_AccessWrite();?>">
+								<div class="d-none d-md-table-cell"><?=\T::Framework_Permission_Table_AccessWrite();?></div>
 								<div class="d-table-cell d-md-none">AW</div>
 							</th>
-							<th scope="col" class="align-middle text-center" title="<?=\T::Permission_Table_AccessChange();?>">
-								<div class="d-none d-md-table-cell"><?=\T::Permission_Table_AccessChange();?></div>
+							<th scope="col" class="align-middle text-center" title="<?=\T::Framework_Permission_Table_AccessChange();?>">
+								<div class="d-none d-md-table-cell"><?=\T::Framework_Permission_Table_AccessChange();?></div>
 								<div class="d-table-cell d-md-none">AC</div>
 							</th>
 							<?php
@@ -516,12 +516,12 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 							2 => 'bi bi-x text-danger fs-4',
 						];
 						$from_groups = [
-							READ => $this->permissions_from_group ? '<i title="'.\T::Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][READ]]).'"></i>':'',
-							WRITE => $this->permissions_from_group ? '<i title="'.\T::Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][WRITE]]).'"></i>':'',
-							DELETE => $this->permissions_from_group ? '<i title="'.\T::Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][DELETE]]).'"></i>':'',
-							ACCESS_READ => $this->permissions_from_group ? '<i title="'.\T::Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][ACCESS_READ]]).'"></i>':'',
-							ACCESS_WRITE => $this->permissions_from_group ? '<i title="'.\T::Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][ACCESS_WRITE]]).'"></i>':'',
-							ACCESS_CHANGE => $this->permissions_from_group ? '<i title="'.\T::Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][ACCESS_CHANGE]]).'"></i>':'',
+							READ => $this->permissions_from_group ? '<i title="'.\T::Framework_Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][READ]]).'"></i>':'',
+							WRITE => $this->permissions_from_group ? '<i title="'.\T::Framework_Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][WRITE]]).'"></i>':'',
+							DELETE => $this->permissions_from_group ? '<i title="'.\T::Framework_Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][DELETE]]).'"></i>':'',
+							ACCESS_READ => $this->permissions_from_group ? '<i title="'.\T::Framework_Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][ACCESS_READ]]).'"></i>':'',
+							ACCESS_WRITE => $this->permissions_from_group ? '<i title="'.\T::Framework_Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][ACCESS_WRITE]]).'"></i>':'',
+							ACCESS_CHANGE => $this->permissions_from_group ? '<i title="'.\T::Framework_Permission_FromGroups().'" class="'.($from_groups_classes[$this->permissions_from_group[$subject][$subject_id][ACCESS_CHANGE]]).'"></i>':'',
 						];
 						?>
 						<tr>
@@ -625,16 +625,16 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 				<div class="modal-content bg-dark">
 					<form action="<?=$this->url;?>" class="needs-validation" method="post" novalidate>
 						<div class="modal-header border-secondary">
-							<h5 class="modal-title" id="createPermissionModalLabel"><?=\T::Permission_ModalTitle();?></h5>
-							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Common_Close();?>" title="<?=\T::Common_Close();?>"></button>
+							<h5 class="modal-title" id="createPermissionModalLabel"><?=\T::Framework_Permission_ModalTitle();?></h5>
+							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Framework_Common_Close();?>" title="<?=\T::Framework_Common_Close();?>"></button>
 						</div>
 						<div class="modal-body" id="createPermissionModalBody">
 							<?php
-							echo $this->template->html_select('permissionsType', \Permissions::subject_types_hash(), 0, \T::Permission_ModalType(), true,[
+							echo $this->template->html_select('permissionsType', \Permissions::subject_types_hash(), 0, \T::Framework_Permission_ModalType(), true,[
 								'with-undefined' => true,
 								'data-container' => '#createPermissionModal',
 							]);
-							echo $this->template->html_select('subject-select', [], '', \T::Menu_Subject(), true,[
+							echo $this->template->html_select('subject-select', [], '', \T::Framework_Menu_Subject(), true,[
 								'with-undefined' => true,
 								'global-id' => 'subject-select-div',
 								'data-container' => '#createPermissionModal',
@@ -642,8 +642,8 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 							?>
 						</div>
 						<div class="modal-footer border-secondary">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Common_Cancel();?></button>
-							<button type="submit" class="btn btn-success" id="confirmCreateBtn" name="action" value="create"><?=\T::Common_Create();?></button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Framework_Common_Cancel();?></button>
+							<button type="submit" class="btn btn-success" id="confirmCreateBtn" name="action" value="create"><?=\T::Framework_Common_Create();?></button>
 						</div>
 					</form>
 				</div>

@@ -38,18 +38,18 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		$groupId = intval($params['id'] ?? 0);
 		$groupTitle = trim($params['title'] ?? '');
 		if (!$groupTitle) {
-			$this->error = \T::Groups_Create_TitleRequired();
+			$this->error = \T::Framework_Groups_Create_TitleRequired();
 			return;
 		}
 		if ($groupId) {
 			// Update
 			if (!\Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $groupId, WRITE)) {
-				$this->error = \T::Errors_PermissionDenied();
+				$this->error = \T::Framework_Errors_PermissionDenied();
 				return;
 			}
 			$oldGroup = \Groups::get(['id' => $groupId]);
 			if (!$oldGroup) {
-				$this->error = \T::Groups_Update_GroupNotFound();
+				$this->error = \T::Framework_Groups_Update_GroupNotFound();
 				return;
 			}
 
@@ -66,7 +66,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		} else {
 			// Create
 			if (!$this->can_create_group) {
-				$this->error = \T::Errors_PermissionDenied();
+				$this->error = \T::Framework_Errors_PermissionDenied();
 				return;
 			}
 			$params = [
@@ -106,20 +106,20 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 	private function delete($group_id) {
 		if (!$group_id) {
-			$this->error = \T::Groups_Delete_GroupNotFound();
+			$this->error = \T::Framework_Groups_Delete_GroupNotFound();
 			return;
 		}
 		if (!\Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $group_id, DELETE)) {
-			$this->error = \T::Groups_Delete_PermissionDenied();
+			$this->error = \T::Framework_Groups_Delete_PermissionDenied();
 			return;
 		}
 		$group = \Groups::get(['id' => $group_id]);
 		if (!$group) {
-			$this->error = \T::Groups_Delete_GroupNotFound();
+			$this->error = \T::Framework_Groups_Delete_GroupNotFound();
 			return;
 		}
 		if (in_array($group_id, [\Groups::ADMIN_GROUP_ID, \Groups::DEFAULT_GROUP_ID])) {
-			$this->error = \T::Groups_Delete_PermissionDenied();
+			$this->error = \T::Framework_Groups_Delete_PermissionDenied();
 			return;
 		}
 		$UserGroups = \UserGroups::data(['group_id' => $group_id]);
@@ -186,12 +186,12 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 	private function print_header() {
 		?>
-		<div class="float-start"><h1><i class="bi bi-people"></i> <?=\T::Menu_Groups();?></h1></div>
+		<div class="float-start"><h1><i class="bi bi-people"></i> <?=\T::Framework_Menu_Groups();?></h1></div>
 		<?php if ($this->can_create_group) {
 			?>
 			<div class="float-end">
 				<h3 class="pointer text-info">
-					<i class="bi bi-plus-circle createGroupAction"> <?=\T::Common_Create();?></i>
+					<i class="bi bi-plus-circle createGroupAction"> <?=\T::Framework_Common_Create();?></i>
 				</h3>
 			</div>
 			<?php
@@ -208,12 +208,12 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 				<thead class="">
 					<tr>
 					<th scope="col" class="d-none d-lg-table-cell align-middle">ID</th>
-					<th scope="col" class="align-middle"><?=\T::Groups_Table_Title();?></th>
-					<th scope="col" class="align-middle text-center"><?=\T::Groups_Table_UsersCount();?></th>
-					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Common_CreateTime();?></th>
-					<th scope="col" class="align-middle text-center"><?=\T::Groups_Table_Permissions();?></th>
+					<th scope="col" class="align-middle"><?=\T::Framework_Groups_Table_Title();?></th>
+					<th scope="col" class="align-middle text-center"><?=\T::Framework_Groups_Table_UsersCount();?></th>
+					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Framework_Common_CreateTime();?></th>
+					<th scope="col" class="align-middle text-center"><?=\T::Framework_Groups_Table_Permissions();?></th>
 					<?php if ($this->can_delete) {?>
-						<th scope="col" class="align-middle text-center"><?=\T::Groups_Table_Delete();?></th>
+						<th scope="col" class="align-middle text-center"><?=\T::Framework_Groups_Table_Delete();?></th>
 					<?php } ?>
 					</tr>
 				</thead>
@@ -314,15 +314,15 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			<div class="modal-dialog" role="document">
 				<div class="modal-content bg-dark">
 				<div class="modal-header border-secondary">
-					<h5 class="modal-title" id="deleteGroupModalLabel"><?=\T::Groups_Delete_Title();?></h5>
-					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Common_Close();?>" title="<?=\T::Common_Close();?>"></button>
+					<h5 class="modal-title" id="deleteGroupModalLabel"><?=\T::Framework_Groups_Delete_Title();?></h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Framework_Common_Close();?>" title="<?=\T::Framework_Common_Close();?>"></button>
 				</div>
 				<div class="modal-body" id="deleteGroupModalBody">
-					<?=\T::Groups_Delete_Confirmation();?>
+					<?=\T::Framework_Groups_Delete_Confirmation();?>
 				</div>
 				<div class="modal-footer border-secondary">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Common_Cancel();?></button>
-					<button type="button" class="btn btn-danger" id="confirmDeleteBtn"><?=\T::Common_Delete();?></button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Framework_Common_Cancel();?></button>
+					<button type="button" class="btn btn-danger" id="confirmDeleteBtn"><?=\T::Framework_Common_Delete();?></button>
 				</div>
 				</div>
 			</div>
@@ -333,27 +333,27 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 				<div class="modal-content bg-dark">
 					<form action="/admin/groups/save/" class="needs-validation" method="post" novalidate>
 						<div class="modal-header border-secondary">
-							<h5 class="modal-title" id="createGroupModalLabel"><?=\T::Groups_ModalTitle();?></h5>
-							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Common_Close();?>" title="<?=\T::Common_Close();?>"></button>
+							<h5 class="modal-title" id="createGroupModalLabel"><?=\T::Framework_Groups_ModalTitle();?></h5>
+							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Framework_Common_Close();?>" title="<?=\T::Framework_Common_Close();?>"></button>
 						</div>
 						<div class="modal-body" id="createGroupModalBody">
 							<input type="hidden" name="id" value="" id="createGroupId" >
 							<div class="mb-3 row">
-								<label for="createGroupTitle" class="col-sm-3 col-form-label"><?=\T::Groups_Create_Title();?><sup>*</sup></label>
+								<label for="createGroupTitle" class="col-sm-3 col-form-label"><?=\T::Framework_Groups_Create_Title();?><sup>*</sup></label>
 								<div class="col-sm-9">
 									<input type="text" required class="form-control" id="createGroupTitle" name="title" value="">
 									<div class="valid-feedback">
-										<?=\T::Common_FormLooksGood();?>
+										<?=\T::Framework_Common_FormLooksGood();?>
 									</div>
 									<div class="invalid-feedback">
-										<?=\T::Common_FormRequired();?>
+										<?=\T::Framework_Common_FormRequired();?>
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="modal-footer border-secondary">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Common_Cancel();?></button>
-							<button type="submit" class="btn btn-success" id="confirmCreateBtn" name="action" value="save"><?=\T::Common_Create();?></button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Framework_Common_Cancel();?></button>
+							<button type="submit" class="btn btn-success" id="confirmCreateBtn" name="action" value="save"><?=\T::Framework_Common_Create();?></button>
 						</div>
 					</form>
 				</div>
@@ -388,7 +388,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 				const modalBody = document.getElementById('deleteGroupModalBody');
 				const confirmBtn = document.getElementById('confirmDeleteBtn');
 
-				modalBody.textContent = '<?=\T::Groups_Delete_Confirmation();?>'.replace('{group}', groupTitle);
+				modalBody.textContent = '<?=\T::Framework_Groups_Delete_Confirmation();?>'.replace('{group}', groupTitle);
 
 				confirmBtn.onclick = function() {
 					window.location.href = '/admin/groups/delete/' + groupId + '/';

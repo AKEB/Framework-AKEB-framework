@@ -1,37 +1,49 @@
 <?php
 
 class Routing {
-	protected array $routes = [];
-
-	protected function routes(): array {
-		$this->routes = [
-			'/admin/users/edit/(?P<user_id>\d+)/' => '/admin/users/edit/',
-			'/admin/users/(?P<action>[^/]+)/(?P<user_id>\d+)/' => '/admin/users/',
-			'/admin/users/(?P<user_id>\d+)/groups/' => '/admin/users/groups/',
-			'/admin/users/(?P<user_id>\d+)/groups/(?P<action>[^/]+)/' => '/admin/users/groups/',
-			'/admin/users/(?P<user_id>\d+)/groups/(?P<action>[^/]+)/(?P<group_id>\d+)/' => '/admin/users/groups/',
-
-			'/admin/groups/(?P<action>[^/]+)/' => '/admin/groups/',
-			'/admin/groups/(?P<action>[^/]+)/(?P<group_id>\d+)/' => '/admin/groups/',
-
-			'/admin/permissions/(?P<subject>[^/]+)/(?P<subject_id>\d+)/' => '/admin/permissions/',
-
-			'/admin/impersonate/(?P<user_id>\d+)/' => '/admin/impersonate/',
-
-			'/settings/disable_2fa/' => '\\FrameworkApp\\Settings',
-
-			'/settings/' => '\\FrameworkApp\\Settings',
-			'/signup/' => '\\FrameworkApp\\Signup',
-			'/login/' => '\\FrameworkApp\\Login',
-			'/logout/' => '\\FrameworkApp\\Logout',
-			'/forgot/' => '\\FrameworkApp\\Forgot',
-
-
-		];
-		return $this->routes;
+	public function __construct() {
+		$this->setRoutes();
+		$this->Run();
 	}
 
-	public function __construct() {
+	private function setRoutes() {
+		$routes = \Routes::getInstance();
+		$routes->addRoute('/admin/users/edit/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Users\\Edit');
+		$routes->addRoute('/admin/users/edit/', '\\FrameworkApp\\Admin\\Users\\Edit');
+
+		$routes->addRoute('/admin/users/(?P<action>[^/]+)/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Users');
+		$routes->addRoute('/admin/users/', '\\FrameworkApp\\Admin\\Users');
+
+		$routes->addRoute('/admin/users/(?P<user_id>\d+)/groups/', '\\FrameworkApp\\Admin\\Users\\Groups');
+		$routes->addRoute('/admin/users/(?P<user_id>\d+)/groups/(?P<action>[^/]+)/', '\\FrameworkApp\\Admin\\Users\\Groups');
+		$routes->addRoute('/admin/users/(?P<user_id>\d+)/groups/(?P<action>[^/]+)/(?P<group_id>\d+)/', '\\FrameworkApp\\Admin\\Users\\Groups');
+		$routes->addRoute('/admin/users/groups/', '\\FrameworkApp\\Admin\\Users\\Groups');
+
+		$routes->addRoute('/admin/groups/(?P<action>[^/]+)/', '\\FrameworkApp\\Admin\\Groups');
+		$routes->addRoute('/admin/groups/(?P<action>[^/]+)/(?P<group_id>\d+)/', '\\FrameworkApp\\Admin\\Groups');
+		$routes->addRoute('/admin/groups/', '\\FrameworkApp\\Admin\\Groups');
+
+		$routes->addRoute('/admin/permissions/(?P<subject>[^/]+)/(?P<subject_id>\d+)/', '\\FrameworkApp\\Admin\\Permissions');
+		$routes->addRoute('/admin/permissions/', '\\FrameworkApp\\Admin\\Permissions');
+
+		$routes->addRoute('/admin/impersonate/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Impersonate');
+		$routes->addRoute('/admin/impersonate/', '\\FrameworkApp\\Admin\\Impersonate');
+
+		$routes->addRoute('/settings/disable_2fa/', '\\FrameworkApp\\Settings');
+		$routes->addRoute('/settings/', '\\FrameworkApp\\Settings');
+
+		$routes->addRoute('/forgot/', '\\FrameworkApp\\Forgot');
+
+		$routes->addRoute('/login/', '\\FrameworkApp\\Login');
+
+		$routes->addRoute('/logout/', '\\FrameworkApp\\Logout');
+
+		$routes->addRoute('/signup/', '\\FrameworkApp\\Signup');
+
+	}
+
+
+	private function Run() {
 		if (
 			isset($_SERVER['SCRIPT_FILENAME']) &&
 			isset($_SERVER['SCRIPT_NAME']) &&
@@ -43,7 +55,8 @@ class Routing {
 			$path_to_class = '';
 			$ARGS = [];
 			// var_dump($_SERVER['DOCUMENT_URI']);
-			foreach($this->routes() as $route => $class) {
+			$routes = \Routes::getInstance()->getRoutes();
+			foreach($routes as $route => $class) {
 				// var_dump($route);
 				if ($_SERVER['DOCUMENT_URI'] == $route) {
 					if (strpos($class, '\\') !== false && class_exists($class)) {

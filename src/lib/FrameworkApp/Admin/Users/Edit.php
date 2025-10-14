@@ -37,7 +37,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			if (isset($data['id']) && $data['id'] && $data['id'] != '') {
 				$data['id'] = trim($data['id']);
 				if ($this->user_id != intval($data['id'])) {
-					$this->error = \T::Settings_UserNotFound();
+					$this->error = \T::Framework_Settings_UserNotFound();
 					break;
 				}
 				$params['id'] = intval($data['id']);
@@ -45,7 +45,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			if (isset($data['name']) && $data['name'] && $data['name'] != '') {
 				$data['name'] = trim($data['name']);
 				if (mb_strlen($data['name']) < 2 || mb_strlen($data['name']) > 64) {
-					$this->error = \T::Settings_NameLengthError();
+					$this->error = \T::Framework_Settings_NameLengthError();
 					break;
 				}
 				$params['name'] = $data['name'];
@@ -53,7 +53,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			if (isset($data['surname']) && $data['surname'] && $data['surname'] != '') {
 				$data['surname'] = trim($data['surname']);
 				if (mb_strlen($data['surname']) < 2 || mb_strlen($data['surname']) > 64) {
-					$this->error = \T::Settings_SurnameLengthError();
+					$this->error = \T::Framework_Settings_SurnameLengthError();
 					break;
 				}
 				$params['surname'] = $data['surname'];
@@ -61,13 +61,13 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			if (isset($data['email']) && $data['email'] && $data['email'] != '') {
 				$data['email'] = trim($data['email']);
 				if (mb_strlen($data['email']) < 6 || mb_strlen($data['email']) > 128) {
-					$this->error = \T::Settings_EmailLengthError();
+					$this->error = \T::Framework_Settings_EmailLengthError();
 					break;
 				}
 				$check_email = \Users::get(['email' => $data['email']]);
 				if ($check_email) {
 					if ($check_email['id'] != ($params['id']??0)) {
-						$this->error = \T::Settings_EmailAlreadyInUse();
+						$this->error = \T::Framework_Settings_EmailAlreadyInUse();
 						break;
 					}
 				}
@@ -82,11 +82,11 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 					$data['newPassword'] = trim($data['newPassword']??'');
 					$data['confirmNewPassword'] = trim($data['confirmNewPassword']??'');
 					if ($data['newPassword'] != $data['confirmNewPassword']) {
-						$this->error = \T::Common_FormPasswordEquals();
+						$this->error = \T::Framework_Common_FormPasswordEquals();
 						break;
 					}
 					if ($data['newPassword'] == '') {
-						$this->error = \T::Settings_PasswordRequired();
+						$this->error = \T::Framework_Settings_PasswordRequired();
 						break;
 					}
 					$params['password'] = md5($data['newPassword'] . \Config::getInstance()->password_salt);
@@ -99,12 +99,12 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			$old_user = [];
 			if (isset($params['id']) && $params['id']) {
 				if (!\Sessions::checkPermission(\Permissions::MANAGE_USERS, $params['id'], WRITE)) {
-					$this->error = \T::Errors_PermissionDenied();
+					$this->error = \T::Framework_Errors_PermissionDenied();
 					break;
 				}
 				$old_user = \Users::get(['id' => $params['id']]);
 				if (!$old_user) {
-					$this->error = \T::Settings_UserNotFound();
+					$this->error = \T::Framework_Settings_UserNotFound();
 					break;
 				}
 				foreach($params as $k=>$v) {
@@ -113,13 +113,13 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 					}
 				}
 				if (!$params) {
-					$this->success = \T::Settings_NotingChanged();
+					$this->success = \T::Framework_Settings_NotingChanged();
 					break;
 				}
 				$params['id'] = $old_user['id'];
 			} else {
 				if (!\Sessions::checkPermission(\Permissions::MANAGE_USERS, 0, WRITE)) {
-					$this->error = \T::Errors_PermissionDenied();
+					$this->error = \T::Framework_Errors_PermissionDenied();
 					break;
 				}
 				$params['registerTime'] = time();
@@ -134,7 +134,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				\Logs::update_log(\Users::LOGS_OBJECT, $params['id'], $old_user, $new_user);
 				$user = \Users::get(['id' => $user_id]);
 				if (!$user) {
-					$this->error = \T::Settings_UserNotFound();
+					$this->error = \T::Framework_Settings_UserNotFound();
 					break;
 				}
 
@@ -160,7 +160,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				$user = \Users::get(['id' => $user_id]);
 				$log_id = \Logs::create_log(\Users::LOGS_OBJECT, $user_id, $user);
 				if (!$user) {
-					$this->error = \T::Settings_UserNotFound();
+					$this->error = \T::Framework_Settings_UserNotFound();
 					break;
 				}
 				$UserGroupsId = \UserGroups::save([
@@ -254,7 +254,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 
 	private function print_header() {
 		?>
-		<div class="float-start"><h1><i class="bi bi-person"></i> <?=\T::Menu_Users();?></h1></div>
+		<div class="float-start"><h1><i class="bi bi-person"></i> <?=\T::Framework_Menu_Users();?></h1></div>
 		<div class="clearfix"></div>
 		<?php
 	}
@@ -266,45 +266,45 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				<div class="card-header bg-transparent"><h3>
 					<?php
 					if ($this->user['id']) {
-						echo \T::Menu_EditUser($this->user['name'].' '.$this->user['surname'], $this->user['id']);
+						echo \T::Framework_Menu_EditUser($this->user['name'].' '.$this->user['surname'], $this->user['id']);
 					} else {
-						echo \T::Menu_CreateUser();
+						echo \T::Framework_Menu_CreateUser();
 					}
 					?>
 				</h3></div>
 				<form class="card-body needs-validation" method="post" novalidate>
 					<input type="hidden" name="id" value="<?=$this->user['id'];?>"/>
 					<?php
-					echo $this->template->html_input("name", $this->user['name']??'', \T::Settings_UserProfile_Name(), true);
-					echo $this->template->html_input("surname", $this->user['surname']??'', \T::Settings_UserProfile_Surname(), true);
-					echo $this->template->html_input("email", $this->user['email']??'', \T::Settings_UserProfile_Email(), true, [
+					echo $this->template->html_input("name", $this->user['name']??'', \T::Framework_Settings_UserProfile_Name(), true);
+					echo $this->template->html_input("surname", $this->user['surname']??'', \T::Framework_Settings_UserProfile_Surname(), true);
+					echo $this->template->html_input("email", $this->user['email']??'', \T::Framework_Settings_UserProfile_Email(), true, [
 						'type' => 'email',
 					]);
-					echo $this->template->html_input("telegram_id", $this->user['telegram_id']??'', \T::Settings_UserProfile_TelegramId(), false, [
+					echo $this->template->html_input("telegram_id", $this->user['telegram_id']??'', \T::Framework_Settings_UserProfile_TelegramId(), false, [
 						'type' => 'number',
 					]);
 					if (\Config::getInstance()->app_signin_active) {
-						echo $this->template->html_input("newPassword", $_POST['newPassword']??'', \T::Settings_NewPassword(), $this->user['id'] ? false : true, [
+						echo $this->template->html_input("newPassword", $_POST['newPassword']??'', \T::Framework_Settings_NewPassword(), $this->user['id'] ? false : true, [
 							'type' => 'password',
 							'password-alert' => true,
 						]);
-						echo $this->template->html_input("confirmNewPassword", $_POST['confirmNewPassword']??'', \T::Settings_ConfirmNewPassword(), $this->user['id'] ? false : true, [
+						echo $this->template->html_input("confirmNewPassword", $_POST['confirmNewPassword']??'', \T::Framework_Settings_ConfirmNewPassword(), $this->user['id'] ? false : true, [
 							'type' => 'password',
-							'invalid-feedback' => \T::Common_FormPasswordEquals(),
+							'invalid-feedback' => \T::Framework_Common_FormPasswordEquals(),
 						]);
 					}
 					if ($this->user['id']) {
-						echo $this->template->html_input("registerTime", $this->user['registerTime']??'', \T::Settings_RegisterTime(), false, ['readonly' => true]);
-						echo $this->template->html_input("updateTime", $this->user['updateTime']??'', \T::Settings_UpdateTime(), false, ['readonly' => true]);
-						echo $this->template->html_input("loginTime", $this->user['loginTime']??'', \T::Settings_LoginTime(), false, ['readonly' => true]);
+						echo $this->template->html_input("registerTime", $this->user['registerTime']??'', \T::Framework_Settings_RegisterTime(), false, ['readonly' => true]);
+						echo $this->template->html_input("updateTime", $this->user['updateTime']??'', \T::Framework_Settings_UpdateTime(), false, ['readonly' => true]);
+						echo $this->template->html_input("loginTime", $this->user['loginTime']??'', \T::Framework_Settings_LoginTime(), false, ['readonly' => true]);
 					}
 
-					echo $this->template->html_switch("status", intval($this->user['status']??0), \T::Settings_Active());
+					echo $this->template->html_switch("status", intval($this->user['status']??0), \T::Framework_Settings_Active());
 
-					echo $this->template->html_flags("flags[]", \Users::flags_hash(), $this->user['flags']??0, \T::Settings_Params());
+					echo $this->template->html_flags("flags[]", \Users::flags_hash(), $this->user['flags']??0, \T::Framework_Settings_Params());
 					?>
 					<div class="d-flex flex-row-reverse">
-						<button type="submit" class="btn btn-primary" name="<?=$this->user['id'] ? 'editUser' : 'createUser';?>" value="true"><?=\T::Settings_UserProfile_Change();?></button>
+						<button type="submit" class="btn btn-primary" name="<?=$this->user['id'] ? 'editUser' : 'createUser';?>" value="true"><?=\T::Framework_Settings_UserProfile_Change();?></button>
 					</div>
 				</form>
 			</div>

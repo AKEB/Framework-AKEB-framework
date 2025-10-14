@@ -1,0 +1,124 @@
+.vardump,
+.xdebug-var-dump {
+	background-color:#222222;
+	color:#dddddd;
+	font-size:0.7rem;
+	border-radius: 6px;
+	padding:0.5rem;
+	height: 20rem;
+	overflow-y: scroll;
+	overflow-x: scroll;
+}
+.gradient-custom {
+	/* fallback for old browsers */
+	background: #6a11cb;
+
+	/* Chrome 10-25, Safari 5.1-6 */
+	background: -webkit-linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1));
+
+	/* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 1))
+}
+
+.table-transparent { --bs-table-bg: transparent !important; }
+.table-transparent > :not(caption) > * > * {
+	--bs-table-bg: transparent !important;
+}
+
+.pointer {
+	cursor: pointer;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.spinning {
+    animation: spin 2s linear infinite;
+    display: inline-block;
+    pointer-events: none; /* Блокируем взаимодействие с элементом */
+    opacity: 0.7;
+}
+
+td.disabled>i {
+	cursor: default;
+	opacity: 0.4;
+	color: rgba(var(--bs-light-rgb), var(--bs-text-opacity)) !important;
+}
+
+i.disabled {
+	cursor: default;
+	opacity: 0.4;
+	color: rgba(var(--bs-light-rgb), var(--bs-text-opacity)) !important;
+}
+
+.invisible {
+	opacity: 0% !important;
+}
+
+.perm-from-group::before {
+	width:0px;
+	padding-left:10px;
+}
+
+.nav-link {
+	color: var(--bs-body-color);
+}
+
+.languageToggle {
+	z-index:1089;
+}
+
+.card {
+	border-radius: 1rem;
+}
+
+
+.wrong .bi-check-lg {
+    display: none;
+}
+.good .bi-x-lg {
+    display: none;
+}
+/* .valid-feedback,
+.invalid-feedback {
+  margin-left: calc(2em + 0.25rem + 1.5rem);
+} */
+
+
+.otp-field {
+	flex-direction: row;
+	column-gap: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.otp-field input {
+	height: 45px;
+	width: 42px;
+	border-radius: 6px;
+	outline: none;
+	font-size: 1.125rem;
+	text-align: center;
+	border: 1px solid #ddd;
+}
+.otp-field input:focus {
+	box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+.otp-field input::-webkit-inner-spin-button,
+.otp-field input::-webkit-outer-spin-button {
+	display: none;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

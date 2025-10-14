@@ -13,7 +13,8 @@
 		"files": [
 			"src/include/placeholder.php",
 			"src/include/constant.php",
-			"src/include/common.php"
+			"src/include/common.php",
+			"src/init.php"
 		]
 	},
 	"description": "Framework",

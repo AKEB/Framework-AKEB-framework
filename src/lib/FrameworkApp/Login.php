@@ -113,7 +113,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 
 			return $this->loginUserWithId($userId);
 		} catch (\Throwable) {
-			$this->errorText = \T::Login_AuthenticateError();
+			$this->errorText = \T::Framework_Login_AuthenticateError();
 			return false;
 		}
 	}
@@ -131,7 +131,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		try{
 			$oidc->authenticate();
 		} catch (\Throwable) {
-			$this->errorText = \T::Login_AuthenticateError();
+			$this->errorText = \T::Framework_Login_AuthenticateError();
 			return false;
 		}
 	}
@@ -191,7 +191,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 
 			return $this->loginUserWithId($userId);
 		} catch (\Throwable) {
-			$this->errorText = \T::Login_AuthenticateError();
+			$this->errorText = \T::Framework_Login_AuthenticateError();
 			return false;
 		}
 	}
@@ -211,18 +211,18 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		try{
 			$oauth->authenticate();
 		} catch (\Throwable) {
-			$this->errorText = \T::Login_AuthenticateError();
+			$this->errorText = \T::Framework_Login_AuthenticateError();
 			return false;
 		}
 	}
 
 	private function loginUserWithId($userId) {
 		if (!$userId) {
-			$this->errorText = \T::Login_InvalidCredentials();
+			$this->errorText = \T::Framework_Login_InvalidCredentials();
 			return;
 		}
 		if ($userId == -1) {
-			$this->errorText = \T::Login_TooManyLoginAttempts();
+			$this->errorText = \T::Framework_Login_TooManyLoginAttempts();
 			return;
 		}
 		\Sessions::set_current_user($userId);
@@ -262,13 +262,13 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 
 	private function signIn(string $email, string $password, int $totp=0) {
 		if (!\Config::getInstance()->app_signin_active) {
-			$this->errorText = \T::Login_SignInWithLoginAndPasswordDenied();
+			$this->errorText = \T::Framework_Login_SignInWithLoginAndPasswordDenied();
 			return;
 		}
 		$email = strval($email??'');
 		$password = strval($password??'');
 		if (!$email || !$password) {
-			$this->errorText = \T::Login_EmailAndPasswordRequired();
+			$this->errorText = \T::Framework_Login_EmailAndPasswordRequired();
 			return;
 		}
 		$userId = \Users::check_user_credentials($email, $password);
@@ -278,7 +278,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			if ($totp) {
 				$googleAuthenticate = new \GoogleAuthenticator();
 				if (!$googleAuthenticate->checkCode($user['2fa'], $totp)) {
-					$this->errorText = \T::Login_InvalidTOTP();
+					$this->errorText = \T::Framework_Login_InvalidTOTP();
 					return;
 				}
 			} else {
@@ -313,29 +313,29 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 									if ($this->need_2fa_form && $this->email && $this->password) {
 										?>
 										<div class="d-flex justify-content-center align-items-center mb-4">
-											<?=\T::Login_TwoFactor_Title();?>
+											<?=\T::Framework_Login_TwoFactor_Title();?>
 										</div>
 										<div class="d-flex justify-content-center align-items-center mb-4">
-											<?=\T::Login_TwoFactor_Description();?>
+											<?=\T::Framework_Login_TwoFactor_Description();?>
 										</div>
 
 										<input type="hidden" name="email"  value="<?=$this->email;?>">
 										<input type="hidden" name="password"  value="<?=$this->password;?>">
 										<?php $this->template->html_totp('totp');?>
-										<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3 signInButton" name="signIn" type="submit"><?=\T::Login_SignIn();?></button><br/>
+										<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3 signInButton" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
 										<?php
 									} else {
 										?>
 										<?php
 										if (\Config::getInstance()->app_signin_active) {
 											?>
-											<p class="text-white-50 mb-3"><?=\T::Login_Subtitle();?></p>
+											<p class="text-white-50 mb-3"><?=\T::Framework_Login_Subtitle();?></p>
 											<div data-mdb-input-init class="form-outline form-white mb-2">
-												<label class="form-label" for="typeEmailX"><?=\T::Login_Email();?></label>
+												<label class="form-label" for="typeEmailX"><?=\T::Framework_Login_Email();?></label>
 												<input type="email" id="typeEmailX" name="email" class="form-control form-control-lg" value="<?=isset($_POST['email']) && $_POST['email'] ?htmlspecialchars($_POST['email']) : ''?>"/>
 											</div>
 											<div data-mdb-input-init class="form-outline form-white mb-2">
-												<label class="form-label" for="typePasswordX"><?=\T::Login_Password();?></label>
+												<label class="form-label" for="typePasswordX"><?=\T::Framework_Login_Password();?></label>
 												<div class="input-group">
 													<input type="password" class="form-control form-control-lg" id="typePasswordX" name="password">
 													<button class="btn btn-secondary btn-lg togglePassword" data-input-id="typePasswordX" type="button" tabindex="-1">
@@ -343,22 +343,22 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 													</button>
 												</div>
 											</div>
-											<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="/forgot/"><?=\T::Login_ForgotPassword();?></a></p>
-											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3" name="signIn" type="submit"><?=\T::Login_SignIn();?></button><br/>
+											<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="/forgot/"><?=\T::Framework_Login_ForgotPassword();?></a></p>
+											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
 											<?php
 										}
 										?>
 										<?php
 										if (\Config::getInstance()->oidc_provider && \Config::getInstance()->oidc_client_id) {
 											?>
-											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mt-5 mb-3" name="openID" type="submit"><?=\T::Login_LoginWith(\Config::getInstance()->oidc_button??\T::Login_OpenID());?></button>
+											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mt-5 mb-3" name="openID" type="submit"><?=\T::Framework_Login_LoginWith(\Config::getInstance()->oidc_button??\T::Framework_Login_OpenID());?></button>
 											<?php
 										}
 										?>
 										<?php
 										if (\Config::getInstance()->oauth_client_id && \Config::getInstance()->oauth_client_secret) {
 											?>
-											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mt-5 mb-3" name="oAuth" type="submit"><?=\T::Login_LoginWith(\Config::getInstance()->oauth_button??\T::Login_OAuth());?></button>
+											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mt-5 mb-3" name="oAuth" type="submit"><?=\T::Framework_Login_LoginWith(\Config::getInstance()->oauth_button??\T::Framework_Login_OAuth());?></button>
 											<?php
 										}
 										?>
@@ -366,7 +366,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 										if (\Config::getInstance()->app_signin_active && \Config::getInstance()->app_signup_active) {
 											?>
 											<div class="mt-4">
-												<p class="mb-0"><?=\T::Login_NoAccount();?> <a href="/signup/" class="text-white-50 fw-bold"><?=\T::Login_SignUp();?></a></p>
+												<p class="mb-0"><?=\T::Framework_Login_NoAccount();?> <a href="/signup/" class="text-white-50 fw-bold"><?=\T::Framework_Login_SignUp();?></a></p>
 											</div>
 											<?php
 										}

@@ -34,8 +34,8 @@ class Groups extends \DB\MySQLObject implements \PermissionSubject_Interface {
 	}
 	static public function permissions_hash(): array {
 		return [
-			\Permissions::MANAGE_GROUPS => \T::Permissions_ManageGroup(),
-			\Permissions::MANAGE_GROUP_PERMISSIONS => \T::Permissions_ManageGroupPermissions(),
+			\Permissions::MANAGE_GROUPS => \T::Framework_Permissions_ManageGroup(),
+			\Permissions::MANAGE_GROUP_PERMISSIONS => \T::Framework_Permissions_ManageGroupPermissions(),
 		];
 	}
 

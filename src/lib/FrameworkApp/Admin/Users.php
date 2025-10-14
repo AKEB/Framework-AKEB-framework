@@ -50,12 +50,12 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 
 	private function print_header() {
 		?>
-		<div class="float-start"><h1><i class="bi bi-person"></i> <?=\T::Menu_Users();?></h1></div>
+		<div class="float-start"><h1><i class="bi bi-person"></i> <?=\T::Framework_Menu_Users();?></h1></div>
 		<?php if ($this->can_create_user) {
 			?>
 			<div class="float-end">
 				<h3 class="pointer text-info">
-					<i class="bi bi-plus-circle createUserAction"> <?=\T::Common_Create();?></i>
+					<i class="bi bi-plus-circle createUserAction"> <?=\T::Framework_Common_Create();?></i>
 				</h3>
 			</div>
 			<?php
@@ -68,30 +68,30 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 	private function processDeleteAction(int $userId) {
 		if (!isset($userId)) return;
 		if (!$this->can_delete) {
-			$this->error = \T::Errors_PermissionDenied();
+			$this->error = \T::Framework_Errors_PermissionDenied();
 			return;
 		}
 		if (!$userId) {
-			$this->error = \T::Users_Delete_UserNotFound();
+			$this->error = \T::Framework_Users_Delete_UserNotFound();
 			return;
 		}
 		if ($userId == \Sessions::currentUser()['id']) {
-			$this->error = \T::Users_Delete_SelfDenied();
+			$this->error = \T::Framework_Users_Delete_SelfDenied();
 			return;
 		}
 		if (!\Sessions::checkPermission(\Permissions::MANAGE_USERS, $userId, DELETE)) {
-			$this->error = \T::Errors_PermissionDenied();
+			$this->error = \T::Framework_Errors_PermissionDenied();
 			return;
 		}
 		$user = \Users::get(['id' => $userId]);
 		if (!$user) {
-			$this->error = \T::Users_Delete_UserNotFound();
+			$this->error = \T::Framework_Users_Delete_UserNotFound();
 			return;
 		}
 		if (\Sessions::in_group(\Groups::ADMIN_GROUP_ID, $userId)) {
 			$users_count = \UserGroups::count(['group_id' => \Groups::ADMIN_GROUP_ID]);
 			if ($users_count <= 1) {
-				$this->error = \T::Users_Delete_LastAdminDenied();
+				$this->error = \T::Framework_Users_Delete_LastAdminDenied();
 				return;
 			}
 		}
@@ -150,21 +150,21 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 				<thead class="">
 					<tr>
 					<th scope="col" class="d-none d-sm-table-cell align-middle">ID</th>
-					<th scope="col" class="align-middle"><?=\T::Users_Table_Name();?></th>
-					<th scope="col" class="d-none d-md-table-cell align-middle"><?=\T::Users_Table_Surname();?></th>
-					<th scope="col" class="align-middle"><?=\T::Users_Table_Email();?></th>
-					<th scope="col" class="align-middle"><?=\T::Users_Table_Status();?></th>
-					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Common_RegisterTime();?></th>
-					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Common_LoginTime();?></th>
-					<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Users_Table_Groups();?></th>
-					<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Users_Table_Permissions();?></th>
+					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Name();?></th>
+					<th scope="col" class="d-none d-md-table-cell align-middle"><?=\T::Framework_Users_Table_Surname();?></th>
+					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Email();?></th>
+					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Status();?></th>
+					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Framework_Common_RegisterTime();?></th>
+					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Framework_Common_LoginTime();?></th>
+					<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Groups();?></th>
+					<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Permissions();?></th>
 					<?php if ($this->can_impersonate) { ?>
-						<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Users_Table_ImpersonateUser();?></th>
+						<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_ImpersonateUser();?></th>
 					<?php } ?>
 					<?php if ($this->can_delete) {?>
-						<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Users_Table_Delete();?></th>
+						<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Delete();?></th>
 					<?php } ?>
-					<th scope="col" class="d-table-cell d-xl-none align-middle text-center"><?=\T::Users_Table_Actions();?></th>
+					<th scope="col" class="d-table-cell d-xl-none align-middle text-center"><?=\T::Framework_Users_Table_Actions();?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -241,10 +241,10 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 								<?php
 								if ($can_read_groups || $can_write_groups) {
 									?>
-									<a href="/admin/users/<?=$params['id'];?>/groups/"><i class="bi bi-people fs-4 text-info pointer" title="<?=\T::Users_Table_Groups();?>"></i></a>
+									<a href="/admin/users/<?=$params['id'];?>/groups/"><i class="bi bi-people fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Groups();?>"></i></a>
 									<?php
 								} else {
-									?><i class="bi bi-people fs-4 text-secondary" title="<?=\T::Users_Table_Groups();?>"></i><?php
+									?><i class="bi bi-people fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Groups();?>"></i><?php
 								}
 								?>
 							</td>
@@ -252,10 +252,10 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 								<?php
 								if ($can_read_permissions || $can_write_permissions) {
 									?>
-									<a href="/admin/permissions/user/<?=$params['id'];?>/"><i class="bi bi-file-earmark-lock fs-4 text-info pointer" title="<?=\T::Users_Table_Permissions();?>"></i></a>
+									<a href="/admin/permissions/user/<?=$params['id'];?>/"><i class="bi bi-file-earmark-lock fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Permissions();?>"></i></a>
 									<?php
 								} else {
-									?><i class="bi bi-file-earmark-lock fs-4 text-secondary" title="<?=\T::Users_Table_Permissions();?>"></i><?php
+									?><i class="bi bi-file-earmark-lock fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Permissions();?>"></i><?php
 								}
 								?>
 							</td>
@@ -266,11 +266,11 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 										?>
 										<i class="bi bi-box-arrow-in-right fs-4 text-warning pointer impersonateUserAction"
 											data-user-id = "<?=$params['id'];?>"
-											title="<?=\T::Users_Table_ImpersonateUser();?>"
+											title="<?=\T::Framework_Users_Table_ImpersonateUser();?>"
 										></i>
 										<?php
 									} else {
-										?><i class="bi bi-box-arrow-in-right fs-4 text-secondary" title="<?=\T::Users_Table_ImpersonateUser();?>"></i><?php
+										?><i class="bi bi-box-arrow-in-right fs-4 text-secondary" title="<?=\T::Framework_Users_Table_ImpersonateUser();?>"></i><?php
 									}
 									?>
 								</td>
@@ -283,11 +283,11 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 										<i class="bi bi-trash fs-4 text-danger pointer deleteUserAction"
 											data-user-id = "<?=$params['id'];?>"
 											data-user-name = "<?=addslashes($params['name'].' '.$params['surname']);?>"
-											title="<?=\T::Users_Table_Delete();?>"
+											title="<?=\T::Framework_Users_Table_Delete();?>"
 										></i>
 										<?php
 									} else {
-										?><i class="bi bi-trash fs-4 text-secondary" title="<?=\T::Users_Table_Delete();?>"></i><?php
+										?><i class="bi bi-trash fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Delete();?>"></i><?php
 									}
 									?>
 								</td>
@@ -297,19 +297,19 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 								<?php
 								if ($can_read_groups || $can_write_groups) {
 									?>
-									<a href="/admin/users/groups/?user_id=<?=$params['id'];?>"><i class="bi bi-people fs-4 text-info pointer" title="<?=\T::Users_Table_Groups();?>"></i></a>
+									<a href="/admin/users/groups/?user_id=<?=$params['id'];?>"><i class="bi bi-people fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Groups();?>"></i></a>
 									<?php
 								} else {
-									?><i class="bi bi-people fs-4 text-secondary" title="<?=\T::Users_Table_Groups();?>"></i><?php
+									?><i class="bi bi-people fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Groups();?>"></i><?php
 								}
 								?>
 								<?php
 								if ($can_read_permissions || $can_write_permissions) {
 									?>
-									<a href="/admin/permissions/?user_id=<?=$params['id'];?>"><i class="bi bi-file-earmark-lock fs-4 text-info pointer" title="<?=\T::Users_Table_Permissions();?>"></i></a>
+									<a href="/admin/permissions/?user_id=<?=$params['id'];?>"><i class="bi bi-file-earmark-lock fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Permissions();?>"></i></a>
 									<?php
 								} else {
-									?><i class="bi bi-file-earmark-lock fs-4 text-secondary" title="<?=\T::Users_Table_Permissions();?>"></i><?php
+									?><i class="bi bi-file-earmark-lock fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Permissions();?>"></i><?php
 								}
 								?>
 								<?php if ($this->can_impersonate) { ?>
@@ -318,11 +318,11 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 										?>
 										<i class="bi bi-box-arrow-in-right fs-4 text-warning pointer impersonateUserAction"
 											data-user-id = "<?=$params['id'];?>"
-											title="<?=\T::Users_Table_ImpersonateUser();?>"
+											title="<?=\T::Framework_Users_Table_ImpersonateUser();?>"
 										></i>
 										<?php
 									} else {
-										?><i class="bi bi-box-arrow-in-right fs-4 text-secondary" title="<?=\T::Users_Table_ImpersonateUser();?>"></i><?php
+										?><i class="bi bi-box-arrow-in-right fs-4 text-secondary" title="<?=\T::Framework_Users_Table_ImpersonateUser();?>"></i><?php
 									}
 									?>
 								<?php } ?>
@@ -333,11 +333,11 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 										<i class="bi bi-trash fs-4 text-danger pointer deleteUserAction"
 											data-user-id = "<?=$params['id'];?>"
 											data-user-name = "<?=addslashes($params['name'].' '.$params['surname']);?>"
-											title="<?=\T::Users_Table_Delete();?>"
+											title="<?=\T::Framework_Users_Table_Delete();?>"
 										></i>
 										<?php
 									} else {
-										?><i class="bi bi-trash fs-4 text-secondary" title="<?=\T::Users_Table_Delete();?>"></i><?php
+										?><i class="bi bi-trash fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Delete();?>"></i><?php
 									}
 									?>
 								<?php } ?>
@@ -358,15 +358,15 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 			<div class="modal-dialog">
 				<div class="modal-content bg-dark">
 				<div class="modal-header border-secondary">
-					<h5 class="modal-title" id="deleteUserModalLabel"><?=\T::Users_Delete_Title();?></h5>
+					<h5 class="modal-title" id="deleteUserModalLabel"><?=\T::Framework_Users_Delete_Title();?></h5>
 					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body" id="deleteUserModalBody">
-					<?=\T::Users_Delete_Confirmation();?>
+					<?=\T::Framework_Users_Delete_Confirmation();?>
 				</div>
 				<div class="modal-footer border-secondary">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Common_Cancel();?></button>
-					<button type="button" class="btn btn-danger" id="confirmDeleteBtn"><?=\T::Common_Delete();?></button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Framework_Common_Cancel();?></button>
+					<button type="button" class="btn btn-danger" id="confirmDeleteBtn"><?=\T::Framework_Common_Delete();?></button>
 				</div>
 				</div>
 			</div>
@@ -402,7 +402,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 				const modalBody = document.getElementById('deleteUserModalBody');
 				const confirmBtn = document.getElementById('confirmDeleteBtn');
 
-				modalBody.textContent = '<?=\T::Users_Delete_Confirmation();?>'.replace('{user}', userTitle);
+				modalBody.textContent = '<?=\T::Framework_Users_Delete_Confirmation();?>'.replace('{user}', userTitle);
 
 				confirmBtn.onclick = function() {
 					window.location.href = '/admin/users/delete/' + userId + '/';

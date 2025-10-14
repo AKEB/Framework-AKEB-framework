@@ -4,8 +4,8 @@ class Migrate {
 	static private $doneMigrations = [];
 	static private $depends = [];
 
-	static private function _migrate($migrationName) {
-		if (isset(static::$doneMigrations[$migrationName]) && static::$doneMigrations[$migrationName]) return true;
+	static private function _migrate(string $migrationName): void {
+		if (isset(static::$doneMigrations[$migrationName]) && static::$doneMigrations[$migrationName]) return;
 
 		$className = ucfirst($migrationName);
 		if (class_exists($className)) {
@@ -17,34 +17,48 @@ class Migrate {
 					static::_migrate($previous);
 				}
 			}
-			$className::install();
-			\DB\Migrations::save([
-				'migration_name' => $migrationName,
-				'stime' => time(),
-				'_mode' => \DB\Common::CSMODE_INSERT,
-			], '', 'migration_name');
-			echo $migrationName." install\n";
-			static::$doneMigrations[$migrationName] = time();
+			try {
+				\DB\Migrations::start_transaction();
+				$className::install();
+				\DB\Migrations::save([
+					'migration_name' => $migrationName,
+					'stime' => time(),
+					'_mode' => \DB\Common::CSMODE_INSERT,
+				], '', 'migration_name');
+				\DB\Migrations::commit_transaction();
+				echo $migrationName." install\n";
+				static::$doneMigrations[$migrationName] = time();
+			} catch (\Throwable $e) {
+				\DB\Migrations::rollback_transaction();
+				throw $e;
+			}
 		}
 	}
 
-	static private function _rollback($migrationName) {
-		if (!static::$doneMigrations[$migrationName]) return true;
+	static private function _rollback(string $migrationName): void {
+		if (!static::$doneMigrations[$migrationName]) return;
 		if (isset(static::$depends[$migrationName]) && static::$depends[$migrationName]) {
 			foreach(static::$depends[$migrationName] as $next) {
 				static::_rollback($next);
 			}
 		}
 		$className = ucfirst($migrationName);
-		$className::uninstall();
-		\DB\Migrations::delete(['migration_name' => $migrationName],'','migration_name');
-		echo $migrationName." uninstall\n";
-		unset(static::$doneMigrations[$migrationName]);
+		if (class_exists($className)) {
+			try {
+				\DB\Migrations::start_transaction();
+				$className::uninstall();
+				\DB\Migrations::delete(['migration_name' => $migrationName],'','migration_name');
+				\DB\Migrations::commit_transaction();
+				unset(static::$doneMigrations[$migrationName]);
+				echo $migrationName." uninstall\n";
+			} catch (\Throwable $e) {
+				\DB\Migrations::rollback_transaction();
+				throw $e;
+			}
+		}
 	}
 
-	static public function apply() {
-		static::$doneMigrations = get_hash(\DB\Migrations::data(), 'migration_name', 'stime');
-		$allFiles = glob(constant('SERVER_ROOT').'migrations/migration_*.php');
+	static private function applyFiles(array $allFiles): void {
 		$migrations = [];
 		foreach($allFiles as $file) {
 			$fileName = basename($file);
@@ -65,10 +79,17 @@ class Migrate {
 		}
 	}
 
-	static public function rollback($migrations) {
+	static public function apply(): void {
 		static::$doneMigrations = get_hash(\DB\Migrations::data(), 'migration_name', 'stime');
-		$allFiles = glob(constant('SERVER_ROOT').'migrations/migration_*.php');
 
+		$allFiles = glob(constant('SERVER_ROOT').'vendor/akeb/framework/src/migrations/framework_migration_*.php');
+		static::applyFiles($allFiles);
+
+		$allFiles = glob(constant('SERVER_ROOT').'/migrations/migration_*.php');
+		static::applyFiles($allFiles);
+	}
+
+	static private function rollbackFiles(array $migrations, array $allFiles): void {
 		static::$depends = [];
 		foreach($allFiles as $file) {
 			$fileName = basename($file);
@@ -91,5 +112,15 @@ class Migrate {
 		foreach($migrations as $migration) {
 			static::_rollback($migration);
 		}
+	}
+
+	static public function rollback(array $migrations): void {
+		static::$doneMigrations = get_hash(\DB\Migrations::data(), 'migration_name', 'stime');
+
+		$allFiles = glob(constant('SERVER_ROOT').'vendor/akeb/framework/src/migrations/framework_migration_*.php');
+		static::applyFiles($allFiles);
+
+		$allFiles = glob(constant('SERVER_ROOT').'/migrations/migration_*.php');
+		static::rollbackFiles($migrations, $allFiles);
 	}
 }

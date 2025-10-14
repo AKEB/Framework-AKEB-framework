@@ -19,10 +19,14 @@ class T {
 				return [];
 			}
 		}
-		if (!$languageFile) $languageFile = 'lang_{LANGUAGE}.yml';
-		$languageFile = str_replace(constant('SERVER_ROOT'), '', $languageFile);
-		$languageFile = str_replace('lang/', '', $languageFile);
-		$languageFile = constant('SERVER_ROOT') . 'lang/' . $languageFile;
+		if (!$languageFile) $languageFile = 'lang/lang_{LANGUAGE}.yml';
+		// Убрать SERVER_ROOT/ в начале пути
+		if (strpos($languageFile, constant('SERVER_ROOT').'/') == 1) {
+			$languageFile = substr($languageFile, strlen(constant('SERVER_ROOT').'/') + 1);
+		}
+		// $languageFile = str_replace(constant('SERVER_ROOT').'/', '', $languageFile);
+		// $languageFile = str_replace('lang/', '', $languageFile);
+		$languageFile = constant('SERVER_ROOT') . '/' . $languageFile;
 		$languageFile = str_replace('{LANGUAGE}', $language, $languageFile);
 		if (file_exists($languageFile)) {
 			return $this->__load($languageFile);

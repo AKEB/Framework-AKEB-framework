@@ -61,8 +61,8 @@ class Permissions extends \DB\MySQLObjectTranslate {
 
 	static public function permissions_type(): array {
 		return [
-			'group' => \T::Menu_Groups(),
-			'user' => \T::Menu_Users(),
+			'group' => \T::Framework_Menu_Groups(),
+			'user' => \T::Framework_Menu_Users(),
 		];
 	}
 

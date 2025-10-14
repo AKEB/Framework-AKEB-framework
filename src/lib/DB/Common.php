@@ -413,7 +413,7 @@ class Common {
 			$from_slave = !empty($params['from_slave']);
 			$db_obj = &static::find_dbobj($db_obj, $table_name, $from_slave);
 		}
-		if (!$params['debug_action']) $params['debug_action'] = 'exec';
+		if (!isset($params['debug_action']) || !$params['debug_action']) $params['debug_action'] = 'exec';
 		$die_on_error = $db_obj->die_on_error;
 		if (isset($params['_noerr'])) { $db_obj->die_on_error = false; unset($params['_noerr']); }
 		\Config::getInstance()->app_debug ?
@@ -433,7 +433,7 @@ class Common {
 			$from_slave = !empty($params['from_slave']);
 			$db_obj = &static::find_dbobj($db_obj, $table_name, $from_slave);
 		}
-		if (!$params['debug_action']) $params['debug_action'] = 'exec';
+		if (!isset($params['debug_action']) || !$params['debug_action']) $params['debug_action'] = 'exec';
 		if (isset($params['_noerr'])) { $db_obj->die_on_error = false; unset($params['_noerr']); }
 		$raw_data = [];
 		try {
