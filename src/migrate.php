@@ -3,7 +3,7 @@
 if (isset($_ENV['SERVER_ROOT']) && $_ENV['SERVER_ROOT']) {
 	$PWD = $_ENV['SERVER_ROOT'];
 } else {
-	$PWD = __DIR__."/vendor";
+	$PWD = __DIR__."../vendor";
 }
 require_once($PWD."/autoload.php");
 set_time_limit(0);
