@@ -1,4 +1,7 @@
 <?php
+
+var_export($_ENV);
+
 require_once(__DIR__."/vendor/autoload.php");
 set_time_limit(0);
 
