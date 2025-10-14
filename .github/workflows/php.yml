@@ -45,23 +45,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
       - name: Cleanup
         run: rm -rf vendor composer.lock
+
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
             path: ~/.composer/cache/files
             key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, mysql, mysqli, pdo_mysql, bcmath, soap, intl, gd, exif, iconv, imagick
           coverage: none
+
       - name: Install dependencies
-        run: composer install --prefer-install=auto --no-interaction
+        run: composer install --prefer-install=auto --no-interaction --no-suggest
+
       - name: Migrations
-        run: cd src/ && php${{ matrix.php }} migrate.php
+        run: cd src/ && php migrate.php
+
       - name: Run Tests
         run: vendor/bin/phpunit --no-coverage --colors=never -c phpunit.xml
         env:
