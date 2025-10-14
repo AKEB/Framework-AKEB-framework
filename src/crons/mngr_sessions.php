@@ -2,8 +2,7 @@
 
 set_time_limit(0);
 ini_set('memory_limit', '1024M');
-$dirname = dirname(__FILE__) . '/';
-require_once($dirname."../../vendor/autoload.php");
+require_once(__DIR__."/../vendor/autoload.php");
 
 $__worker_sleep = 3600;
 
