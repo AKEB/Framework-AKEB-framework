@@ -1,0 +1,42 @@
+{
+	"authors": [
+		{
+			"email": "vadimakeb@gmail.com",
+			"name": "Vadim Babadzhanyan",
+			"role": "Lead"
+		}
+	],
+	"autoload": {
+		"classmap": [
+			"src/lib/"
+		],
+		"files": [
+			"src/include/placeholder.php",
+			"src/include/constant.php",
+			"src/include/common.php"
+		]
+	},
+	"description": "Framework",
+	"license": "Apache-2.0",
+	"name": "akeb/framework",
+	"support": {
+		"email": "vadimakeb@gmail.com",
+		"issues": "https://github.com/AKEB/Framework-AKEB-framework/issues",
+		"wiki": "https://github.com/AKEB/Framework-AKEB-framework/wiki",
+		"source": "https://github.com/AKEB/Framework-AKEB-framework"
+	},
+	"type": "library",
+	"require": {
+		"php": ">=7.1",
+		"akeb/curlget": "@stable",
+		"akeb/profiler": "@stable",
+		"akeb/cache": "@stable",
+		"mustangostang/spyc": "@stable",
+		"phpmailer/phpmailer": "@stable",
+		"jumbojett/openid-connect-php": "@stable",
+		"chillerlan/php-qrcode": "@stable"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "@stable"
+	}
+}
