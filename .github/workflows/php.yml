@@ -11,14 +11,12 @@ permissions:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
-    container: ${{ matrix.container }}
+    runs-on: ubuntu-latest
+    container: akeb/nginx-php-fpm-${{ matrix.php }}:latest
     strategy:
       matrix:
-        version: ['8.2', '8.3']
-        os: [ubuntu-latest]
-        container: ['akeb/nginx-php-fpm-8.2:latest', 'akeb/nginx-php-fpm-8.3:latest']
-    name: PHP ${{ matrix.version }} - Container ${{ matrix.container }} - ${{ matrix.os }}
+        php: ['8.2', '8.3']
+    name: PHP ${{ matrix.php }}
 
     services:
       mysql:
@@ -40,11 +38,11 @@ jobs:
         uses: actions/cache@v4
         with:
             path: ~/.composer/cache/files
-            key: dependencies-php-${{ matrix.version }}-composer-${{ hashFiles('composer.json') }}
+            key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
       - name: Install dependencies
         run: composer install --prefer-install=auto --no-interaction
       - name: Run Tests
-        run: XDEBUG_MODE=coverage php7.1 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_${{ matrix.version }}.xml
+        run: XDEBUG_MODE=coverage php7.1 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_${{ matrix.php }}.xml
         env:
           TZ: Europe/Moscow
           MYSQL_HOST: localhost
