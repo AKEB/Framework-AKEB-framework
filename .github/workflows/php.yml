@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: akeb/nginx-php-fpm-${{ matrix.php }}:latest
     services:
       mysql:
         image: mysql:latest
@@ -23,7 +23,7 @@ jobs:
           - 3306
         options: --health-cmd="mysqladmin ping -h localhost -u root --password=pa$$word" --health-interval=5s --health-timeout=5s --health-retries=3
 
-    container: akeb/nginx-php-fpm-${{ matrix.php }}:latest
+    # container: akeb/nginx-php-fpm-${{ matrix.php }}:latest
     env:
       TZ: Europe/Moscow
       MYSQL_HOST: localhost
@@ -55,8 +55,8 @@ jobs:
             key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
       - name: Install dependencies
         run: composer install --prefer-install=auto --no-interaction
-      - name: Migrations
-        run: cd src/ && php${{ matrix.php }} migrate.php
+      # - name: Migrations
+      #   run: cd src/ && php${{ matrix.php }} migrate.php
       - name: Run Tests
         run: XDEBUG_MODE=coverage php${{ matrix.php }} vendor/bin/phpunit --coverage-text --colors=never -c phpunit.xml
         env:
