@@ -26,3 +26,4 @@ $__work_time = time() - $__start_time;
 $sleepTime = max($__worker_sleep - $__work_time,0);
 error_log("$__worker_errorlog_prefix: Finished $__work_time sec; sleep " . intval($sleepTime) . " sec");
 echo "sleep " . intval($sleepTime);
+
