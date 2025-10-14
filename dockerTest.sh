@@ -1,6 +1,6 @@
 #!/bin/bash
 
-versions='7.1 7.2 7.3 7.4 8.0 8.1 8.2 8.3'
+versions='8.2 8.3'
 
 mv ${PWD}/composer.lock ${PWD}/composer.lock.local > /dev/null 2>&1
 mv ${PWD}/vendor/ ${PWD}/vendor.local/ > /dev/null 2>&1

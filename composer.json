@@ -28,7 +28,7 @@
 	},
 	"type": "library",
 	"require": {
-		"php": ">=7.1",
+		"php": ">=8.2",
 		"akeb/curlget": "@stable",
 		"akeb/profiler": "@stable",
 		"akeb/cache": "@stable",

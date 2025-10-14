@@ -12,12 +12,6 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-${{ matrix.php }}:latest
-    strategy:
-      matrix:
-        php: ['8.2', '8.3']
-    name: PHP ${{ matrix.php }}
-
     services:
       mysql:
         image: mysql:latest
@@ -28,6 +22,26 @@ jobs:
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping -h localhost -u root --password=pa$$word" --health-interval=5s --health-timeout=5s --health-retries=3
+
+    container: akeb/nginx-php-fpm-${{ matrix.php }}:latest
+    env:
+      TZ: Europe/Moscow
+      MYSQL_HOST: localhost
+      MYSQL_PORT: 3306
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: pa$$word
+      MYSQL_DB_NAME: test
+      MYSQL_DONT_USE_SLAVE: true
+      MYSQL_SLAVE_HOST: localhost
+      MYSQL_SLAVE_PORT: 3306
+      MYSQL_SLAVE_USERNAME: root
+      MYSQL_SLAVE_PASSWORD: pa$$word
+      MYSQL_SLAVE_DB_NAME: test
+      PASSWORD_SALT: salt_for_passwords
+    strategy:
+      matrix:
+        php: ['8.2', '8.3']
+    name: PHP ${{ matrix.php }}
 
     steps:
       - name: Checkout code
@@ -41,19 +55,9 @@ jobs:
             key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
       - name: Install dependencies
         run: composer install --prefer-install=auto --no-interaction
+      - name: Migrations
+        run: cd src/ && php${{ matrix.php }} migrate.php
       - name: Run Tests
-        run: XDEBUG_MODE=coverage php${{ matrix.php }} vendor/bin/phpunit --coverage-text --colors=never -c phpunit_${{ matrix.php }}.xml
+        run: XDEBUG_MODE=coverage php${{ matrix.php }} vendor/bin/phpunit --coverage-text --colors=never -c phpunit.xml
         env:
-          TZ: Europe/Moscow
-          MYSQL_HOST: localhost
           MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
-          MYSQL_USERNAME: root
-          MYSQL_PASSWORD: pa$$word
-          MYSQL_DB_NAME: test
-          MYSQL_DONT_USE_SLAVE: true
-          MYSQL_SLAVE_HOST: localhost
-          MYSQL_SLAVE_PORT: ${{ job.services.mysql.ports[3306] }}
-          MYSQL_SLAVE_USERNAME: root
-          MYSQL_SLAVE_PASSWORD: pa$$word
-          MYSQL_SLAVE_DB_NAME: test
-          PASSWORD_SALT: salt_for_passwords
