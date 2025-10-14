@@ -21,22 +21,8 @@ jobs:
           MYSQL_DATABASE: laravel_tags
         ports:
           - 3306
-        options: --health-cmd="mysqladmin ping -h localhost -u root --password=pa$$word" --health-interval=5s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping -h 127.0.0.1 -u root --password=pa$$word" --health-interval=5s --health-timeout=5s --health-retries=3
 
-    env:
-      TZ: Europe/Moscow
-      MYSQL_HOST: localhost
-      MYSQL_PORT: 3306
-      MYSQL_USERNAME: root
-      MYSQL_PASSWORD: pa$$word
-      MYSQL_DB_NAME: test
-      MYSQL_DONT_USE_SLAVE: true
-      MYSQL_SLAVE_HOST: localhost
-      MYSQL_SLAVE_PORT: 3306
-      MYSQL_SLAVE_USERNAME: root
-      MYSQL_SLAVE_PASSWORD: pa$$word
-      MYSQL_SLAVE_DB_NAME: test
-      PASSWORD_SALT: salt_for_passwords
     strategy:
       matrix:
         php: ['8.2', '8.3']
@@ -65,10 +51,47 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-install=auto --no-interaction --no-suggest
 
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            if mysql -h 127.0.0.1 -P ${{ job.services.mysql.ports[3306] }} -u root -ppa$$word -e "SELECT 1" > /dev/null 2>&1; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+
       - name: Migrations
         run: cd src/ && php migrate.php
+        env:
+          TZ: Europe/Moscow
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
+          MYSQL_USERNAME: root
+          MYSQL_PASSWORD: pa$$word
+          MYSQL_DB_NAME: test
+          MYSQL_DONT_USE_SLAVE: true
+          MYSQL_SLAVE_HOST: 127.0.0.1
+          MYSQL_SLAVE_PORT: ${{ job.services.mysql.ports[3306] }}
+          MYSQL_SLAVE_USERNAME: root
+          MYSQL_SLAVE_PASSWORD: pa$$word
+          MYSQL_SLAVE_DB_NAME: test
+          PASSWORD_SALT: salt_for_passwords
 
       - name: Run Tests
         run: vendor/bin/phpunit --no-coverage --colors=never -c phpunit.xml
         env:
+          TZ: Europe/Moscow
+          MYSQL_HOST: 127.0.0.1
           MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
+          MYSQL_USERNAME: root
+          MYSQL_PASSWORD: pa$$word
+          MYSQL_DB_NAME: test
+          MYSQL_DONT_USE_SLAVE: true
+          MYSQL_SLAVE_HOST: 127.0.0.1
+          MYSQL_SLAVE_PORT: ${{ job.services.mysql.ports[3306] }}
+          MYSQL_SLAVE_USERNAME: root
+          MYSQL_SLAVE_PASSWORD: pa$$word
+          MYSQL_SLAVE_DB_NAME: test
+          PASSWORD_SALT: salt_for_passwords
