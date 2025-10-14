@@ -42,7 +42,7 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-install=auto --no-interaction
       - name: Run Tests
-        run: XDEBUG_MODE=coverage php7.1 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_${{ matrix.php }}.xml
+        run: XDEBUG_MODE=coverage php${{ matrix.php }} vendor/bin/phpunit --coverage-text --colors=never -c phpunit_${{ matrix.php }}.xml
         env:
           TZ: Europe/Moscow
           MYSQL_HOST: localhost
