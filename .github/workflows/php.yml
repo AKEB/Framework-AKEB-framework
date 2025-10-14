@@ -52,35 +52,27 @@ jobs:
         run: composer install --prefer-install=auto --no-interaction --no-suggest
 
       - name: Migrations
-        run: cd src/ && php migrate.php
+        run: |
+          cd src/
+          php migrate.php
         env:
-          TZ: Europe/Moscow
-          MYSQL_HOST: 127.0.0.1
+          TZ: 'Europe/Moscow'
+          MYSQL_HOST: '127.0.0.1'
           MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
-          MYSQL_USERNAME: root
-          MYSQL_PASSWORD: pa$$word
-          MYSQL_DB_NAME: test
-          MYSQL_DONT_USE_SLAVE: true
-          MYSQL_SLAVE_HOST: 127.0.0.1
-          MYSQL_SLAVE_PORT: ${{ job.services.mysql.ports[3306] }}
-          MYSQL_SLAVE_USERNAME: root
-          MYSQL_SLAVE_PASSWORD: pa$$word
-          MYSQL_SLAVE_DB_NAME: test
-          PASSWORD_SALT: salt_for_passwords
+          MYSQL_USERNAME: 'root'
+          MYSQL_PASSWORD: 'pa$$word'
+          MYSQL_DB_NAME: 'test'
+          PASSWORD_SALT: 'salt_for_passwords'
 
       - name: Run Tests
-        run: vendor/bin/phpunit --no-coverage --colors=never -c phpunit.xml
+        run: |
+          cd ./
+          vendor/bin/phpunit --no-coverage --colors=never -c phpunit.xml
         env:
-          TZ: Europe/Moscow
-          MYSQL_HOST: 127.0.0.1
+          TZ: 'Europe/Moscow'
+          MYSQL_HOST: '127.0.0.1'
           MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
-          MYSQL_USERNAME: root
-          MYSQL_PASSWORD: pa$$word
-          MYSQL_DB_NAME: test
-          MYSQL_DONT_USE_SLAVE: true
-          MYSQL_SLAVE_HOST: 127.0.0.1
-          MYSQL_SLAVE_PORT: ${{ job.services.mysql.ports[3306] }}
-          MYSQL_SLAVE_USERNAME: root
-          MYSQL_SLAVE_PASSWORD: pa$$word
-          MYSQL_SLAVE_DB_NAME: test
-          PASSWORD_SALT: salt_for_passwords
+          MYSQL_USERNAME: 'root'
+          MYSQL_PASSWORD: 'pa$$word'
+          MYSQL_DB_NAME: 'test'
+          PASSWORD_SALT: 'salt_for_passwords'
