@@ -8,10 +8,13 @@ services:
       - ${EXTERNAL_MYSQL_PORT}:3306
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      # MYSQL_USER: ${MYSQL_USERNAME}
+      # MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ./mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "${MYSQL_USERNAME}", "--password=${MYSQL_PASSWORD}"]
+      test: ["CMD", "mysql", "-h", "localhost", "-u", "${MYSQL_USERNAME}", "--password=${MYSQL_PASSWORD}", "-e", "show databases;"]
       start_period: 10s
       interval: 5s
       timeout: 5s
@@ -32,11 +35,9 @@ services:
       - "${NGINX_PORT}:80"
     environment:
       - MYSQL_HOST=${MYSQL_HOST}
-      - MYSQL_PORT=${MYSQL_PORT}
       - MYSQL_USERNAME=${MYSQL_USERNAME}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_DB_NAME=${MYSQL_DB_NAME}
     depends_on:
       mysql:
           condition: service_healthy
-
