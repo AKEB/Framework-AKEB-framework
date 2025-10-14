@@ -302,7 +302,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 							<form action="/login/" method="post">
 								<input type="hidden" name="action" value="signin"/>
 								<div class="mb-md-3 mt-md-4 pb-5">
-									<img src="/images/apple-icon-120x120.png" alt="MyGoodIP" width="120" height="120" class="rounded-circle">
+									<img src="/images/apple-icon-120x120.png" alt="Login" width="120" height="120" class="rounded-circle">
 									<?php if ($this->errorText) { ?>
 										<div class="alert alert-danger" role="alert">
 											<?=htmlspecialchars($this->errorText)?>

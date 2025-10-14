@@ -290,7 +290,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		if (!$currentUser['2fa']) {
 			$googleAuthenticate = new \GoogleAuthenticator();
 			$secret = $googleAuthenticate->generateSecret();
-			$url = $googleAuthenticate->render_qrcode($this->currentUser['email'], $secret, 'MyGoodIP');
+			$url = $googleAuthenticate->render_qrcode($this->currentUser['email'], $secret, \Template::getProjectName());
 		}
 
 		?>

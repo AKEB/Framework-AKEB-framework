@@ -69,7 +69,7 @@ class Config {
 			self::$_instance->mysql_port = intval($_ENV['MYSQL_PORT'] ?? 3306);
 			self::$_instance->mysql_username = strval($_ENV['MYSQL_USERNAME'] ?? 'root');
 			self::$_instance->mysql_password = strval($_ENV['MYSQL_PASSWORD'] ?? '');
-			self::$_instance->mysql_db_name = strval($_ENV['MYSQL_DB_NAME'] ?? 'mygoodip');
+			self::$_instance->mysql_db_name = strval($_ENV['MYSQL_DB_NAME'] ?? 'example');
 			self::$_instance->mysql_dont_use_slave = (isset($_ENV['MYSQL_DONT_USE_SLAVE']) && $_ENV['MYSQL_DONT_USE_SLAVE'] == 'false') ? false : true;
 			self::$_instance->mysql_slave_host = strval($_ENV['MYSQL_SLAVE_HOST'] ?? self::$_instance->mysql_host);
 			self::$_instance->mysql_slave_port = intval($_ENV['MYSQL_SLAVE_PORT'] ?? self::$_instance->mysql_port);

@@ -9,6 +9,10 @@ class Template {
 	public static function setProjectName(string $name) {
 		static::$project_name = $name;
 	}
+	public static function getProjectName(): string {
+		return static::$project_name;
+	}
+
 
 	public static function setMenuItems(array $menu_items) {
 		static::$menu_items = $menu_items;
@@ -42,6 +46,7 @@ class Template {
 				<link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
 				<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
 				<link rel="manifest" href="/manifest.json">
+				<meta name="apple-mobile-web-app-title" content="<?=static::$project_name;?>" />
 				<meta name="msapplication-TileColor" content="#6a11cb">
 				<meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
 				<meta name="theme-color" content="#6a11cb">
@@ -154,7 +159,7 @@ class Template {
 			<div class="container pb-3 border-bottom">
 				<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
 					<a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-						<img src="/images/android-icon-48x48.png" alt="MyGoodIP" width="48" height="48" class="rounded-circle">
+						<img src="/images/android-icon-48x48.png" alt="<?=static::$project_name;?>" width="48" height="48" class="rounded-circle">
 					</a>
 					<ul class="nav nav-underline col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
 						<?php
