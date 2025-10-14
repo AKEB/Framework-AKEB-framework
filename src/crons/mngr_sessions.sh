@@ -6,7 +6,7 @@ PHP="php -d memory_limit=512M -d allow_url_fopen=true -d error_log=${LOG}"
 while [ 1 ] ;
 do
      # Сохраняем весь вывод скрипта
-    output=`${PHP} ./mngr_sessions.php ${1}`
+    output=`SERVER_ROOT=${SERVER_ROOT} ${PHP} ./mngr_sessions.php ${1}`
     status=$?
     if [ $status -eq 0 ]
     then

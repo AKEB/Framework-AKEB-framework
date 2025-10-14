@@ -1,5 +1,5 @@
 <?php
-
+error_log(var_export($_ENV, true));
 set_time_limit(0);
 ini_set('memory_limit', '1024M');
 require_once(__DIR__."/../vendor/autoload.php");
