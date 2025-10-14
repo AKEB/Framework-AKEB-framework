@@ -12,7 +12,7 @@ services:
       - ./mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u", "${MYSQL_USERNAME}", "--password=${MYSQL_PASSWORD}"]
-      start_period: 5s
+      start_period: 10s
       interval: 5s
       timeout: 5s
       retries: 55

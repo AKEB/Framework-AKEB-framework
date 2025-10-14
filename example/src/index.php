@@ -1,7 +1,7 @@
 <?php
 require_once("./autoload.php");
 
-\Template::setProjectName("My Good IP");
+\Template::setProjectName("Example");
 
 \Template::setMenuItems([
 	[
