@@ -10,91 +10,52 @@ permissions:
   contents: read
 
 jobs:
-  test_7_1:
-    runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-7.1:latest
+  test:
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    strategy:
+      matrix:
+        version: ['8.2', '8.3']
+        os: [ubuntu-latest]
+        container: ['akeb/nginx-php-fpm-8.2:latest', 'akeb/nginx-php-fpm-8.3:latest']
+    name: PHP ${{ matrix.version }} - Container ${{ matrix.container }} - ${{ matrix.os }}
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_ROOT_PASSWORD: pa$$word
+          MYSQL_DATABASE: laravel_tags
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping -h localhost -u root --password=pa$$word" --health-interval=5s --health-timeout=5s --health-retries=3
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v5
       - name: Cleanup
         run: rm -rf vendor composer.lock
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+            path: ~/.composer/cache/files
+            key: dependencies-php-${{ matrix.version }}-composer-${{ hashFiles('composer.json') }}
       - name: Install dependencies
         run: composer install --prefer-install=auto --no-interaction
       - name: Run Tests
-        run: XDEBUG_MODE=coverage php7.1 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_7.1.xml
-  test_7_2:
-    runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-7.2:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cleanup
-        run: rm -rf vendor composer.lock
-      - name: Install dependencies
-        run: composer install --prefer-install=auto --no-interaction
-      - name: Run Tests
-        run: XDEBUG_MODE=coverage php7.2 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_7.2.xml
-  test_7_3:
-    runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-7.3:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cleanup
-        run: rm -rf vendor composer.lock
-      - name: Install dependencies
-        run: composer install --prefer-install=auto --no-interaction
-      - name: Run Tests
-        run: XDEBUG_MODE=coverage php7.3 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_7.3.xml
-  test_7_4:
-    runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-7.4:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cleanup
-        run: rm -rf vendor composer.lock
-      - name: Install dependencies
-        run: composer install --prefer-install=auto --no-interaction
-      - name: Run Tests
-        run: XDEBUG_MODE=coverage php7.4 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_7.4.xml
-  test_8_0:
-    runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-8.0:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cleanup
-        run: rm -rf vendor composer.lock
-      - name: Install dependencies
-        run: composer install --prefer-install=auto --no-interaction
-      - name: Run Tests
-        run: XDEBUG_MODE=coverage php8.0 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_8.0.xml
-  test_8_1:
-    runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-8.1:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cleanup
-        run: rm -rf vendor composer.lock
-      - name: Install dependencies
-        run: composer install --prefer-install=auto --no-interaction
-      - name: Run Tests
-        run: XDEBUG_MODE=coverage php8.1 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_8.1.xml
-  test_8_2:
-    runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-8.2:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cleanup
-        run: rm -rf vendor composer.lock
-      - name: Install dependencies
-        run: composer install --prefer-install=auto --no-interaction
-      - name: Run Tests
-        run: XDEBUG_MODE=coverage php8.2 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_8.2.xml
-  test_8_3:
-    runs-on: ubuntu-latest
-    container: akeb/nginx-php-fpm-8.3:latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Cleanup
-        run: rm -rf vendor composer.lock
-      - name: Install dependencies
-        run: composer install --prefer-install=auto --no-interaction
-      - name: Run Tests
-        run: XDEBUG_MODE=coverage php8.3 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_8.3.xml
+        run: XDEBUG_MODE=coverage php7.1 vendor/bin/phpunit --coverage-text --colors=never -c phpunit_${{ matrix.version }}.xml
+        env:
+          TZ: Europe/Moscow
+          MYSQL_HOST: localhost
+          MYSQL_PORT: ${{ job.services.mysql.ports[3306] }}
+          MYSQL_USERNAME: root
+          MYSQL_PASSWORD: pa$$word
+          MYSQL_DB_NAME: test
+          MYSQL_DONT_USE_SLAVE: true
+          MYSQL_SLAVE_HOST: localhost
+          MYSQL_SLAVE_PORT: ${{ job.services.mysql.ports[3306] }}
+          MYSQL_SLAVE_USERNAME: root
+          MYSQL_SLAVE_PASSWORD: pa$$word
+          MYSQL_SLAVE_DB_NAME: test
+          PASSWORD_SALT: salt_for_passwords
