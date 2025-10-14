@@ -51,17 +51,6 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-install=auto --no-interaction --no-suggest
 
-      - name: Wait for MySQL to be ready
-        run: |
-          for i in {1..30}; do
-            if mysql -h 127.0.0.1 -P ${{ job.services.mysql.ports[3306] }} -u root -ppa$$word -e "SELECT 1" > /dev/null 2>&1; then
-              echo "MySQL is ready!"
-              break
-            fi
-            echo "Waiting for MySQL... ($i/30)"
-            sleep 2
-          done
-
       - name: Migrations
         run: cd src/ && php migrate.php
         env:
