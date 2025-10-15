@@ -18,7 +18,7 @@
 		]
 	},
 	"archive": {
-		"exclude": ["/example", "/tests", "/vendor", "/docker"]
+		"exclude": ["example/", "tests/", "vendor/", "docker/"]
 	},
 	"description": "Framework",
 	"license": "Apache-2.0",

@@ -11,7 +11,7 @@ else
   composer config --unset repositories.framework
 fi
 
-cd /app && composer update 
+cd /app && composer update
 
 cd /app/vendor/akeb/framework/src/ && SERVER_ROOT=/app php migrate.php
 

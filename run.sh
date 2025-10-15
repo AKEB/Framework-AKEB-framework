@@ -20,7 +20,7 @@ build() {
 
 start() {
 	echo "Starting..."
-	rm -rf vendor/ composer.lock
+	rm -rf src/vendor/ src/composer.lock
 	if [ "$build" = "true" ]; then
 		run_cmd "up -d --build"
 	else
@@ -33,7 +33,7 @@ serve() {
 	# Регистрируем обработчики
 	trap stop SIGINT SIGTERM
 	
-	rm -rf vendor/ composer.lock
+	rm -rf src/vendor/ src/composer.lock
 	if [ "$build" = "true" ]; then
 		run_cmd "up --build"
 	else
