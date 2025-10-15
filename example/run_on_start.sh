@@ -6,12 +6,13 @@ cd /app/
 if [ "$DEVELOPMENT" = "true" ] && [ -d "/app_framework" ]; then
   echo "Development mode: using local framework repository."
   composer config repositories.framework path /app_framework
+  cd /app && composer install
 else
   echo "Production mode: local /app_framework directory not found. Relying on composer.json for remote repository."
   composer config --unset repositories.framework
+  cd /app && composer install --prefer-dist --no-interaction --no-dev --no-scripts
 fi
 
-cd /app && composer update
 
 cd /app/vendor/akeb/framework/src/ && SERVER_ROOT=/app php migrate.php
 
