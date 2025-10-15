@@ -253,7 +253,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			$target = $_COOKIE['target'];
 			setcookie('target', '', time() + 1, '/');
 			$_COOKIE['target'] = '';
-			$target = str_replace('%2F', '/', $target);
+			$target = str_replace('%2F', '/', urldecode($target));
 			common_redirect($target);
 		} else {
 			common_redirect('/');
