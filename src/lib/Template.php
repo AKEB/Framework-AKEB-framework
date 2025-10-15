@@ -2,10 +2,24 @@
 
 class Template {
 
-	static public $head_additional = '';
-	static private $project_name = 'AKEB Framework';
-	static private $menu_items = [];
+	static public string $head_additional = '';
+	static private string $project_name = 'AKEB Framework';
+	static private string $theme = 'dark';
+	static private array $menu_items = [];
 
+	static private array $css_files = [];
+	static private array $js_files = [];
+
+	static private array $head_metas = [];
+	static private array $head_links = [];
+
+
+	/**
+	 * setProjectName
+	 *
+	 * @param  string $name Set Project title
+	 * @return void
+	 */
 	public static function setProjectName(string $name) {
 		static::$project_name = $name;
 	}
@@ -13,65 +27,152 @@ class Template {
 		return static::$project_name;
 	}
 
+	/**
+	 * setTheme
+	 *
+	 * @param  string $theme dark, light or auto
+	 * @return void
+	 */
+	public static function setTheme(string $theme): void {
+		static::$theme = $theme;
+	}
+	public static function getTheme(): string {
+		return static::$theme;
+	}
 
+	/**
+	 * setMenuItems
+	 *
+	 * @param  array $menu_items
+	 * @return void
+	 */
 	public static function setMenuItems(array $menu_items) {
 		static::$menu_items = $menu_items;
 	}
 
-	public function __construct(bool $withHeader=true, string $theme='dark') {
-		$theme = $theme == 'dark' ? 'dark' : 'light';
+	public static function addCSSFile(string $css_file) {
+		static::$css_files[] = $css_file;
+	}
+	public static function setCSSFiles(array $css_files) {
+		static::$css_files = $css_files;
+	}
+	public static function getCSSFiles(): array {
+		return static::$css_files;
+	}
+
+	public static function addJSFile(string $js_file) {
+		static::$js_files[] = $js_file;
+	}
+	public static function setJSFiles(array $js_files) {
+		static::$js_files = $js_files;
+	}
+	public static function getJSFiles(): array {
+		return static::$js_files;
+	}
+
+	public static function addHeadMeta(object $head_meta) {
+		static::$head_metas[] = $head_meta;
+	}
+	public static function setHeadMetas(array $head_metas) {
+		static::$head_metas = $head_metas;
+	}
+	public static function getHeadMetas(): array {
+		return static::$head_metas;
+	}
+
+	public static function addHeadLink(object $head_link) {
+		static::$head_links[] = $head_link;
+	}
+	public static function setHeadLinks(array $head_links) {
+		static::$head_links = $head_links;
+	}
+	public static function getHeadLinks(): array {
+		return static::$head_links;
+	}
+
+
+	public function __construct(bool $withHeader=true) {
 		$lang = \T::getCurrentLanguage();
+
+		$css_files = array_merge([
+			'/vendor/akeb/framework/src/css/bootstrap-icons.min.css',
+			'/vendor/akeb/framework/src/css/bootstrap.min.css',
+			'/vendor/akeb/framework/src/css/datatables.min.css',
+			'/vendor/akeb/framework/src/css/bootstrap-select.min.css',
+			'/vendor/akeb/framework/src/css/main.css',
+		], static::getCSSFiles());
+
+		$js_files = array_merge([
+			'/vendor/akeb/framework/src/js/bootstrap.bundle.min.js',
+			'/vendor/akeb/framework/src/js/datatables.min.js',
+			'/vendor/akeb/framework/src/js/bootstrap-select.min.js',
+			'/vendor/akeb/framework/src/js/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
+			'/vendor/akeb/framework/src/js/locale_'.\T::getCurrentLanguage().'.js',
+			'/vendor/akeb/framework/src/js/main.js',
+		], static::getJSFiles());
+
+		$head_metas = array_merge([
+			['charset' => 'UTF-8'],
+			['name' => 'viewport','content' => 'width=device-width, initial-scale=1'],
+			['http-equiv' => 'X-UA-Compatible','content' => 'IE=edge'],
+			['name' => 'apple-mobile-web-app-title','content' => static::getProjectName()],
+			['content' => "#6a11cb",'name' => 'msapplication-TileColor'],
+			['name' => 'theme-color','content' => "#6a11cb"],
+			['name' => 'msapplication-TileImage','content' => "/images/ms-icon-144x144.png"]
+		], static::getHeadMetas());
+
+		$head_links = array_merge([
+			['rel' => 'shortcut icon', 'href' => '/images/favicon.ico', 'type' => 'image/x-icon'],
+			['rel' => 'apple-touch-icon', 'sizes' => '57x57', 'href' => '/images/apple-icon-57x57.png'],
+			['rel' => 'apple-touch-icon', 'sizes' => '60x60', 'href' => '/images/apple-icon-60x60.png'],
+			['rel' => 'apple-touch-icon', 'sizes' => '72x72', 'href' => '/images/apple-icon-72x72.png'],
+			['rel' => 'apple-touch-icon', 'sizes' => '76x76', 'href' => '/images/apple-icon-76x76.png'],
+			['rel' => 'apple-touch-icon', 'sizes' => '114x114', 'href' => '/images/apple-icon-114x114.png'],
+			['rel' => 'apple-touch-icon', 'sizes' => '120x120', 'href' => '/images/apple-icon-120x120.png'],
+			['rel' => 'apple-touch-icon', 'sizes' => '144x144', 'href' => '/images/apple-icon-144x144.png'],
+			['rel' => 'apple-touch-icon', 'sizes' => '152x152', 'href' => '/images/apple-icon-152x152.png'],
+			['rel' => 'apple-touch-icon', 'sizes' => '180x180', 'href' => '/images/apple-icon-180x180.png'],
+			['rel' => 'icon', 'type' => 'image/png', 'sizes' => '192x192', 'href' => '/images/android-icon-192x192.png'],
+			['rel' => 'icon', 'type' => 'image/png', 'sizes' => '32x32', 'href' => '/images/favicon-32x32.png'],
+			['rel' => 'icon', 'type' => 'image/png', 'sizes' => '96x96', 'href' => '/images/favicon-96x96.png'],
+			['rel' => 'icon', 'type' => 'image/png', 'sizes' => '16x16', 'href' => '/images/favicon-16x16.png'],
+			['rel' => 'manifest', 'href' => '/manifest.json'],
+		], static::getHeadLinks());
 
 		?>
 		<!doctype html>
-		<html lang="<?=$lang;?>" data-bs-theme="<?=$theme;?>" class="h-100">
+		<html lang="<?=$lang;?>" data-bs-theme="<?=static::getTheme();?>" class="h-100">
 			<head>
-				<meta charset="UTF-8" />
-				<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-				<title><?=static::$project_name;?></title>
-
-				<link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon" />
-				<link rel="apple-touch-icon" sizes="57x57" href="/images/apple-icon-57x57.png">
-				<link rel="apple-touch-icon" sizes="60x60" href="/images/apple-icon-60x60.png">
-				<link rel="apple-touch-icon" sizes="72x72" href="/images/apple-icon-72x72.png">
-				<link rel="apple-touch-icon" sizes="76x76" href="/images/apple-icon-76x76.png">
-				<link rel="apple-touch-icon" sizes="114x114" href="/images/apple-icon-114x114.png">
-				<link rel="apple-touch-icon" sizes="120x120" href="/images/apple-icon-120x120.png">
-				<link rel="apple-touch-icon" sizes="144x144" href="/images/apple-icon-144x144.png">
-				<link rel="apple-touch-icon" sizes="152x152" href="/images/apple-icon-152x152.png">
-				<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-icon-180x180.png">
-				<link rel="icon" type="image/png" sizes="192x192"  href="/images/android-icon-192x192.png">
-				<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-				<link rel="icon" type="image/png" sizes="96x96" href="/images/favicon-96x96.png">
-				<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-				<link rel="manifest" href="/manifest.json">
-				<meta name="apple-mobile-web-app-title" content="<?=static::$project_name;?>" />
-				<meta name="msapplication-TileColor" content="#6a11cb">
-				<meta name="msapplication-TileImage" content="/images/ms-icon-144x144.png">
-				<meta name="theme-color" content="#6a11cb">
-
-				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/bootstrap-icons.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/bootstrap.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/datatables.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/bootstrap-select.min.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-
-				<link href="<?=file_anticache('/vendor/akeb/framework/src/css/main.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-
-				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/bootstrap.bundle.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/datatables.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-
-				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/bootstrap-select.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/bootstrap-select-'.\T::getCurrentLanguage().'.min.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-
-				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/locale_'.\T::getCurrentLanguage().'.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-				<script src="<?=file_anticache('/vendor/akeb/framework/src/js/main.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-
-
-				<link href="<?=file_anticache('/css/main.css');?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>">
-				<script src="<?=file_anticache('/js/locale_'.\T::getCurrentLanguage().'.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-				<script src="<?=file_anticache('/js/main.js');?>" nonce="<?=\CSP::nonceRandom();?>"></script>
-
+				<title><?=static::getProjectName();?></title>
+				<?php
+				foreach($head_metas as $head_meta) {
+					echo "<meta ";
+					foreach($head_meta as $key=>$value) {
+						echo $key.'="'.addslashes($value).'"';
+					}
+					echo "/>\n";
+				}
+				foreach($head_links as $head_link) {
+					echo "<link ";
+					foreach($head_link as $key=>$value) {
+						echo $key.'="'.addslashes($value).'"';
+					}
+					echo "/>\n";
+				}
+				foreach($css_files as $css_file) {
+					?>
+					<link href="<?=file_anticache($css_file);?>" rel="stylesheet" nonce="<?=\CSP::nonceRandom();?>"/>
+					<?php
+				}
+				foreach($js_files as $js_file) {
+					?>
+					<script src="<?=file_anticache($js_file);?>" nonce="<?=\CSP::nonceRandom();?>"></script>
+					<?php
+				}
+				?>
+				<script nonce="<?=\CSP::nonceRandom();?>">
+					setStoredTheme('<?=static::getTheme();?>');
+				</script>
 			</head>
 			<body class="d-flex flex-column min-vh-100 min-hw-100 gradient-custom">
 				<div aria-live="polite" aria-atomic="true" class="position-static">
@@ -159,7 +260,7 @@ class Template {
 			<div class="container pb-3 border-bottom">
 				<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
 					<a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-						<img src="/images/android-icon-48x48.png" alt="<?=static::$project_name;?>" width="48" height="48" class="rounded-circle">
+						<img src="/images/android-icon-48x48.png" alt="<?=static::getProjectName();?>" width="48" height="48" class="rounded-circle">
 					</a>
 					<ul class="nav nav-underline col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
 						<?php
@@ -194,7 +295,7 @@ class Template {
 						<?php
 						if (\Config::getInstance()->app_debug) {
 							?>
-							<div class="d-inline fs-6 text-info-emphasis">
+							<div class="d-inline me-4 fs-6 text-info-emphasis">
 								<span class="d-inline d-sm-none">XS</span>
 								<span class="d-none d-sm-inline d-md-none">SM</span>
 								<span class="d-none d-md-inline d-lg-none">MD</span>
@@ -205,11 +306,7 @@ class Template {
 							<?php
 						}
 						?>
-						<span class="badge text-info-emphasis"><?=\T::Framework_Version();?>: <?=constant('SERVER_VERSION');?></span>
 					</div>
-					<!-- <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-						<input type="search" class="form-control" placeholder="Search..." aria-label="Search">
-					</form> -->
 					<div class="dropdown text-end me-4">
 						<a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 							<img src="<?=$userAvatar;?>" alt="avatar" width="32" height="32" class="rounded-circle"> <?=$currentUser['name'];?>
@@ -546,8 +643,9 @@ class Template {
 						</div>
 					</main>
 					<footer class="footer mt-auto py-3">
-						<div class="container border-top p-3">
-							<span class="mt-3 pt-3 mb-3 text-body-secondary">© 2025 Vadim Babadzhanyan</span>
+						<div class="container border-top d-flex flex-wrap justify-content-between align-items-center">
+							<span class="mt-3 mb-3 text-body-secondary justify-content-start">© 2025 Vadim Babadzhanyan</span>
+							<span class="mt-3 mb-3 text-body-secondary justify-content-end"><?=\T::Framework_Version();?>: <?=constant('SERVER_VERSION');?></span>
 						</div>
 					</footer>
 				</div>

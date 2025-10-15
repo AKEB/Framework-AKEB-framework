@@ -348,6 +348,33 @@ function otp_input(input_id, otp_div_id) {
 	});
 }
 
+function setStoredTheme(theme) {
+	localStorage.setItem('theme', theme);
+}
+
+function getStoredTheme() {
+	return localStorage.getItem('theme');
+}
+
+function getPreferredTheme() {
+	const storedTheme = getStoredTheme();
+	if (storedTheme) {
+		return storedTheme;
+	}
+	return 'auto'
+}
+
+function setTheme(theme) {
+	if (theme === 'auto') {
+		document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+	} else {
+		document.documentElement.setAttribute('data-bs-theme', theme)
+	}
+}
+
+function changeThemeColorPrefers() {
+	setTheme(getPreferredTheme());
+}
 
 Object.assign(DataTable.defaults, {
 	"pageLength": 50, // Default entries per page
@@ -363,9 +390,11 @@ Object.assign(DataTable.defaults, {
 	}
 });
 
-
-
 $(document).ready(function() {
+	const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+	changeThemeColorPrefers();
+	darkModeMediaQuery.addEventListener('change', changeThemeColorPrefers);
 	validateForms();
 	togglePasswordButtons();
 });
+

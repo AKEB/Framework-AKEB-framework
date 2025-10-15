@@ -2,6 +2,13 @@
 require_once("./autoload.php");
 
 \Template::setProjectName("Example");
+\Template::setTheme('auto');
+
+\Template::addCSSFile('/css/main.css');
+
+\Template::addJSFile('/js/locale_'.\T::getCurrentLanguage().'.js');
+\Template::addJSFile('/js/main.js');
+
 
 \Template::setMenuItems([
 	[
