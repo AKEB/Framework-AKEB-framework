@@ -11,6 +11,7 @@ COPY default.conf /etc/nginx/conf.d/default.conf
 
 COPY run_on_start.sh /run_on_start.sh
 
+RUN composer config --unset repositories.framework
 RUN composer install
 RUN touch /app/version.php
 RUN echo '<?php\n' > /app/version.php

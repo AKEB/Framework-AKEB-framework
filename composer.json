@@ -17,6 +17,9 @@
 			"src/init.php"
 		]
 	},
+	"archive": {
+		"exclude": ["/example", "/tests", "/vendor", "/docker"]
+	},
 	"description": "Framework",
 	"license": "Apache-2.0",
 	"name": "akeb/framework",

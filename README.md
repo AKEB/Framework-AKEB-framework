@@ -20,6 +20,27 @@ or
 composer require akeb/framework
 ```
 
+## Usage
+
+### For development
+
+```bash
+./run.sh --dev serve
+```
+
+### For production
+
+```bash
+./run.sh start
+```
+
+### Web Interface
+
+- Web Site [http://127.0.0.1:61080/](http://127.0.0.1:61080/)
+- PhpMyAdmin [http://127.0.0.1:61081/](http://127.0.0.1:61081/)
+
+Default username: **```admin@admin.com```** and password: **```admin```**
+
 ## Issues
 
 - [x] Авторизация

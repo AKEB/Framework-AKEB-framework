@@ -6,7 +6,6 @@
 		"akeb/framework": "dev-main"
 	},
 	"require-dev": {},
-
 	"authors": [
 		{
 			"name": "Vadim Babadzhanyan",
@@ -20,8 +19,8 @@
 		"classmap": [
 			"lib/"
 		],
-		"files": [
-		
-		]
+		"files": []
+	},
+	"repositories": {
 	}
 }
