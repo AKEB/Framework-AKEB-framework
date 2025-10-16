@@ -1,48 +1,24 @@
 <?php
 
 class Routes {
-	private array $routes = [];
 
-	private static $_instance;
+	static private array $routes = [];
 
-	private function __construct() {}
-	private function __clone() {}
-	public function __wakeup() {}
-
-	public static function getInstance(): self {
-		if (self::$_instance === null) {
-			self::$_instance = new self;
-		}
-
-		return self::$_instance;
+	static public function addRoute(string $route, string $className): void {
+		static::$routes[$route] = $className;
 	}
 
-	public function addRoute($route, $class) {
-		$this->routes[$route] = $class;
+	static public function getRoute(string $route): string {
+		return static::$routes[$route]??'';
 	}
 
-	public function getRoute($route) {
-		return $this->routes[$route];
+	static public function getRoutes(): array {
+		return static::$routes??[];
 	}
 
-	public function getRoutes() {
-		return $this->routes;
+	static public function toArray(): array {
+		return static::$routes??[];
 	}
 
-	public function setRoutes($routes) {
-		$this->routes = $routes;
-	}
-
-	public function toArray() {
-		return $this->routes;
-	}
-
-	public function __debugInfo() {
-		return $this->toArray();
-	}
-
-	public function __toString() {
-		return json_encode($this->toArray());
-	}
 }
 

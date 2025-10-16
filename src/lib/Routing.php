@@ -7,38 +7,37 @@ class Routing {
 	}
 
 	private function setRoutes() {
-		$routes = \Routes::getInstance();
-		$routes->addRoute('/admin/users/edit/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Users\\Edit');
-		$routes->addRoute('/admin/users/edit/', '\\FrameworkApp\\Admin\\Users\\Edit');
+		\Routes::addRoute('/admin/users/edit/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Users\\Edit');
+		\Routes::addRoute('/admin/users/edit/', '\\FrameworkApp\\Admin\\Users\\Edit');
 
-		$routes->addRoute('/admin/users/(?P<action>[^/]+)/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Users');
-		$routes->addRoute('/admin/users/', '\\FrameworkApp\\Admin\\Users');
+		\Routes::addRoute('/admin/users/(?P<action>[^/]+)/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Users');
+		\Routes::addRoute('/admin/users/', '\\FrameworkApp\\Admin\\Users');
 
-		$routes->addRoute('/admin/users/(?P<user_id>\d+)/groups/', '\\FrameworkApp\\Admin\\Users\\Groups');
-		$routes->addRoute('/admin/users/(?P<user_id>\d+)/groups/(?P<action>[^/]+)/', '\\FrameworkApp\\Admin\\Users\\Groups');
-		$routes->addRoute('/admin/users/(?P<user_id>\d+)/groups/(?P<action>[^/]+)/(?P<group_id>\d+)/', '\\FrameworkApp\\Admin\\Users\\Groups');
-		$routes->addRoute('/admin/users/groups/', '\\FrameworkApp\\Admin\\Users\\Groups');
+		\Routes::addRoute('/admin/users/(?P<user_id>\d+)/groups/', '\\FrameworkApp\\Admin\\Users\\Groups');
+		\Routes::addRoute('/admin/users/(?P<user_id>\d+)/groups/(?P<action>[^/]+)/', '\\FrameworkApp\\Admin\\Users\\Groups');
+		\Routes::addRoute('/admin/users/(?P<user_id>\d+)/groups/(?P<action>[^/]+)/(?P<group_id>\d+)/', '\\FrameworkApp\\Admin\\Users\\Groups');
+		\Routes::addRoute('/admin/users/groups/', '\\FrameworkApp\\Admin\\Users\\Groups');
 
-		$routes->addRoute('/admin/groups/(?P<action>[^/]+)/', '\\FrameworkApp\\Admin\\Groups');
-		$routes->addRoute('/admin/groups/(?P<action>[^/]+)/(?P<group_id>\d+)/', '\\FrameworkApp\\Admin\\Groups');
-		$routes->addRoute('/admin/groups/', '\\FrameworkApp\\Admin\\Groups');
+		\Routes::addRoute('/admin/groups/(?P<action>[^/]+)/', '\\FrameworkApp\\Admin\\Groups');
+		\Routes::addRoute('/admin/groups/(?P<action>[^/]+)/(?P<group_id>\d+)/', '\\FrameworkApp\\Admin\\Groups');
+		\Routes::addRoute('/admin/groups/', '\\FrameworkApp\\Admin\\Groups');
 
-		$routes->addRoute('/admin/permissions/(?P<subject>[^/]+)/(?P<subject_id>\d+)/', '\\FrameworkApp\\Admin\\Permissions');
-		$routes->addRoute('/admin/permissions/', '\\FrameworkApp\\Admin\\Permissions');
+		\Routes::addRoute('/admin/permissions/(?P<subject>[^/]+)/(?P<subject_id>\d+)/', '\\FrameworkApp\\Admin\\Permissions');
+		\Routes::addRoute('/admin/permissions/', '\\FrameworkApp\\Admin\\Permissions');
 
-		$routes->addRoute('/admin/impersonate/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Impersonate');
-		$routes->addRoute('/admin/impersonate/', '\\FrameworkApp\\Admin\\Impersonate');
+		\Routes::addRoute('/admin/impersonate/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Impersonate');
+		\Routes::addRoute('/admin/impersonate/', '\\FrameworkApp\\Admin\\Impersonate');
 
-		$routes->addRoute('/settings/disable_2fa/', '\\FrameworkApp\\Settings');
-		$routes->addRoute('/settings/', '\\FrameworkApp\\Settings');
+		\Routes::addRoute('/settings/disable_2fa/', '\\FrameworkApp\\Settings');
+		\Routes::addRoute('/settings/', '\\FrameworkApp\\Settings');
 
-		$routes->addRoute('/forgot/', '\\FrameworkApp\\Forgot');
+		\Routes::addRoute('/forgot/', '\\FrameworkApp\\Forgot');
 
-		$routes->addRoute('/login/', '\\FrameworkApp\\Login');
+		\Routes::addRoute('/login/', '\\FrameworkApp\\Login');
 
-		$routes->addRoute('/logout/', '\\FrameworkApp\\Logout');
+		\Routes::addRoute('/logout/', '\\FrameworkApp\\Logout');
 
-		$routes->addRoute('/signup/', '\\FrameworkApp\\Signup');
+		\Routes::addRoute('/signup/', '\\FrameworkApp\\Signup');
 
 	}
 
@@ -55,7 +54,7 @@ class Routing {
 			$path_to_class = '';
 			$ARGS = [];
 			// var_dump($_SERVER['DOCUMENT_URI']);
-			$routes = \Routes::getInstance()->getRoutes();
+			$routes = \Routes::getRoutes();
 			foreach($routes as $route => $class) {
 				// var_dump($route);
 				if ($_SERVER['DOCUMENT_URI'] == $route) {

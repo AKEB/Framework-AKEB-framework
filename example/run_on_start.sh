@@ -13,7 +13,7 @@ else
   cd /app && composer install --prefer-dist --no-interaction --no-dev --no-scripts
 fi
 
-
+# cd /app && composer install --prefer-dist --no-interaction --no-dev --no-scripts
 cd /app/vendor/akeb/framework/src/ && SERVER_ROOT=/app php migrate.php
 
 cd /app/vendor/akeb/framework/src/crons/ && SERVER_ROOT=/app ./run_all.sh
