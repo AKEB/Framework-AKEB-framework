@@ -529,7 +529,7 @@ class Sessions extends \DB\MySQLObject{
 		static::change_server_cookies();
 
 		if (!$WithoutRedirect && \Config::getInstance()->app_signin_active && static::$current_user['flags'] & \Users::FLAGS_NEED_CHANGE_PASSWORD) {
-			if (strpos($_SERVER['REQUEST_URI'],'/settings/') === false) {
+			if (strpos($_SERVER['REQUEST_URI'],'/settings/') === false && strpos($_SERVER['REQUEST_URI'],'/logout/') === false) {
 				common_redirect('/settings/');
 				return true;
 			}
