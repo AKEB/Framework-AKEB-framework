@@ -38,7 +38,7 @@ class Framework_Migration_0002 {
 				KEY `updateTime` (`updateTime`)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 		");
-		$db->execSQL("INSERT INTO `users` (`id`, `name`, `surname`, `email`, `language`, `password`, `role`, `registerTime`, `flags`) VALUES (1, 'admin', 'admin', 'admin@admin.com', 'en', '".md5('admin'.\Config::getInstance()->password_salt)."', 'admin', ".time().", ".(\Users::FLAGS_NEED_CHANGE_PASSWORD).");");
+		$db->execSQL("INSERT INTO `users` (`id`, `name`, `surname`, `email`, `language`, `password`, `role`, `registerTime`, `flags`) VALUES (1, 'admin', 'admin', 'admin@admin.com', 'en', '".md5('Admin@123'.\Config::getInstance()->password_salt)."', 'admin', ".time().", ".(\Users::FLAGS_NEED_CHANGE_PASSWORD).");");
 	}
 
 	static function uninstall() {

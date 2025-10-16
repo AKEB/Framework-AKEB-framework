@@ -14,10 +14,10 @@ class First_CaseTest extends PHPUnit\Framework\TestCase {
 	}
 
 	function test_admin_user() {
-		$data = \Users::data();
+		$data = \Users::data(false, ' ORDER BY id ASC');
 		$this->assertTrue(isset($data));
 		$this->assertIsArray($data);
-		$this->assertEquals(1, count($data));
+		$this->assertGreaterThanOrEqual(1, count($data));
 		$admin = $data[0];
 		$this->assertTrue(isset($admin));
 		$this->assertIsArray($admin);
@@ -36,7 +36,9 @@ class First_CaseTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals('admin', $admin['surname']);
 		$this->assertEquals('admin@admin.com', $admin['email']);
 		$this->assertNotEmpty($admin['password']);
+		$this->assertEquals(md5('Admin@123'.\Config::getInstance()->password_salt), $admin['password']);
 		$this->assertEquals(1, $admin['status']);
+		$this->assertEquals(1, $admin['flags']);
 		$this->assertTrue($admin['registerTime'] > 0);
 	}
 

@@ -39,7 +39,7 @@ composer require akeb/framework
 - Web Site [http://127.0.0.1:61080/](http://127.0.0.1:61080/)
 - PhpMyAdmin [http://127.0.0.1:61081/](http://127.0.0.1:61081/)
 
-Default username: **```admin@admin.com```** and password: **```admin```**
+Default username: **```admin@admin.com```** and password: **```Admin@123```**
 
 ## Issues
 

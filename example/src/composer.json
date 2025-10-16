@@ -3,10 +3,11 @@
 	"version": "0.0.1",
 	"require": {
 		"php": "^8.3",
-		"akeb/framework": "dev-main"
+		"akeb/framework": "@stable"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "@stable"
+		"phpunit/phpunit": "@stable",
+		"akeb/framework": "dev-main"
 	},
 	"authors": [
 		{

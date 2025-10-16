@@ -12,7 +12,7 @@ services:
     volumes:
       - ./mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysql", "-h", "127.0.0.1", "-u", "${MYSQL_USERNAME}", "--password=${MYSQL_PASSWORD}", "-e", "show databases;"]
+      test: ["CMD", "mysql", "-h", "127.0.0.1", "-u", "root", "--password=${MYSQL_ROOT_PASSWORD}", "-e", "show databases;"]
       start_period: 10s
       interval: 5s
       timeout: 5s

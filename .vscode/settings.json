@@ -106,7 +106,7 @@
 	"code-runner.runInTerminal": true,
 	"php.validate.executablePath": "/opt/local/bin/php",
 
-	"phpunit.command": "docker compose -f ./example/docker-compose.yml -f ./example/docker-compose.dev.yml exec server bash -c \"${php} ${phpargs} ${phpunit} ${phpunitargs}\"",
+	"phpunit.command": "docker compose -f ./example/docker-compose.yml -f ./docker-compose.dev.yml exec server bash -c \"${php} ${phpargs} ${phpunit} ${phpunitargs}\"",
 	"phpunit.php": "php",
 	"phpunit.phpunit": "./src/vendor/bin/phpunit",
 	"phpunit.args": [
