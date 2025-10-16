@@ -10,6 +10,7 @@ require_once("./autoload.php");
 \Template::addJSFile('/js/main.js');
 
 
+\Sessions::session_init(true); // This need to check Permissions and user language
 \Template::setMenuItems([
 	[
 		'title' => \T::Menu_Home(),
@@ -23,14 +24,10 @@ require_once("./autoload.php");
 	],
 ]);
 
-
 $routes = \Routes::getInstance();
 // ADD Another Routes
 
-
-
 $routing = new \Routing();
-
 
 // Main Page
 $app = new \App\Main();

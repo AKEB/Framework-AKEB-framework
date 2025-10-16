@@ -23,6 +23,27 @@ if (!defined('SERVER_ROOT')) define("SERVER_ROOT", $PWD);
 \Config::getInstance();
 date_default_timezone_set(\Config::getInstance()->timezone);
 
+
+global $CACHE_SERVERS;
+global $mcServers;
+\Cache::$file_cache_enable=false;
+
+if (\Config::getInstance()->memcached_host) {
+	$CACHE_SERVERS = [
+		'default' => ['host' => \Config::getInstance()->memcached_host, 'port' => \Config::getInstance()->memcached_port],
+	];
+	foreach ($CACHE_SERVERS as $server_name=>$server) {
+		$mcServers[$server_name] = new \AKEB\Cache\newMemcache();
+		if (!@$mcServers[$server_name]->connect($server['host'], $server['port'])) {
+			$mcServers[$server_name] = false;
+		}
+	}
+} else {
+	$CACHE_SERVERS = [];
+	$mcServers = [];
+	\Cache::$memcache_cache_enable=false;
+}
+
 new \CSP();
 new \T([
 	'en' => 'vendor/akeb/framework/src/lang/framework_en.yml',

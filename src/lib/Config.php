@@ -44,6 +44,9 @@ class Config {
 	public readonly string $oauth_scope;
 	public readonly bool $oauth_register;
 
+	public readonly string $memcached_host;
+	public readonly int $memcached_port;
+
 	public readonly array $per_page_counts;
 
 	private static $_instance;
@@ -106,6 +109,9 @@ class Config {
 			self::$_instance->oauth_scope = strval($_ENV['OAUTH_SCOPE'] ?? 'self_profile');
 			self::$_instance->oauth_register = (isset($_ENV['OAUTH_REGISTER']) && $_ENV['OAUTH_REGISTER'] == 'false') ? false : true;
 
+			// Memcached
+			self::$_instance->memcached_host = strval($_ENV['MEMCACHED_HOST'] ?? '');
+			self::$_instance->memcached_port = intval($_ENV['MEMCACHED_PORT'] ?? 11211);
 
 			self::$_instance->per_page_counts = [5, 10, 20, 50, 100, 500, 1000];
 		}
@@ -155,6 +161,9 @@ class Config {
 			'oauth_button' => $this->oauth_button,
 			'oauth_scope' => $this->oauth_scope,
 			'oauth_register' => $this->oauth_register,
+
+			'memcached_host' => $this->memcached_host,
+			'memcached_port' => $this->memcached_port,
 
 			'per_page_counts' => $this->per_page_counts,
 

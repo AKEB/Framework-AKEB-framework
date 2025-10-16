@@ -17,7 +17,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 55
-      
+  
+  memcached:
+    image: memcached
+    command:
+      - --conn-limit=1024
+      - --memory-limit=32
+      - --threads=4
+    
   server:
     container_name: "example"
     image: "akeb/example:local"

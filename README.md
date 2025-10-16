@@ -124,3 +124,6 @@ Default username: **```admin@admin.com```** and password: **```admin```**
 | OAUTH_BUTTON                 |                      | string   | OAuth Button Title            |
 | OAUTH_SCOPE                  | self_profile         | string   | OAuth Scope                   |
 | OAUTH_REGISTER               | true                 | boolean  | OAuth Register Allow          |
+| ---------------------------- | -------------------- | -------- | ----------------------------- |
+| MEMCACHED_HOST               |                      | string   | Memcached Host                |
+| MEMCACHED_PORT               | 11211                | integer  | Memcached Port                |

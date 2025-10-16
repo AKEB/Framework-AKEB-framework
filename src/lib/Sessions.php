@@ -229,7 +229,6 @@ class Sessions extends \DB\MySQLObject{
 		if ($userPermissions && is_array($userPermissions)) {
 			foreach($userPermissions as $userPermission) {
 				if (!isset($userPermission['subject']) || !$userPermission['subject']) continue;
-				$permissionName = strval($userPermission['subject']??'') . '_'. intval($userPermission['subject_id']??0);
 				if (!isset($permissions[$userPermission['subject']])) $permissions[$userPermission['subject']] = [];
 				$permissions[$userPermission['subject']][$userPermission['subject_id']] = [
 					READ => max($permissions[$userPermission['subject']][$userPermission['subject_id']][READ] ?? 0, intval($userPermission[READ])),
@@ -261,6 +260,15 @@ class Sessions extends \DB\MySQLObject{
 	}
 
 	static private function getPermissionsForUser(array &$user): void {
+		$cache = new \Cache('getPermissionsForUser_'.intval($user['id']));
+		if ($cache->isValid()) {
+			$from_cache = json_decode($cache->get(), true);
+			if ($from_cache && isset($from_cache['permissions']) && is_array($from_cache['permissions']) && isset($from_cache['groups']) && is_array($from_cache['groups'])) {
+				$user['permissions'] = $from_cache['permissions'];
+				$user['groups'] = $from_cache['groups'];
+				return;
+			}
+		}
 		$user['groups'] = static::getUserGroups($user['id']);
 		$groupIds = [];
 		if (isset($user['groups']) && is_array($user['groups']) && $user['groups']) {
@@ -319,6 +327,11 @@ class Sessions extends \DB\MySQLObject{
 				];
 			}
 		}
+		$for_cache = [
+			'permissions' => $user['permissions'],
+			'groups' => $user['groups'],
+		];
+		$cache->update(json_encode($for_cache), 10);
 	}
 
 	static public function checkPermission(string $subject, int $subject_id=0, string $accessType=READ, array $user=[]): bool {
@@ -439,72 +452,73 @@ class Sessions extends \DB\MySQLObject{
 
 
 	static public function session_init(bool $WithoutRedirect=false): bool {
-		static::$current_user = [];
-		do {
-			static::get_session_id();
-			if (!static::$sessionId) {
-				break;
-			}
+		if (!static::$current_user) {
+			static::$current_user = [];
+			do {
+				static::get_session_id();
+				if (!static::$sessionId) {
+					break;
+				}
 
-			$session = static::get(['id' => static::$sessionId]);
-			if (!$session) break;
-			if ($session['sessionExpireTime'] < time()) break;
-			$userId = '';
-			if (!empty($session['userId'])) {
-				$userId = $session['userId'];
-			}
-			if (!$userId) break;
-			$user = Users::get(['id' => $userId]);
-			if (!isset($user) || !is_array($user) || !$user) break;
-			if ($user['status'] != \Users::STATUS_ACTIVE) break;
-			$user['cookie'] = json_decode($user['cookie']??'{}', true);
-			static::getPermissionsForUser($user);
-			static::$current_user = $user;
-			static::$originalUserId = $user['id'];
-			static::$currentUserId = $user['id'];
+				$session = static::get(['id' => static::$sessionId]);
+				if (!$session) break;
+				if ($session['sessionExpireTime'] < time()) break;
+				$userId = '';
+				if (!empty($session['userId'])) {
+					$userId = $session['userId'];
+				}
+				if (!$userId) break;
+				$user = Users::get(['id' => $userId]);
+				if (!isset($user) || !is_array($user) || !$user) break;
+				if ($user['status'] != \Users::STATUS_ACTIVE) break;
+				$user['cookie'] = json_decode($user['cookie']??'{}', true);
+				static::getPermissionsForUser($user);
+				static::$current_user = $user;
+				static::$originalUserId = $user['id'];
+				static::$currentUserId = $user['id'];
 
-			$currentIP = static::client_ip();
-			if (!isset(static::$current_user['cookie']['client_ip'])) static::$current_user['cookie']['client_ip'] = '';
-			if (static::$current_user['cookie']['client_ip'] != $currentIP) {
-				\Logs::log('IP Changed',\Logs::ACTION_LOGIN,'user', static::$current_user['id'],[
-					'ip' => [
-						'old' => static::$current_user['cookie']['client_ip'],
-						'new' => $currentIP,
-					]
-				]);
-				static::$current_user['cookie']['client_ip'] = $currentIP;
-				static::set_server_cookie('client_ip', $currentIP);
-			}
+				$currentIP = static::client_ip();
+				if (!isset(static::$current_user['cookie']['client_ip'])) static::$current_user['cookie']['client_ip'] = '';
+				if (static::$current_user['cookie']['client_ip'] != $currentIP) {
+					\Logs::log('IP Changed',\Logs::ACTION_LOGIN,'user', static::$current_user['id'],[
+						'ip' => [
+							'old' => static::$current_user['cookie']['client_ip'],
+							'new' => $currentIP,
+						]
+					]);
+					static::$current_user['cookie']['client_ip'] = $currentIP;
+					static::set_server_cookie('client_ip', $currentIP);
+				}
 
-			// IMPERSONATE_USER
-			if ($session['sessionJsonData'] && is_string($session['sessionJsonData'])) {
-				$jsonData = json_decode($session['sessionJsonData'], true);
-				if (is_array($jsonData) && isset($jsonData['impersonateUserId']) && $jsonData['impersonateUserId']) {
-					if (static::checkPermission(\Permissions::IMPERSONATE_USER, $jsonData['impersonateUserId'], READ, $user)) {
-						$impersonateUser = Users::get(['id' => $jsonData['impersonateUserId']]);
-						if (isset($impersonateUser) && is_array($impersonateUser) && $impersonateUser && $impersonateUser['status'] == \Users::STATUS_ACTIVE) {
-							$user = $impersonateUser;
-							$user['cookie'] = json_decode($user['cookie']??'{}', true);
-							static::getPermissionsForUser($user);
-							static::$current_user = $user;
-							static::$currentUserId = $user['id'];
+				// IMPERSONATE_USER
+				if ($session['sessionJsonData'] && is_string($session['sessionJsonData'])) {
+					$jsonData = json_decode($session['sessionJsonData'], true);
+					if (is_array($jsonData) && isset($jsonData['impersonateUserId']) && $jsonData['impersonateUserId']) {
+						if (static::checkPermission(\Permissions::IMPERSONATE_USER, $jsonData['impersonateUserId'], READ, $user)) {
+							$impersonateUser = Users::get(['id' => $jsonData['impersonateUserId']]);
+							if (isset($impersonateUser) && is_array($impersonateUser) && $impersonateUser && $impersonateUser['status'] == \Users::STATUS_ACTIVE) {
+								$user = $impersonateUser;
+								$user['cookie'] = json_decode($user['cookie']??'{}', true);
+								static::getPermissionsForUser($user);
+								static::$current_user = $user;
+								static::$currentUserId = $user['id'];
+							}
 						}
 					}
 				}
-			}
 
-			// Update Session
-			if ($session['sessionExpireTime'] < time() + static::$sessionLifeTime - 5*60) {
-				$sessionUpdate = [
-					'id' => $session['id'],
-					'sessionExpireTime' => time() + static::$sessionLifeTime,
-					'_mode' => \DB\Common::CSMODE_UPDATE,
-				];
-				static::save($sessionUpdate);
-			}
+				// Update Session
+				if ($session['sessionExpireTime'] < time() + static::$sessionLifeTime - 5*60) {
+					$sessionUpdate = [
+						'id' => $session['id'],
+						'sessionExpireTime' => time() + static::$sessionLifeTime,
+						'_mode' => \DB\Common::CSMODE_UPDATE,
+					];
+					static::save($sessionUpdate);
+				}
 
-		} while(0);
-
+			} while(0);
+		}
 		if (!static::$current_user) {
 			if ($WithoutRedirect) return false;
 			setcookie('target', urlencode($_SERVER['REQUEST_URI']), time() + 86400, '/');
