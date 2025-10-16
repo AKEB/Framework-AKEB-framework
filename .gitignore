@@ -6,8 +6,9 @@ composer.phar
 /vendor*/
 composer.lock.*
 
-/docker/composer/
-.phpunit.result.cache
+/docker/
+.phpunit.*
 /.phpunit.cache/
 *.bak
 example/.env
+.env

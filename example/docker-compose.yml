@@ -19,6 +19,7 @@ services:
       retries: 55
   
   memcached:
+    container_name: "memcached"
     image: memcached
     command:
       - --conn-limit=1024

@@ -1,27 +1,18 @@
 {
-	"search.useGlobalIgnoreFiles": true,
-	"git.ignoreLimitWarning": true,
+	"php.version": "8.3",
 	"files.exclude": {
+		"docker/composer/":true,
 		"**/.DS_Store": true,
 	},
-	"editor.formatOnSave": false,
-	"editor.rulers": [
-		79,
-		119
-	],
-	"workbench.colorCustomizations": {
-		"editorRuler.foreground": "#313131"
+	"code-runner.defaultLanguage": "php",
+	"code-runner.executorMap": {
+		"php": "\"$workspaceRoot/dockerRun.sh\" \"8.3\" \"$workspaceRoot\" $fullFileName"
 	},
-	"phpfmt.exclude": [
-		"PSR2CurlyOpenNextLine"
-	],
-	"phpfmt.indent_with_space": false,
-	"phpfmt.detect_indent": true,
-	"editor.formatOnSaveMode": "modifications",
 	"cSpell.language": "en, ru",
 	"cSpell.words": [
 		"апдейта",
 		"зачекиниться",
+		"пересоединиться",
 		"Хеллоу",
 		"шардах",
 		"APP_SIGNUP_ACTIVE",
@@ -35,6 +26,7 @@
 		"datatables",
 		"dbhs",
 		"Debugoutput",
+		"Dmitry",
 		"emeraldwalk",
 		"ENCRYPTION_SMTPS",
 		"ENCRYPTION_STARTTLS",
@@ -42,15 +34,16 @@
 		"filesize",
 		"InnoDB",
 		"Jumbojett",
+		"Koterov",
 		"laquo",
 		"leng",
 		"mrgs",
 		"mustangostang",
-		"mygoodip",
 		"NGCB",
 		"noerr",
 		"OPENIDCONNECT",
 		"pholder",
+		"phpmyadmin",
 		"Pixonic",
 		"raquo",
 		"runonsave",
@@ -64,13 +57,17 @@
 		"Vadim"
 	],
 	"cSpell.ignoreWords": [
+		"anticache",
 		"bHchLzC3B99Ss2ghc2gkDdtgCG7vKtoj",
 		"djzygmcjiiw",
 		"krbg",
+		"metas",
 		"mhawt",
+		"phar",
+		"phpmailer",
 		"qyjfcbpii"
 	],
-	
+
 	"i18n-ally.localesPaths": [
 		"./src/lang/"
 	],
@@ -103,21 +100,19 @@
 		]
 	},
 	"code-runner.runInTerminal": true,
-	"code-runner.executorMap": {
-		"php": "$workspaceRoot/run_php_in_docker.sh php $workspaceRoot $fullFileName"
-	},
-	"php.version": "8.3",
 	"php.validate.executablePath": "/opt/local/bin/php",
 
-	"phpunit.command": "/usr/local/bin/docker compose -f ./docker-compose.yml exec server bash -c \"${php} ${phpargs} ${phpunit} ${phpunitargs}\"",
+	"phpunit.command": "docker compose -f ./example/docker-compose.yml -f ./example/docker-compose.dev.yml exec server bash -c \"${php} ${phpargs} ${phpunit} ${phpunitargs}\"",
 	"phpunit.php": "php",
-	"phpunit.phpunit": "./src/vendor/bin/phpunit", 
+	"phpunit.phpunit": "./src/vendor/bin/phpunit",
 	"phpunit.args": [
-		"--configuration",
-		"${workspaceFolder}/phpunit.xml"
 	],
 	"phpunit.paths": {
 		"/src/": "/",
+		"/tests/": "/vendor/akeb/framework/tests/",
 		"${workspaceFolder}": "/app",
 	},
+	"i18n-ally.fullReloadOnChanged": false,
+	"i18n-ally.translate.overrideExisting": true,
+
 }

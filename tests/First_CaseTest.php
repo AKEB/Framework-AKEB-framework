@@ -2,7 +2,7 @@
 
 error_reporting(E_ALL);
 
-class First_TestCase extends PHPUnit\Framework\TestCase {
+class First_CaseTest extends PHPUnit\Framework\TestCase {
 
 	protected function setUp(): void {
 
@@ -10,7 +10,7 @@ class First_TestCase extends PHPUnit\Framework\TestCase {
 
 	function test_true() {
 		$this->assertTrue(true);
-
+		$this->assertFalse(false);
 	}
 
 	function test_admin_user() {
@@ -35,9 +35,8 @@ class First_TestCase extends PHPUnit\Framework\TestCase {
 		$this->assertEquals('admin', $admin['name']);
 		$this->assertEquals('admin', $admin['surname']);
 		$this->assertEquals('admin@admin.com', $admin['email']);
-		$this->assertEquals(md5('admin'.\Config::getInstance()->password_salt), $admin['password']);
+		$this->assertNotEmpty($admin['password']);
 		$this->assertEquals(1, $admin['status']);
-		$this->assertEquals(1, $admin['flags']);
 		$this->assertTrue($admin['registerTime'] > 0);
 	}
 

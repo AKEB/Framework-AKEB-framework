@@ -4,19 +4,5 @@
 	// Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
-		
-		{
-			"name": "PHP in Docker",
-			"type": "f5anything",
-			"request": "launch",
-			"command": "cd ${workspaceFolder} && ${workspaceFolder}/run_php_in_docker.sh php ${workspaceFolder} ${file}"
-		},
-		{
-			"name": "PHPUnit in Docker",
-			"type": "f5anything",
-			"request": "launch",
-			"command": "cd ${workspaceFolder} && ${workspaceFolder}/run_php_in_docker.sh /app/vendor/bin/phpunit ${workspaceFolder} ${file}"
-		},
-
 	]
 }
