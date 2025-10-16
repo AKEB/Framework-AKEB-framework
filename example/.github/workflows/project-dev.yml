@@ -18,7 +18,7 @@ jobs:
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: yes
           MYSQL_ROOT_PASSWORD: pa$$word
-          MYSQL_DATABASE: laravel_tags
+          MYSQL_DATABASE: test
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping -h 127.0.0.1 -u root --password=pa$$word" --health-interval=5s --health-timeout=5s --health-retries=3
