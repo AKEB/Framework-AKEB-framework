@@ -3,7 +3,7 @@ services:
     environment:
       - DEVELOPMENT=true
     volumes:
-      - ./:/app_framework:ro
+      - ../:/app_framework:ro
 
   phpmyadmin:
     container_name: phpmyadmin
