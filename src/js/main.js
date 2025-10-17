@@ -400,7 +400,7 @@ Object.assign(DataTable.defaults, {
 	lengthChange: true,
 	responsive: true,
 	language: {
-		url: '/vendor/akeb/framework/src/lang/dataTable_'+lang+'.json'
+		url: '/lang/framework/dataTable_'+lang+'.json'
 	}
 });
 

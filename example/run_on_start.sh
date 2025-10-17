@@ -14,6 +14,19 @@ else
 fi
 
 # cd /app && composer install --prefer-dist --no-interaction --no-dev --no-scripts
+
+mkdir -p js/framework/
+mkdir -p css/framework/
+mkdir -p lang/framework/
+
+rm -rf js/framework/
+rm -rf css/framework/
+rm -rf lang/framework/
+
+cp -R vendor/akeb/framework/src/js js/framework/
+cp -R vendor/akeb/framework/src/css css/framework/
+cp -R vendor/akeb/framework/src/lang lang/framework/
+
 cd /app/vendor/akeb/framework/src/ && SERVER_ROOT=/app php migrate.php
 
 cd /app/vendor/akeb/framework/src/crons/ && SERVER_ROOT=/app ./run_all.sh

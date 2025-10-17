@@ -95,20 +95,20 @@ class Template {
 		$lang = \T::getCurrentLanguage();
 
 		$css_files = array_merge([
-			'/vendor/akeb/framework/src/css/bootstrap-icons.min.css',
-			'/vendor/akeb/framework/src/css/bootstrap.min.css',
-			'/vendor/akeb/framework/src/css/datatables.min.css',
-			'/vendor/akeb/framework/src/css/bootstrap-select.min.css',
-			'/vendor/akeb/framework/src/css/main.css',
+			'/css/framework/bootstrap-icons.min.css',
+			'/css/framework/bootstrap.min.css',
+			'/css/framework/datatables.min.css',
+			'/css/framework/bootstrap-select.min.css',
+			'/css/framework/main.css',
 		], static::getCSSFiles());
 
 		$js_files = array_merge([
-			'/vendor/akeb/framework/src/js/bootstrap.bundle.min.js',
-			'/vendor/akeb/framework/src/js/datatables.min.js',
-			'/vendor/akeb/framework/src/js/bootstrap-select.min.js',
-			'/vendor/akeb/framework/src/js/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
-			'/vendor/akeb/framework/src/js/locale_'.\T::getCurrentLanguage().'.js',
-			'/vendor/akeb/framework/src/js/main.js',
+			'/js/framework/bootstrap.bundle.min.js',
+			'/js/framework/datatables.min.js',
+			'/js/framework/bootstrap-select.min.js',
+			'/js/framework/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
+			'/js/framework/locale_'.\T::getCurrentLanguage().'.js',
+			'/js/framework/main.js',
 		], static::getJSFiles());
 
 		$head_metas = array_merge([

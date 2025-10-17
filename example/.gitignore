@@ -6,3 +6,8 @@
 .env
 /logs/nginx/*
 /logs/php/*
+/src/.phpunit.cache/
+.phpunit.result.cache
+src/js/framework/
+src/css/framework/
+src/lang/framework/

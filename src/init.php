@@ -46,8 +46,8 @@ if (\Config::getInstance()->memcached_host) {
 
 new \CSP();
 new \T([
-	'en' => 'vendor/akeb/framework/src/lang/framework_en.yml',
-	'ru' => 'vendor/akeb/framework/src/lang/framework_ru.yml',
+	'en' => 'lang/framework/framework_en.yml',
+	'ru' => 'lang/framework/framework_ru.yml',
 ]);
 new \T();
 
