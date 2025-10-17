@@ -19,7 +19,7 @@ services:
       retries: 55
   
   memcached:
-    container_name: "memcached"
+    container_name: "example-memcached"
     image: memcached
     command:
       - --conn-limit=1024
@@ -27,7 +27,7 @@ services:
       - --threads=4
     
   server:
-    container_name: "example"
+    container_name: "example-server"
     image: "akeb/example:local"
     restart: unless-stopped
     build: .
