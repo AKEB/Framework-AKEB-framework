@@ -49,7 +49,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 		$user = \Users::get(['email' => $email]);
 		if ($user) {
 			// Generate a secure random token
-			$token = bin2hex(random_bytes(32));
+			$token = \Users::generate_reset_token();
 			// Set token expiration (e.g., 1 hour from now)
 			$expires = time() + 1800;
 
@@ -61,10 +61,13 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 				'id' => $user['id'],
 				'reset_token' => $token,
 				'reset_token_expires' => $expires,
-				'updateTime' => time(),
+				'update_time' => time(),
 				'_mode' => \DB\Common::CSMODE_UPDATE,
 			]);
-
+			$new_user = \Users::get(['id' => $user['id']]);
+			\Logs::update_log(\Users::LOGS_OBJECT, $this->user['id'], $user, $new_user,[
+				'ip' => \Sessions::client_ip(),
+			],'',$this->user['id'],$this->user['id']);
 			// Assuming you have a mailer service
 			\Mail::send($user['email'], $subject, $body);
 		}
@@ -99,7 +102,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 			'reset_token' => '',
 			'reset_token_expires' => 0,
 			'flags' => $this->user['flags'] & ~\Users::FLAGS_NEED_CHANGE_PASSWORD,
-			'updateTime' => time(),
+			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		];
 		$old_user = \Users::get(['id' => $this->user['id']]);

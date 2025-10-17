@@ -161,6 +161,38 @@ class T {
 	public static function Framework_Login_InvalidTOTP(...$argv): string { return ''; }
 
 	/**
+	 * Framework_Login_EmailNotVerified
+	 * 
+	 * @return string "Email not confirmed. Please check your email to confirm your registration or resend the link."
+	 * @return string "Email не подтвержден. Проверьте почту для подтверждения регистрации или отправьте ссылку повторно."
+	 */
+	public static function Framework_Login_EmailNotVerified(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Login_ResendEmailVerificationButton
+	 * 
+	 * @return string "Resend confirmation link"
+	 * @return string "Отправить повторную ссылку"
+	 */
+	public static function Framework_Login_ResendEmailVerificationButton(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Login_ResendEmailSuccess
+	 * 
+	 * @return string "Please check your email for confirmation"
+	 * @return string "Проверьте почту для подтверждения регистрации"
+	 */
+	public static function Framework_Login_ResendEmailSuccess(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Login_EmailVerified
+	 * 
+	 * @return string "Your email has been confirmed"
+	 * @return string "Ваш Email подтвержден"
+	 */
+	public static function Framework_Login_EmailVerified(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Login_TwoFactor_Title
 	 * 
 	 * @return string "Two Factor Authentication"
@@ -185,6 +217,46 @@ class T {
 	public static function Framework_Login_TwoFactor_EnterCode(...$argv): string { return ''; }
 
 	/**
+	 * Framework_SignUp_Success
+	 * 
+	 * @return string "Registration successful. Please check your email for confirmation."
+	 * @return string "Регистрация прошла успешно. Проверьте почту для подтверждения регистрации."
+	 */
+	public static function Framework_SignUp_Success(...$argv): string { return ''; }
+
+	/**
+	 * Framework_SignUp_Error
+	 * 
+	 * @return string "Registration error"
+	 * @return string "Ошибка регистрации"
+	 */
+	public static function Framework_SignUp_Error(...$argv): string { return ''; }
+
+	/**
+	 * Framework_SignUp_EmailSubject
+	 * 
+	 * @return string "Confirmation of registration"
+	 * @return string "Подтверждение регистрации"
+	 */
+	public static function Framework_SignUp_EmailSubject(...$argv): string { return ''; }
+
+	/**
+	 * Framework_SignUp_EmailBody
+	 * 
+	 * @return string "To confirm your registration, please follow the link below: %s"
+	 * @return string "Чтобы подтвердить регистрацию, перейдите по следующей ссылке: %s"
+	 */
+	public static function Framework_SignUp_EmailBody(...$argv): string { return ''; }
+
+	/**
+	 * Framework_SignUp_InvalidOrExpiredToken
+	 * 
+	 * @return string "This link for confirmation of registration is invalid or has expired."
+	 * @return string "Эта ссылка для подтверждения регистрации недействительна или устарела."
+	 */
+	public static function Framework_SignUp_InvalidOrExpiredToken(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Forgot_Title
 	 * 
 	 * @return string "Forgot Password"
@@ -196,7 +268,7 @@ class T {
 	 * Framework_Forgot_Subtitle
 	 * 
 	 * @return string "Please enter your E-mail"
-	 * @return string "Пожалуйста, введите ваш E-mail"
+	 * @return string "Пожалуйста, введите ваш Email"
 	 */
 	public static function Framework_Forgot_Subtitle(...$argv): string { return ''; }
 
@@ -559,6 +631,14 @@ class T {
 	 * @return string "Изменить профиль"
 	 */
 	public static function Framework_Settings_UserProfile_Change(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Settings_UserProfile_Create
+	 * 
+	 * @return string "Create User"
+	 * @return string "Создать пользователя"
+	 */
+	public static function Framework_Settings_UserProfile_Create(...$argv): string { return ''; }
 
 	/**
 	 * Framework_Settings_TwoFactor_Title

@@ -96,7 +96,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			'reset_token' => '',
 			'reset_token_expires' => 0,
 			'flags' => $this->currentUser['flags'] & ~\Users::FLAGS_NEED_CHANGE_PASSWORD,
-			'updateTime' => time(),
+			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		];
 		$old_user = \Users::get(['id' => $this->currentUser['id']]);
@@ -119,8 +119,8 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		}
 		$user_id = \Users::save([
 			'id' => $user['id'],
-			'2fa' => '',
-			'updateTime' => time(),
+			'two_factor_secret' => '',
+			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		]);
 		if ($user_id) {
@@ -144,8 +144,8 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		}
 		$user_id = \Users::save([
 			'id' => $user['id'],
-			'2fa' => $secret,
-			'updateTime' => time(),
+			'two_factor_secret' => $secret,
+			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		]);
 		if ($user_id) {
@@ -184,7 +184,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			'surname' => $surname,
 			'email' => $email,
 			'telegram_id' => $telegramId,
-			'updateTime' => time(),
+			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		];
 		$old_user = \Users::get(['id' => $this->currentUser['id']]);
@@ -290,7 +290,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 	private function userTwoFactorCard() {
 
 		$currentUser = \Sessions::currentUser();
-		if (!$currentUser['2fa']) {
+		if (!$currentUser['two_factor_secret']) {
 			$googleAuthenticate = new \GoogleAuthenticator();
 			$secret = $googleAuthenticate->generateSecret();
 			$url = $googleAuthenticate->render_qrcode($this->currentUser['email'], $secret, \Template::getProjectName());
@@ -301,7 +301,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			<div class="card-body bg-transparent">
 				<div class="d-flex justify-content-between flex-wrap">
 					<h3><?=\T::Framework_Settings_TwoFactor_Title();?></h3>
-					<?php if (!$currentUser['2fa']) { ?>
+					<?php if (!$currentUser['two_factor_secret']) { ?>
 						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#twoFactorModal">
 							<?=\T::Framework_Settings_TwoFactor_Enable();?>
 						</button>
@@ -313,7 +313,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 				</div>
 			</div>
 		</div>
-		<?php if (!$currentUser['2fa']) { ?>
+		<?php if (!$currentUser['two_factor_secret']) { ?>
 			<div class="modal p-0" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="twoFactorModalLabel" aria-modal="true">
 				<div class="modal-dialog modal-fullscreen-md-down p-0" role="document">
 					<div class="modal-content bg-dark">

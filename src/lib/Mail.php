@@ -6,7 +6,7 @@ class Mail {
 		$mail = new \PHPMailer\PHPMailer\PHPMailer();
 		$mail->CharSet = 'utf-8';
 		$mail->Timeout = 10; // 10 seconds timeout
-		$mail->SMTPDebug = \Config::getInstance()->app_debug ? 1 : 0;
+		$mail->SMTPDebug = \Config::getInstance()->app_debug ? 4 : 0;
 		$mail->Debugoutput = function($str, $level) {
 			error_log("Mail Debug level $level; message: $str");
 		};

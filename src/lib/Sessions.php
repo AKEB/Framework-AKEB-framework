@@ -34,7 +34,7 @@ class Sessions extends \DB\MySQLObject{
 		return boolval(\Users::save([
 			'id' => static::$current_user['id'],
 			'cookie' => json_encode(static::$current_user['cookie']),
-			'updateTime' => time(),
+			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		]));
 	}
@@ -68,10 +68,10 @@ class Sessions extends \DB\MySQLObject{
 		static::new_session_id();
 		$session = [
 			'id' => static::$sessionId,
-			'userId' => $userId ?? 0,
-			'sessionStartTime' => time(),
-			'sessionExpireTime' => time() + static::$sessionLifeTime,
-			'sessionJsonData' => json_encode($jsonData),
+			'user_id' => $userId ?? 0,
+			'session_start_time' => time(),
+			'session_expire_time' => time() + static::$sessionLifeTime,
+			'session_json_data' => json_encode($jsonData),
 			'_mode' => \DB\Common::CSMODE_REPLACE,
 		];
 		static::save($session);
@@ -123,8 +123,8 @@ class Sessions extends \DB\MySQLObject{
 		$session = static::get(['id' => static::$sessionId]);
 		if (!$session) return false;
 		$jsonData = [];
-		if ($session['sessionJsonData'] && is_string($session['sessionJsonData'])) {
-			$jsonData = json_decode($session['sessionJsonData'], true);
+		if ($session['session_json_data'] && is_string($session['session_json_data'])) {
+			$jsonData = json_decode($session['session_json_data'], true);
 			if (!is_array($jsonData)) $jsonData = [];
 		}
 		return isset($jsonData['impersonateUserId']) && $jsonData['impersonateUserId'];
@@ -143,14 +143,14 @@ class Sessions extends \DB\MySQLObject{
 		$session = static::get(['id' => static::$sessionId]);
 		if (!$session) return false;
 		$jsonData = [];
-		if ($session['sessionJsonData'] && is_string($session['sessionJsonData'])) {
-			$jsonData = json_decode($session['sessionJsonData'], true);
+		if ($session['session_json_data'] && is_string($session['session_json_data'])) {
+			$jsonData = json_decode($session['session_json_data'], true);
 			if (!is_array($jsonData)) $jsonData = [];
 		}
 		$jsonData['impersonateUserId'] = $impersonateUserId;
 		$sessionUpdate = [
 			'id' => $session['id'],
-			'sessionJsonData' => json_encode($jsonData),
+			'session_json_data' => json_encode($jsonData),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		];
 		static::save($sessionUpdate);
@@ -168,15 +168,15 @@ class Sessions extends \DB\MySQLObject{
 		$session = static::get(['id' => static::$sessionId]);
 		if (!$session) return false;
 		$jsonData = [];
-		if ($session['sessionJsonData'] && is_string($session['sessionJsonData'])) {
-			$jsonData = json_decode($session['sessionJsonData'], true);
+		if ($session['session_json_data'] && is_string($session['session_json_data'])) {
+			$jsonData = json_decode($session['session_json_data'], true);
 			if (!is_array($jsonData)) $jsonData = [];
 		}
 		if (isset($jsonData['impersonateUserId'])) {
 			unset($jsonData['impersonateUserId']);
 			$sessionUpdate = [
 				'id' => $session['id'],
-				'sessionJsonData' => json_encode($jsonData),
+				'session_json_data' => json_encode($jsonData),
 				'_mode' => \DB\Common::CSMODE_UPDATE,
 			];
 			static::save($sessionUpdate);
@@ -462,10 +462,10 @@ class Sessions extends \DB\MySQLObject{
 
 				$session = static::get(['id' => static::$sessionId]);
 				if (!$session) break;
-				if ($session['sessionExpireTime'] < time()) break;
+				if ($session['session_expire_time'] < time()) break;
 				$userId = '';
-				if (!empty($session['userId'])) {
-					$userId = $session['userId'];
+				if (!empty($session['user_id'])) {
+					$userId = $session['user_id'];
 				}
 				if (!$userId) break;
 				$user = Users::get(['id' => $userId]);
@@ -491,8 +491,8 @@ class Sessions extends \DB\MySQLObject{
 				}
 
 				// IMPERSONATE_USER
-				if ($session['sessionJsonData'] && is_string($session['sessionJsonData'])) {
-					$jsonData = json_decode($session['sessionJsonData'], true);
+				if ($session['session_json_data'] && is_string($session['session_json_data'])) {
+					$jsonData = json_decode($session['session_json_data'], true);
 					if (is_array($jsonData) && isset($jsonData['impersonateUserId']) && $jsonData['impersonateUserId']) {
 						if (static::checkPermission(\Permissions::IMPERSONATE_USER, $jsonData['impersonateUserId'], READ, $user)) {
 							$impersonateUser = Users::get(['id' => $jsonData['impersonateUserId']]);
@@ -508,10 +508,10 @@ class Sessions extends \DB\MySQLObject{
 				}
 
 				// Update Session
-				if ($session['sessionExpireTime'] < time() + static::$sessionLifeTime - 5*60) {
+				if ($session['session_expire_time'] < time() + static::$sessionLifeTime - 5*60) {
 					$sessionUpdate = [
 						'id' => $session['id'],
-						'sessionExpireTime' => time() + static::$sessionLifeTime,
+						'session_expire_time' => time() + static::$sessionLifeTime,
 						'_mode' => \DB\Common::CSMODE_UPDATE,
 					];
 					static::save($sessionUpdate);

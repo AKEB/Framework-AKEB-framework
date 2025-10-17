@@ -7,6 +7,7 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 
 	const STATUS_ACTIVE               =  1;
 	const STATUS_INACTIVE             =  2;
+	const STATUS_EMAIL_VERIFICATION   =  3;
 
 	/** Требовать сменить пароль */
 	const FLAGS_NEED_CHANGE_PASSWORD = 1 << 0; // 1
@@ -36,6 +37,14 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 		return $password_hash == static::password_hash($password);
 	}
 
+	static public function generate_verification_token(): string {
+		return bin2hex(random_bytes(32));
+	}
+
+	static public function generate_reset_token(): string {
+		return bin2hex(random_bytes(32));
+	}
+
 	static public function check_user_credentials(string $email, string $password):int|bool {
 		if (!$email || !$password) return false;
 		$user = static::get([
@@ -43,13 +52,13 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 			'status' => self::STATUS_ACTIVE,
 		]);
 		if (!$user) return false;
-		if ($user['loginTryTime'] && (time() - $user['loginTryTime']) < 2) {
+		if ($user['login_try_time'] && (time() - $user['login_try_time']) < 2) {
 			return -1;
 		}
-		$user['loginTryTime'] = time();
+		$user['login_try_time'] = time();
 		static::save([
 			'id' => $user['id'],
-			'loginTryTime' => $user['loginTryTime'],
+			'login_try_time' => $user['login_try_time'],
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		]);
 		if (!$user['password']) return false;

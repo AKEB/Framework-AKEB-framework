@@ -134,7 +134,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 				continue;
 			}
 			$param = $params;
-			$param['createTime'] = time();
+			$param['create_time'] = time();
 			$param[READ] = 0;
 			$param[WRITE] = 0;
 			$param[DELETE] = 0;
@@ -204,13 +204,13 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 				'subject' => $subject,
 				'subject_id' => $subject_id,
 				$accessCode => $value,
-				'updateTime' => time(),
+				'update_time' => time(),
 			];
 			if ($old_perm) {
 				$param['id'] = $old_perm['id'];
 				$param['_mode'] = \DB\Common::CSMODE_UPDATE;
 			} else {
-				$param['createTime'] = time();
+				$param['create_time'] = time();
 				$param['_mode'] = \DB\Common::CSMODE_INSERT;
 			}
 			$new_id = \ObjectPermissions::save($param);

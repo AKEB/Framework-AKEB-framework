@@ -29,7 +29,7 @@ class First_CaseTest extends PHPUnit\Framework\TestCase {
 		$this->assertArrayHasKey('password', $admin);
 		$this->assertArrayHasKey('status', $admin);
 		$this->assertArrayHasKey('flags', $admin);
-		$this->assertArrayHasKey('registerTime', $admin);
+		$this->assertArrayHasKey('register_time', $admin);
 
 		$this->assertEquals(1, $admin['id']);
 		$this->assertEquals('admin', $admin['name']);
@@ -46,7 +46,7 @@ class First_CaseTest extends PHPUnit\Framework\TestCase {
 
 		$this->assertEquals(1, $admin['status']);
 		$this->assertEquals(1, $admin['flags']);
-		$this->assertTrue($admin['registerTime'] > 0);
+		$this->assertTrue($admin['register_time'] > 0);
 	}
 
 	protected function tearDown(): void {

@@ -5,11 +5,14 @@ namespace FrameworkApp;
 class Login extends \Routing_Parent implements \Routing_Interface {
 
 	private string $errorText = '';
+	private string $successText = '';
 
 	private bool $need_2fa_form = false;
 	private string $email = '';
 	private string $password = '';
 
+	private string $token = '';
+	private int $email_verification_user = 0;
 
 	public function Run() {
 		$this->processRequest();
@@ -21,8 +24,34 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 	protected function handleGetData(array $data) {
 		// Обработка GET данных
 		if (!isset($data)) return;
+		if (!is_array($data)) return;
 
-		if (isset($data['oidc']) && isset($data['code']) && isset($data['state'])) {
+		if (isset($data['token'])) {
+			$this->token = $data['token'];
+			$user = \Users::get(['email_verification_token' => $this->token]);
+			if (!$user) {
+				$this->errorText = \T::Framework_SignUp_InvalidOrExpiredToken();
+				$this->token = ''; // Invalidate token to show the initial form
+			} else {
+				$param = [
+					'id' => $user['id'],
+					'email_verification_token' => '',
+					'status' => \Users::STATUS_ACTIVE,
+					'update_time' => time(),
+					'_mode' => \DB\Common::CSMODE_UPDATE,
+				];
+				\Users::save($param);
+				$new_user = \Users::get(['id' => $user['id']]);
+				\Logs::update_log(\Users::LOGS_OBJECT, $user['id'], $user, $new_user,[
+					'ip' => \Sessions::client_ip(),
+				],'',$user['id'],$user['id']);
+				$this->token = '';
+				$this->email_verification_user = 0;
+				$_POST['email'] = $user['email'];
+				$this->successText = \T::Framework_Login_EmailVerified();
+				common_redirect('/login/');
+			}
+		} elseif (isset($data['oidc']) && isset($data['code']) && isset($data['state'])) {
 			$this->openIdCode($data);
 		} elseif (isset($data['oauth']) && isset($data['code']) && isset($data['state'])) {
 			$this->oAuthCode($data);
@@ -34,8 +63,22 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		if (!isset($data)) return;
 		if (!$data) return;
 		if (!is_array($data)) return;
+
 		if (isset($data['action']) && $data['action'] == 'signin') {
-			if (isset($data['signIn'])) {
+			if (isset($data['resendEmail'])) {
+				if (isset($data['user_id'])) {
+					$user = \Users::get(['id' => $data['user_id']]);
+					if (!$user) return;
+					if ($user['email_verification_token']) {
+						$resetLink = strval($_SERVER['HTTP_REFERER'] ?? '').'?token=' . $user['email_verification_token'];
+						$subject = \T::Framework_SignUp_EmailSubject();
+						$body = \T::Framework_SignUp_EmailBody($resetLink);
+
+						\Mail::send($user['email'], $subject, $body);
+						$this->successText = \T::Framework_Login_ResendEmailSuccess();
+					}
+				}
+			} elseif (isset($data['signIn'])) {
 				$this->signIn($data['email']??'', $data['password']??'', intval($data['totp']??0));
 			} elseif(isset($data['openID'])) {
 				$this->openIdRedirect();
@@ -89,11 +132,11 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 				'telegram_id' => 0,
 				'password' => '',
 				'status' => \Users::STATUS_ACTIVE,
-				'creatorUserId' => 0,
-				'registerTime' => time(),
-				'updateTime' => time(),
-				'loginTime' => time(),
-				'loginTryTime' => 0,
+				'creator_user_id' => 0,
+				'register_time' => time(),
+				'update_time' => time(),
+				'login_time' => time(),
+				'login_try_time' => 0,
 				'flags' => 0,
 				'cookie' => '{}',
 			]);
@@ -102,8 +145,8 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			$UserGroupsId = \UserGroups::save([
 				'user_id' => $userId,
 				'group_id' => \Groups::DEFAULT_GROUP_ID,
-				'createTime' => time(),
-				'updateTime' => time(),
+				'create_time' => time(),
+				'update_time' => time(),
 				'_mode' => \DB\Common::CSMODE_REPLACE,
 			]);
 			$UserGroups = \UserGroups::get(['id' => $UserGroupsId]);
@@ -152,7 +195,6 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			$oauth->authenticate();
 			$data = $oauth->requestUserInfo();
 			if (!isset($data) || !$data) return false;
-			var_dump($data);
 
 			$check_user = \Users::get(['email' => $data['email']]);
 			if ($check_user) {
@@ -167,11 +209,11 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 				'telegram_id' => 0,
 				'password' => '',
 				'status' => \Users::STATUS_ACTIVE,
-				'creatorUserId' => 0,
-				'registerTime' => time(),
-				'updateTime' => time(),
-				'loginTime' => time(),
-				'loginTryTime' => 0,
+				'creator_user_id' => 0,
+				'register_time' => time(),
+				'update_time' => time(),
+				'login_time' => time(),
+				'login_try_time' => 0,
 				'flags' => 0,
 				'cookie' => '{"lang": "'.($data['language']??'en').'"}',
 			]);
@@ -180,8 +222,8 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			$UserGroupsId = \UserGroups::save([
 				'user_id' => $userId,
 				'group_id' => \Groups::DEFAULT_GROUP_ID,
-				'createTime' => time(),
-				'updateTime' => time(),
+				'create_time' => time(),
+				'update_time' => time(),
 				'_mode' => \DB\Common::CSMODE_REPLACE,
 			]);
 			$UserGroups = \UserGroups::get(['id' => $UserGroupsId]);
@@ -238,9 +280,9 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		}
 		$params = [
 			'id' => $currentUser['id'],
-			'loginTime' => time(),
-			'loginTryTime' => 0,
-			'updateTime' => time(),
+			'login_time' => time(),
+			'login_try_time' => 0,
+			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		];
 		\Users::save($params);
@@ -274,10 +316,16 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		$userId = \Users::check_user_credentials($email, $password);
 
 		$user = \Users::get(['id' => $userId]);
-		if (isset($user['2fa']) && $user['2fa']) {
+		if (isset($user) && isset($user['email_verification_token']) && $user['email_verification_token']) {
+			$this->email_verification_user = $user['id'];
+			$this->errorText = \T::Framework_Login_EmailNotVerified();
+			return;
+		}
+
+		if (isset($user['two_factor_secret']) && $user['two_factor_secret']) {
 			if ($totp) {
 				$googleAuthenticate = new \GoogleAuthenticator();
-				if (!$googleAuthenticate->checkCode($user['2fa'], $totp)) {
+				if (!$googleAuthenticate->checkCode($user['two_factor_secret'], $totp)) {
 					$this->errorText = \T::Framework_Login_InvalidTOTP();
 					return;
 				}
@@ -308,24 +356,26 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 											<?=htmlspecialchars($this->errorText)?>
 										</div>
 									<?php } ?>
-
-									<?php
-									if ($this->need_2fa_form && $this->email && $this->password) {
-										?>
+									<?php if ($this->successText) { ?>
+										<div class="alert alert-success mt-4" role="alert">
+											<?= htmlspecialchars($this->successText) ?>
+										</div>
+									<?php } ?>
+									<?php if ($this->need_2fa_form && $this->email && $this->password) { ?>
 										<div class="d-flex justify-content-center align-items-center mb-4">
 											<?=\T::Framework_Login_TwoFactor_Title();?>
 										</div>
 										<div class="d-flex justify-content-center align-items-center mb-4">
 											<?=\T::Framework_Login_TwoFactor_Description();?>
 										</div>
-
 										<input type="hidden" name="email"  value="<?=$this->email;?>">
 										<input type="hidden" name="password"  value="<?=$this->password;?>">
 										<?php $this->template->html_totp('totp');?>
 										<button class="btn btn-outline-light btn-lg px-5 mb-3 signInButton" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
-										<?php
-									} else {
-										?>
+									<?php } elseif ($this->email_verification_user) { ?>
+										<input type="hidden" name="user_id"  value="<?=$this->email_verification_user;?>">
+										<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3" name="resendEmail" value="true" type="submit"><?=\T::Framework_Login_ResendEmailVerificationButton();?></button><br/>
+									<?php } else { ?>
 										<?php if (\Config::getInstance()->app_signin_active) { ?>
 											<p class="text-white-50 mb-3"><?=\T::Framework_Login_Subtitle();?></p>
 											<div data-mdb-input-init class="form-outline form-white mb-2">

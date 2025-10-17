@@ -56,7 +56,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			$params = [
 				'id' => $groupId,
 				'title' => $groupTitle,
-				'updateTime' => time(),
+				'update_time' => time(),
 				'_mode' => \DB\Common::CSMODE_UPDATE,
 			];
 			\Groups::save($params);
@@ -71,8 +71,8 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			}
 			$params = [
 				'title' => $groupTitle,
-				'createTime' => time(),
-				'updateTime' => time(),
+				'create_time' => time(),
+				'update_time' => time(),
 				'_mode' => \DB\Common::CSMODE_INSERT,
 			];
 			$groupId = \Groups::save($params);
@@ -91,8 +91,8 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 						ACCESS_READ => 1,
 						ACCESS_WRITE => 1,
 						ACCESS_CHANGE => 1,
-						'createTime' => time(),
-						'updateTime' => time(),
+						'create_time' => time(),
+						'update_time' => time(),
 						'_mode' => \DB\Common::CSMODE_INSERT,
 					];
 					$ObjectPermission['id'] = \ObjectPermissions::save($ObjectPermission);
@@ -179,7 +179,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 				$sql .= sql_pholder(' AND 0');
 			}
 		}
-		$this->groups = \Groups::data(false, $sql, 'id, title, createTime');
+		$this->groups = \Groups::data(false, $sql, 'id, title, create_time');
 
 		$this->groups_counts_hash = get_hash(\UserGroups::data(false, ' GROUP BY group_id ORDER BY NULL', 'group_id, count(*) as users_count'), 'group_id', 'users_count');
 	}
@@ -224,7 +224,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 							'id' => intval($group['id'] ?? 0),
 							'title' => htmlspecialchars(trim($group['title'] ?? '')),
 							'users_count' => intval($this->groups_counts_hash[$group['id']] ?? 0),
-							'createTime' => isset($group['createTime']) && $group['createTime'] > 0 ? date("Y-m-d H:i:s", $group['createTime']) : '',
+							'create_time' => isset($group['create_time']) && $group['create_time'] > 0 ? date("Y-m-d H:i:s", $group['create_time']) : '',
 						];
 
 						$can_read_group = \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $params['id'], READ);
@@ -265,7 +265,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 								?>
 							</td>
 							<td class="align-middle text-center"><?=$params['users_count'];?></td>
-							<td class="d-none d-lg-table-cell align-middle text-center"><?=$params['createTime'];?></td>
+							<td class="d-none d-lg-table-cell align-middle text-center"><?=$params['create_time'];?></td>
 							<td class="align-middle text-center">
 								<?php
 									if (!in_array($params['id'], [\Groups::ADMIN_GROUP_ID]) && ($can_read_permissions || $can_write_permissions)) {

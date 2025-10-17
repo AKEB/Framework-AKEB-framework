@@ -107,8 +107,8 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		$params = [
 			'user_id' => $this->user_id,
 			'group_id' => $groupId,
-			'createTime' => time(),
-			'updateTime' => time(),
+			'create_time' => time(),
+			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_INSERT,
 		];
 		$params['id'] = \UserGroups::save($params);
@@ -146,7 +146,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 	private function get_data() {
 		$this->user_groups = \UserGroups::data(false, sql_pholder(' AND `user_id`=?',$this->user_id));
-		$data = \Groups::data(false, '', 'id, title, createTime');
+		$data = \Groups::data(false, '', 'id, title, create_time');
 		$this->groups = [];
 		$this->groups_hash = [];
 		foreach($data as $item) {
@@ -199,7 +199,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 						$params = [
 							'id' => intval($group['id'] ?? 0),
 							'title' => htmlspecialchars(trim($group['title'] ?? '')),
-							'createTime' => isset($group['createTime']) && $group['createTime'] > 0 ? date("Y-m-d H:i:s", $group['createTime']) : '',
+							'create_time' => isset($group['create_time']) && $group['create_time'] > 0 ? date("Y-m-d H:i:s", $group['create_time']) : '',
 						];
 						$can_delete_group = true;
 						if ($params['id'] == \Groups::DEFAULT_GROUP_ID) {

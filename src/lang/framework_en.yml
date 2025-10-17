@@ -21,10 +21,21 @@ Framework:
     SignInWithLoginAndPasswordDenied: "Sign in with login and password denied"
     AuthenticateError: "Error: Please try again later!"
     InvalidTOTP: "Invalid authentication code!"
+    EmailNotVerified: "Email not confirmed. Please check your email to confirm your registration or resend the link."
+    ResendEmailVerificationButton: "Resend confirmation link"
+    ResendEmailSuccess: "Please check your email for confirmation"
+    EmailVerified: "Your email has been confirmed"
     TwoFactor:
       Title: "Two Factor Authentication"
       Description: "To be able to login you need enter the verification code below."
       EnterCode: "Enter verification code"
+
+  SignUp:
+    Success: "Registration successful. Please check your email for confirmation."
+    Error: "Registration error"
+    EmailSubject: "Confirmation of registration"
+    EmailBody: "To confirm your registration, please follow the link below: %s"
+    InvalidOrExpiredToken: "This link for confirmation of registration is invalid or has expired."
 
   Forgot:
     Title: "Forgot Password"
@@ -80,6 +91,7 @@ Framework:
       Email: "Email"
       TelegramId: "Telegram ID"
       Change: "Change Profile"
+      Create: "Create User"
     TwoFactor:
       Title: "Two Factor Authentication"
       Header: "Set up two-factor authentication"

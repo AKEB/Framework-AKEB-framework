@@ -122,9 +122,9 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 					$this->error = \T::Framework_Errors_PermissionDenied();
 					break;
 				}
-				$params['registerTime'] = time();
+				$params['register_time'] = time();
 			}
-			$params['updateTime'] = time();
+			$params['update_time'] = time();
 
 			if (isset($params['id']) && $params['id']) {
 				// Update User
@@ -143,8 +143,8 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 					$UserGroupsId = \UserGroups::save([
 						'user_id' => $user_id,
 						'group_id' => \Groups::DEFAULT_GROUP_ID,
-						'createTime' => time(),
-						'updateTime' => time(),
+						'create_time' => time(),
+						'update_time' => time(),
 						'_mode' => \DB\Common::CSMODE_REPLACE,
 					]);
 					$UserGroups = \UserGroups::get(['id' => $UserGroupsId]);
@@ -154,7 +154,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				}
 			} else {
 				// Create User
-				$params['creatorUserId'] = \Sessions::currentUser()['id'];
+				$params['creator_user_id'] = \Sessions::currentUser()['id'];
 				$params['_mode'] = \DB\Common::CSMODE_INSERT;
 				$user_id = \Users::save($params);
 				$user = \Users::get(['id' => $user_id]);
@@ -166,8 +166,8 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				$UserGroupsId = \UserGroups::save([
 					'user_id' => $user_id,
 					'group_id' => \Groups::DEFAULT_GROUP_ID,
-					'createTime' => time(),
-					'updateTime' => time(),
+					'create_time' => time(),
+					'update_time' => time(),
 					'_mode' => \DB\Common::CSMODE_REPLACE,
 				]);
 
@@ -190,8 +190,8 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 							ACCESS_READ => 1,
 							ACCESS_WRITE => 1,
 							ACCESS_CHANGE => 1,
-							'createTime' => time(),
-							'updateTime' => time(),
+							'create_time' => time(),
+							'update_time' => time(),
 							'_mode' => \DB\Common::CSMODE_INSERT,
 						];
 						$ObjectPermissions['id'] = \ObjectPermissions::save($ObjectPermissions);
@@ -234,19 +234,19 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 		if (!$this->user['id']) {
 			$this->user['status'] = 1;
 		} else {
-			$this->user['registerTime'] = (
-				isset($this->user['registerTime']) ? (
-					is_string($this->user['registerTime']) ? $this->user['registerTime'] : date('Y-m-d H:i:s', $this->user['registerTime'])
+			$this->user['register_time'] = (
+				isset($this->user['register_time']) ? (
+					is_string($this->user['register_time']) ? $this->user['register_time'] : date('Y-m-d H:i:s', $this->user['register_time'])
 				) :
 			'');
-			$this->user['updateTime'] = (
-				isset($this->user['updateTime']) ? (
-					is_string($this->user['updateTime']) ? $this->user['updateTime'] : date('Y-m-d H:i:s', $this->user['updateTime'])
+			$this->user['update_time'] = (
+				isset($this->user['update_time']) ? (
+					is_string($this->user['update_time']) ? $this->user['update_time'] : date('Y-m-d H:i:s', $this->user['update_time'])
 				) :
 			'');
-			$this->user['loginTime'] = (
-				isset($this->user['loginTime']) ? (
-					is_string($this->user['loginTime']) ? $this->user['loginTime'] : date('Y-m-d H:i:s', $this->user['loginTime'])
+			$this->user['login_time'] = (
+				isset($this->user['login_time']) ? (
+					is_string($this->user['login_time']) ? $this->user['login_time'] : date('Y-m-d H:i:s', $this->user['login_time'])
 				) :
 			'');
 		}
@@ -294,9 +294,9 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 						]);
 					}
 					if ($this->user['id']) {
-						echo $this->template->html_input("registerTime", $this->user['registerTime']??'', \T::Framework_Settings_RegisterTime(), false, ['readonly' => true]);
-						echo $this->template->html_input("updateTime", $this->user['updateTime']??'', \T::Framework_Settings_UpdateTime(), false, ['readonly' => true]);
-						echo $this->template->html_input("loginTime", $this->user['loginTime']??'', \T::Framework_Settings_LoginTime(), false, ['readonly' => true]);
+						echo $this->template->html_input("register_time", $this->user['register_time']??'', \T::Framework_Settings_RegisterTime(), false, ['readonly' => true]);
+						echo $this->template->html_input("update_time", $this->user['update_time']??'', \T::Framework_Settings_UpdateTime(), false, ['readonly' => true]);
+						echo $this->template->html_input("login_time", $this->user['login_time']??'', \T::Framework_Settings_LoginTime(), false, ['readonly' => true]);
 					}
 
 					echo $this->template->html_switch("status", intval($this->user['status']??0), \T::Framework_Settings_Active());
@@ -304,7 +304,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 					echo $this->template->html_flags("flags[]", \Users::flags_hash(), $this->user['flags']??0, \T::Framework_Settings_Params());
 					?>
 					<div class="d-flex flex-row-reverse">
-						<button type="submit" class="btn btn-primary" name="<?=$this->user['id'] ? 'editUser' : 'createUser';?>" value="true"><?=\T::Framework_Settings_UserProfile_Change();?></button>
+						<button type="submit" class="btn btn-primary" name="<?=$this->user['id'] ? 'editUser' : 'createUser';?>" value="true"><?=($this->user['id'] ? \T::Framework_Settings_UserProfile_Change() : \T::Framework_Settings_UserProfile_Create());?></button>
 					</div>
 				</form>
 			</div>
@@ -317,7 +317,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 		?>
 		<script nonce="<?=\CSP::nonceRandom();?>">
 			$(document).ready(function(){
-				validateEmail('email');
+				validateEmailInput('email');
 				<?php if (\Config::getInstance()->app_signin_active) { ?>
 					validateEqualInputs('newPassword', 'confirmNewPassword');
 				<?php } ?>

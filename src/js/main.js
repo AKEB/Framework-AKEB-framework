@@ -87,6 +87,20 @@ function showAllToasts() {
 
 function validateEmail(objectId) {
 	var email = $('#'+objectId);
+	const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	if(!re.test(email.val())){
+		email.addClass('is-invalid');
+		email.get(0).setCustomValidity("Invalid field.");
+		return false;
+	} else {
+		email.removeClass('is-invalid');
+		email.get(0).setCustomValidity("");
+		return true;
+	}
+}
+
+function validateEmailInput(objectId) {
+	var email = $('#'+objectId);
 	email.on('input', function() {
 		const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		if(!re.test(email.val())){

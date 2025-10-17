@@ -140,7 +140,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 				$sql .= sql_pholder(' AND 0');
 			}
 		}
-		$this->users = \Users::data(false, $sql, 'id, name, surname, email, status, registerTime, loginTime');
+		$this->users = \Users::data(false, $sql, 'id, name, surname, email, status, register_time, login_time');
 	}
 
 	private function print_table() {
@@ -176,8 +176,8 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 							'surname' => htmlspecialchars(trim($user['surname'] ?? '')),
 							'email' => htmlspecialchars(trim($user['email'] ?? '')),
 							'status' => intval($user['status'] ?? 0) == 1 ? '<i class="bi bi-check-lg fs-3 text-success"></i>':'<i class="bi bi-x-lg fs-3 text-danger"></i>',
-							'registerTime' => isset($user['registerTime']) && $user['registerTime'] > 0 ? date("Y-m-d H:i:s", $user['registerTime']) : '',
-							'loginTime' => isset($user['loginTime']) && $user['loginTime'] > 0 ? date("Y-m-d H:i:s", $user['loginTime']) : '',
+							'register_time' => isset($user['register_time']) && $user['register_time'] > 0 ? date("Y-m-d H:i:s", $user['register_time']) : '',
+							'login_time' => isset($user['login_time']) && $user['login_time'] > 0 ? date("Y-m-d H:i:s", $user['login_time']) : '',
 						];
 
 						$can_read_user = \Sessions::checkPermission(\Permissions::MANAGE_USERS, $params['id'], READ);
@@ -235,8 +235,8 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 							</td>
 							<td class="align-middle text-center"><?=$params['email'];?></td>
 							<td class="align-middle text-center"><?=$params['status'];?></td>
-							<td class="d-none d-lg-table-cell align-middle text-center"><?=$params['registerTime'];?></td>
-							<td class="d-none d-lg-table-cell align-middle text-center"><?=$params['loginTime'];?></td>
+							<td class="d-none d-lg-table-cell align-middle text-center"><?=$params['register_time'];?></td>
+							<td class="d-none d-lg-table-cell align-middle text-center"><?=$params['login_time'];?></td>
 							<td class="d-none d-xl-table-cell align-middle text-center">
 								<?php
 								if ($can_read_groups || $can_write_groups) {
