@@ -3,7 +3,7 @@ Framework:
 
   Login:
     Title: "Login"
-    Subtitle: "Please enter your login and password!"
+    Subtitle: "Please enter your E-mail and password!"
     Email: "Email"
     Password: "Password"
     Submit: "Login"
@@ -25,6 +25,20 @@ Framework:
       Title: "Two Factor Authentication"
       Description: "To be able to login you need enter the verification code below."
       EnterCode: "Enter verification code"
+
+  Forgot:
+    Title: "Forgot Password"
+    Subtitle: "Please enter your E-mail"
+    RequestButton: "Send Reset Link"
+    InstructionsSent: "If an account with that email exists, we have sent instructions to reset your password."
+    ResetTitle: "Reset Password"
+    ResetSubtitle: "Please enter your new password."
+    ResetButton: "Change Password"
+    InvalidOrExpiredToken: "This password reset link is invalid or has expired."
+    BackToLogin: "Back to Login"
+    EmailSubject: "Password Reset Request"
+    EmailBody: "To reset your password, please click the following link: %s"
+
 
   SignOut: "Sign out"
   Profile:

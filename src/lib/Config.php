@@ -4,6 +4,7 @@ class Config {
 	public readonly string $timezone;
 	public readonly string $password_salt;
 
+	public readonly bool $mysql_debug;
 	public readonly string $mysql_host;
 	public readonly int $mysql_port;
 	public readonly string $mysql_username;
@@ -68,6 +69,7 @@ class Config {
 			self::$_instance->password_salt = strval($_ENV['PASSWORD_SALT'] ?? "bHchLzC3B99Ss2ghc2gkDdtgCG7vKtoj");
 
 			// Mysql
+			self::$_instance->mysql_debug = (isset($_ENV['MYSQL_DEBUG']) && $_ENV['MYSQL_DEBUG'] == 'true') ? true : false;
 			self::$_instance->mysql_host = strval($_ENV['MYSQL_HOST'] ?? 'localhost');
 			self::$_instance->mysql_port = intval($_ENV['MYSQL_PORT'] ?? 3306);
 			self::$_instance->mysql_username = strval($_ENV['MYSQL_USERNAME'] ?? 'root');
@@ -123,6 +125,7 @@ class Config {
 			'timezone' => $this->timezone,
 			'password_salt' => $this->password_salt ? '*****************':'',
 
+			'mysql_debug' => $this->mysql_debug,
 			'mysql_host' => $this->mysql_host,
 			'mysql_port' => $this->mysql_port,
 			'mysql_username' => $this->mysql_username,

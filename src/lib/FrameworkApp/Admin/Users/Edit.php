@@ -89,7 +89,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 						$this->error = \T::Framework_Settings_PasswordRequired();
 						break;
 					}
-					$params['password'] = md5($data['newPassword'] . \Config::getInstance()->password_salt);
+					$params['password'] = \Users::password_hash($data['newPassword']);
 				}
 			}
 

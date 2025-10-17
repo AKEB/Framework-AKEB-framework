@@ -26,6 +26,16 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 		];
 	}
 
+	static public function password_hash(string $password): string {
+		if (!$password) return '';
+		return md5($password . \Config::getInstance()->password_salt);
+	}
+
+	static public function password_verify(string $password, string $password_hash): bool {
+		if (!$password || !$password_hash) return false;
+		return $password_hash == static::password_hash($password);
+	}
+
 	static public function check_user_credentials(string $email, string $password):int|bool {
 		if (!$email || !$password) return false;
 		$user = static::get([
@@ -43,7 +53,7 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		]);
 		if (!$user['password']) return false;
-		if ($user['password'] != md5($password . \Config::getInstance()->password_salt)) return false;
+		if (!static::password_verify($password, $user['password'])) return false;
 		return $user['id'];
 	}
 

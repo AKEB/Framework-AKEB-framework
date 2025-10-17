@@ -7,7 +7,6 @@ if (isset($_ENV['SERVER_ROOT']) && $_ENV['SERVER_ROOT']) {
 } else {
 	$PWD = __DIR__."/../../vendor";
 }
-error_log($PWD."/autoload.php");
 require_once($PWD."/autoload.php");
 
 $__worker_sleep = 3600;
@@ -21,6 +20,8 @@ error_log("$__worker_errorlog_prefix: Started");
 $__start_time = time();
 
 \Sessions::delete(false, ' AND `sessionExpireTime` < UNIX_TIMESTAMP() + 600 ');
+
+\Users::getDatabase()->execSQL("UPDATE `".(\Users::$table)."` SET `reset_token`='', `reset_token_expires`=0, `updateTime`=UNIX_TIMESTAMP() WHERE `reset_token_expires` < UNIX_TIMESTAMP() + 600;");
 
 $__work_time = time() - $__start_time;
 $sleepTime = max($__worker_sleep - $__work_time,0);

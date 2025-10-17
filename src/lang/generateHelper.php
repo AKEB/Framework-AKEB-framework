@@ -6,7 +6,7 @@ global $PWD;
 $PWD = __DIR__;
 if (!defined('SERVER_ROOT')) define("SERVER_ROOT", $PWD);
 
-require_once($dirname . "../../vendor/autoload.php");
+require_once($dirname . "../lib/Spyc.php");
 
 if (!function_exists('glob_recursive')) {
 	// Does not support flag GLOB_BRACE
@@ -59,8 +59,8 @@ foreach($data as $k=>$v) {
 	$code .= "\t/**\n";
 	$code .= "\t * $k\n";
 	$code .= "\t * \n";
-	$code .= "\t * @return string \"".str_replace(["\n", "\t"],["\\n", "\\t"],addslashes($v[0]))."\"\n";
-	$code .= "\t * @return string \"". str_replace(["\n", "\t"], ["\\n", "\\t"], addslashes($v[1]))."\"\n";
+	$code .= "\t * @return string \"".str_replace(["\n", "\t"],["\\n", "\\t"],addslashes($v[0]??''))."\"\n";
+	$code .= "\t * @return string \"". str_replace(["\n", "\t"], ["\\n", "\\t"], addslashes($v[1]??''))."\"\n";
 	$code .= "\t */\n";
 	$code .= "\tpublic static function $k(...\$argv): string { return ''; }\n\n";
 }

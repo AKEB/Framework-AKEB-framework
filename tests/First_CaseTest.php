@@ -36,7 +36,14 @@ class First_CaseTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals('admin', $admin['surname']);
 		$this->assertEquals('admin@admin.com', $admin['email']);
 		$this->assertNotEmpty($admin['password']);
-		$this->assertEquals(md5('Admin@123'.\Config::getInstance()->password_salt), $admin['password']);
+
+		$this->assertEquals(\Users::password_hash('Admin@123'), $admin['password']);
+		$this->assertTrue(\Users::password_verify('Admin@123', $admin['password']));
+		$this->assertFalse(\Users::password_verify('WrongPassword@123', $admin['password']));
+		$this->assertFalse(\Users::password_verify('', $admin['password']));
+		$this->assertFalse(\Users::password_verify('', ''));
+		$this->assertEquals(\Users::password_hash(''), '');
+
 		$this->assertEquals(1, $admin['status']);
 		$this->assertEquals(1, $admin['flags']);
 		$this->assertTrue($admin['registerTime'] > 0);

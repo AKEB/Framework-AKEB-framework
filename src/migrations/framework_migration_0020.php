@@ -1,7 +1,7 @@
 <?php
 class Framework_Migration_0020 {
 	static public $previous = [
-		'framework_migration_0013',
+		'framework_migration_0002',
 	];
 
 	static function install() {

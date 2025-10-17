@@ -1,75 +1,19 @@
 {
-	"php.version": "8.3",
+	"php.version": "8.4",
 	"files.exclude": {
 		"docker/composer/":true,
 		"**/.DS_Store": true,
 	},
 	"code-runner.defaultLanguage": "php",
 	"code-runner.executorMap": {
-		"php": "\"$workspaceRoot/dockerRun.sh\" \"8.3\" \"$workspaceRoot\" $fullFileName"
+		"php": "\"$workspaceRoot/dockerRun.sh\" \"8.4\" \"$workspaceRoot\" $fullFileName"
 	},
 	"cSpell.language": "en, ru",
 	"cSpell.words": [
 
 	],
 	"cSpell.ignoreWords": [
-		"APP_SIGNUP_ACTIVE",
-		"argnum",
-		"autoload",
-		"Ayvrs",
-		"cfos",
-		"chillerlan",
-		"classmap",
-		"curlget",
-		"datatables",
-		"dbhs",
-		"Debugoutput",
-		"Dmitry",
-		"anticache",
-		"bHchLzC3B99Ss2ghc2gkDdtgCG7vKtoj",
-		"djzygmcjiiw",
-		"krbg",
-		"metas",
-		"mhawt",
-		"phar",
-		"phpmailer",
-		"qyjfcbpii",
-		"EGPCS",
-		"emeraldwalk",
-		"ENCRYPTION_SMTPS",
-		"ENCRYPTION_STARTTLS",
-		"exif",
-		"fastcgi",
-		"filesize",
-		"imagick",
-		"InnoDB",
-		"Jumbojett",
-		"Koterov",
-		"laquo",
-		"leng",
-		"mbstring",
-		"mrgs",
-		"mustangostang",
-		"mysqladmin",
-		"mysqli",
-		"NGCB",
-		"noerr",
-		"OPENIDCONNECT",
-		"pcntl",
-		"pholder",
-		"phpmyadmin",
-		"Pixonic",
-		"raquo",
-		"runonsave",
-		"selectpicker",
-		"shivammathur",
-		"skud",
-		"Sysact",
-		"tbegin",
-		"timeload",
-		"tinyint",
-		"userinfo",
-		"Vadim"
+
 	],
 
 	"i18n-ally.localesPaths": [
@@ -118,5 +62,13 @@
 	},
 	"i18n-ally.fullReloadOnChanged": false,
 	"i18n-ally.translate.overrideExisting": true,
+	"cSpell.customDictionaries": {
+		"custom-dictionary-workspace": {
+			"name": "custom-dictionary-workspace",
+			"path": "${workspaceFolder:Framework}/.cspell/custom-dictionary-workspace.txt",
+			"addWords": true,
+			"scope": "workspace"
+		}
+	},
 
 }

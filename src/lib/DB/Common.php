@@ -70,7 +70,7 @@ class Common {
 		} else {
 			try {
 				pf_inc('mysql.get.'.$table_name);
-				\Config::getInstance()->app_debug ?
+				\Config::getInstance()->mysql_debug ?
 					error_log(
 						'Get from '.($db_obj->database_master ? 'master':'slave').
 						($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -139,7 +139,7 @@ class Common {
 			}
 			try {
 				pf_inc('mysql.list.'.$table_name);
-				\Config::getInstance()->app_debug ?
+				\Config::getInstance()->mysql_debug ?
 					error_log(
 						'List from '.($db_obj->database_master ? 'master':'slave').
 						($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -199,7 +199,7 @@ class Common {
 		$st_time = microtime(true);
 		try {
 			pf_inc('mysql.count.'.$table_name);
-			\Config::getInstance()->app_debug ?
+			\Config::getInstance()->mysql_debug ?
 				error_log(
 					'Count from '.($db_obj->database_master ? 'master':'slave').
 					($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -257,7 +257,7 @@ class Common {
 				$query = sql_pholder('INSERT '.($ignore ? 'IGNORE': '').' INTO `'.$table_name.'` (`'.implode('`,`', array_keys($param)).'`) values ( ?@ )',array_values($param));
 				if ($on_duplicate) $query .= ' ON DUPLICATE KEY UPDATE '.$on_duplicate;
 				pf_inc('mysql.insert.'.$table_name);
-				\Config::getInstance()->app_debug ?
+				\Config::getInstance()->mysql_debug ?
 					error_log(
 						'Save from '.($db_obj->database_master ? 'master':'slave').
 						($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -278,7 +278,7 @@ class Common {
 				if ($ref_id) $query .= (is_array($ref_id) ? sql_pholder(" AND `".$ref_name."` IN ( ?@ ) ",$ref_id) : sql_pholder(" AND `".$ref_name."`=?",$ref_id));
 				$query .= $add;
 				pf_inc('mysql.update.'.$table_name);
-				\Config::getInstance()->app_debug ?
+				\Config::getInstance()->mysql_debug ?
 					error_log(
 						'Save from '.($db_obj->database_master ? 'master':'slave').
 						($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -290,7 +290,7 @@ class Common {
 			} elseif ($mode == static::CSMODE_REPLACE)  {	// REPLACE
 				$query = sql_pholder('REPLACE INTO `'.$table_name.'` SET ?%',$param);
 				pf_inc('mysql.replace.'.$table_name);
-				\Config::getInstance()->app_debug ?
+				\Config::getInstance()->mysql_debug ?
 					error_log(
 						'Save from '.($db_obj->database_master ? 'master':'slave').
 						($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -327,7 +327,7 @@ class Common {
 		}
 		$query .= $add;
 		pf_inc('mysql.delete.'.$table_name);
-		\Config::getInstance()->app_debug ?
+		\Config::getInstance()->mysql_debug ?
 			error_log(
 				'Delete from '.($db_obj->database_master ? 'master':'slave').
 				($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -344,7 +344,7 @@ class Common {
 		$db_obj = &static::find_dbobj($db_obj, $table_name);
 		$query = 'TRUNCATE `'.$table_name.'` ';
 		pf_inc('mysql.truncate.'.$table_name);
-		\Config::getInstance()->app_debug ?
+		\Config::getInstance()->mysql_debug ?
 			error_log(
 				'Truncate from '.($db_obj->database_master ? 'master':'slave').
 				($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -397,7 +397,7 @@ class Common {
 			$sql .= ' ON DUPLICATE KEY UPDATE '.implode(',', $update_pieces);
 		}
 		pf_inc('mysql.multiUpdate.'.$table_name);
-		\Config::getInstance()->app_debug ?
+		\Config::getInstance()->mysql_debug ?
 			error_log(
 				'Multi_update from '.($db_obj->database_master ? 'master':'slave').
 				($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -416,7 +416,7 @@ class Common {
 		if (!isset($params['debug_action']) || !$params['debug_action']) $params['debug_action'] = 'exec';
 		$die_on_error = $db_obj->die_on_error;
 		if (isset($params['_noerr'])) { $db_obj->die_on_error = false; unset($params['_noerr']); }
-		\Config::getInstance()->app_debug ?
+		\Config::getInstance()->mysql_debug ?
 			error_log(
 				'Exec_sql from '.($db_obj->database_master ? 'master':'slave').
 				($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -438,7 +438,7 @@ class Common {
 		$raw_data = [];
 		try {
 			pf_inc('mysql.list.'.$table_name);
-			\Config::getInstance()->app_debug ?
+			\Config::getInstance()->mysql_debug ?
 				error_log(
 					'Exec_sql_with_result from '.($db_obj->database_master ? 'master':'slave').
 					($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -466,7 +466,7 @@ class Common {
 		if (isset($value_old)) $query .= sql_pholder(" AND `".$field."`=?",$value_old);
 		$query .= $add;
 		pf_inc('mysql.bulkUpdate.'.$table_name);
-		\Config::getInstance()->app_debug ?
+		\Config::getInstance()->mysql_debug ?
 			error_log(
 				'Bulk_update from '.($db_obj->database_master ? 'master':'slave').
 				($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -562,7 +562,6 @@ class Common {
 			return $data;
 		}
 
-		$tbegin = microtime(true);
 		$from_slave = false;
 		if (!defined('PROHIBITION_USE_SLAVE')) {
 			$from_slave = ($params['from_slave'] || $use_slave);
@@ -591,7 +590,7 @@ class Common {
 		$query = '/* '.$_SERVER['PHP_SELF'].' '.getmypid().'  */ '.$query;
 		foreach ($db_shards_links as $link) {
 			pf_inc('mysql.list.'.$table_name);
-			\Config::getInstance()->app_debug ?
+			\Config::getInstance()->mysql_debug ?
 				error_log(
 					'Ilist from '.($db_obj->database_master ? 'master':'slave').
 					($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -628,8 +627,6 @@ class Common {
 		foreach ($db_shards_links as $link) {
 			mysqli_close($link);
 		}
-		global $__MysqlScriptTime;
-		$__MysqlScriptTime += microtime(true)-$tbegin;
 		return $data;
 	}
 
@@ -644,7 +641,6 @@ class Common {
 			return $count;
 		}
 
-		$tbegin = microtime(true);
 		$from_slave = false;
 		if (!defined('PROHIBITION_USE_SLAVE')) {
 			$from_slave = ($params['from_slave'] || $use_slave);
@@ -663,7 +659,6 @@ class Common {
 		}
 		$query .= $add;
 		$db_shards_links = [];
-		$t1 = microtime(true);
 		foreach ($shards as $db_obj) {
 			$db_obj = &static::find_dbobj($db_obj['master'], $table_name, $from_slave);
 			$db_shards_links[] = static::iconnect($db_obj);
@@ -672,7 +667,7 @@ class Common {
 		$query = '/* '.$_SERVER['PHP_SELF'].' '.getmypid().'  */ '.$query;
 		foreach ($db_shards_links as $link) {
 			pf_inc('mysql.count.'.$table_name);
-			\Config::getInstance()->app_debug ?
+			\Config::getInstance()->mysql_debug ?
 				error_log(
 					'Icount from '.($db_obj->database_master ? 'master':'slave').
 					($db_obj->database_node ? ' Node:'.$db_obj->database_node:'').
@@ -709,8 +704,6 @@ class Common {
 		foreach ($db_shards_links as $link) {
 			mysqli_close($link);
 		}
-		global $__MysqlScriptTime;
-		$__MysqlScriptTime += microtime(true)-$tbegin;
 		return $count;
 	}
 

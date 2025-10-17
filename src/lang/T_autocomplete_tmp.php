@@ -19,8 +19,8 @@ class T {
 	/**
 	 * Framework_Login_Subtitle
 	 * 
-	 * @return string "Please enter your login and password!"
-	 * @return string "Пожалуйста, введите ваш логин и пароль!"
+	 * @return string "Please enter your E-mail and password!"
+	 * @return string "Пожалуйста, введите ваш E-mail и пароль!"
 	 */
 	public static function Framework_Login_Subtitle(...$argv): string { return ''; }
 
@@ -183,6 +183,94 @@ class T {
 	 * @return string "Введите проверочный код"
 	 */
 	public static function Framework_Login_TwoFactor_EnterCode(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_Title
+	 * 
+	 * @return string "Forgot Password"
+	 * @return string "Восстановление пароля"
+	 */
+	public static function Framework_Forgot_Title(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_Subtitle
+	 * 
+	 * @return string "Please enter your E-mail"
+	 * @return string "Пожалуйста, введите ваш E-mail"
+	 */
+	public static function Framework_Forgot_Subtitle(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_RequestButton
+	 * 
+	 * @return string "Send Reset Link"
+	 * @return string "Отправить ссылку для сброса"
+	 */
+	public static function Framework_Forgot_RequestButton(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_InstructionsSent
+	 * 
+	 * @return string "If an account with that email exists, we have sent instructions to reset your password."
+	 * @return string "Если учётная запись с таким адресом электронной почты существует, мы отправили вам инструкции по сбросу пароля."
+	 */
+	public static function Framework_Forgot_InstructionsSent(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_ResetTitle
+	 * 
+	 * @return string "Reset Password"
+	 * @return string "Сброс пароля"
+	 */
+	public static function Framework_Forgot_ResetTitle(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_ResetSubtitle
+	 * 
+	 * @return string "Please enter your new password."
+	 * @return string "Пожалуйста, введите новый пароль."
+	 */
+	public static function Framework_Forgot_ResetSubtitle(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_ResetButton
+	 * 
+	 * @return string "Change Password"
+	 * @return string "Сменить пароль"
+	 */
+	public static function Framework_Forgot_ResetButton(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_InvalidOrExpiredToken
+	 * 
+	 * @return string "This password reset link is invalid or has expired."
+	 * @return string "Эта ссылка для сброса пароля недействительна или устарела."
+	 */
+	public static function Framework_Forgot_InvalidOrExpiredToken(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_BackToLogin
+	 * 
+	 * @return string "Back to Login"
+	 * @return string "Вернуться к входу"
+	 */
+	public static function Framework_Forgot_BackToLogin(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_EmailSubject
+	 * 
+	 * @return string "Password Reset Request"
+	 * @return string "Запрос на сброс пароля"
+	 */
+	public static function Framework_Forgot_EmailSubject(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Forgot_EmailBody
+	 * 
+	 * @return string "To reset your password, please click the following link: %s"
+	 * @return string "Чтобы сбросить пароль, перейдите по следующей ссылке: %s"
+	 */
+	public static function Framework_Forgot_EmailBody(...$argv): string { return ''; }
 
 	/**
 	 * Framework_SignOut

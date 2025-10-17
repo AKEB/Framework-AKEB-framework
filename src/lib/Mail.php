@@ -6,9 +6,9 @@ class Mail {
 		$mail = new \PHPMailer\PHPMailer\PHPMailer();
 		$mail->CharSet = 'utf-8';
 		$mail->Timeout = 10; // 10 seconds timeout
-		$mail->SMTPDebug   = 4;
+		$mail->SMTPDebug = \Config::getInstance()->app_debug ? 1 : 0;
 		$mail->Debugoutput = function($str, $level) {
-			error_log("debug level $level; message: $str");
+			error_log("Mail Debug level $level; message: $str");
 		};
 
 		if (\Config::getInstance()->smtp_host) {
@@ -70,13 +70,9 @@ class Mail {
 
 		$mail->Subject = $subject;
 
-		error_log(var_export($mail, true));
-		error_log('Test Send Mail');
 		if (!$mail->send()) {
-			error_log('Test Send Mail Error');
 			return $mail->ErrorInfo;
 		}
-		error_log('Test Send Mail Success');
 		return true;
 	}
 }

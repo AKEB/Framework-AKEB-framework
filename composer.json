@@ -35,7 +35,6 @@
 		"akeb/curlget": "@stable",
 		"akeb/profiler": "@stable",
 		"akeb/cache": "@stable",
-		"mustangostang/spyc": "@stable",
 		"phpmailer/phpmailer": "@stable",
 		"jumbojett/openid-connect-php": "@stable",
 		"chillerlan/php-qrcode": "@stable"

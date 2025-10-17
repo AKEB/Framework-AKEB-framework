@@ -71,12 +71,12 @@ Default username: **```admin@admin.com```** and password: **```Admin@123```**
 - [x] Авторизация через oAuth2
 - [x] Добавление двухфакторной авторизации
 - [x] Создание отдельной ветки для будущих проектов
-- [ ] Просмотр логов изменений
+- [x] Функция забыли пароль
 - [ ] Регистрация пользователей
-- [ ] Функция забыли пароль
 - [ ] Нотификация через Telegram
-- [ ] Нотификация через Mattermost
 - [ ] Нотификация через Почту
+- [ ] Нотификация через Mattermost
+- [ ] Просмотр логов изменений
 
 ## Environments
 
@@ -86,6 +86,7 @@ Default username: **```admin@admin.com```** and password: **```Admin@123```**
 | TZ                           | UTC                  | string   | Timezone                      |
 | PASSWORD_SALT                |                      | string   | Password Salt                 |
 | ---------------------------- | -------------------- | -------- | ----------------------------- |
+| MYSQL_DEBUG                  | false                | boolean  | MySQL Debug logs              |
 | MYSQL_HOST                   | localhost            | string   | MySQL Host                    |
 | MYSQL_PORT                   | 3306                 | integer  | MySQL Port                    |
 | MYSQL_USERNAME               | root                 | string   | MySQL User                    |

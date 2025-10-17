@@ -24,8 +24,6 @@ class Database {
 	var $mysqli = true;
 
 	var $debug_array = [];
-	var $is_debug = 0;//defined('DEVS') && DEVS ? 1 : 0;  // 0 -  нет, 1 - запросы, 2 - запросы+результаты
-	var $is_file_debug = false;
 	var $die_on_error = true;
 	var $file_debug;
 	var $connection_error='';
@@ -66,9 +64,13 @@ class Database {
 				$i++;
 				continue;
 			}
-
-			if (!$this->dbh->real_connect($host[0], $this->database_user, $this->database_password, $this->database_name,$host[1])) {
+			$connect_status = false;
+			try {
+				$connect_status = @$this->dbh?->real_connect($host[0], $this->database_user, $this->database_password, $this->database_name,$host[1]);
+			} catch (\Exception $e) {
 				error_log(sprintf("Can't connect to host: %s %s",$this->host_name,$this->database_name)."; Continue");
+			}
+			if (!$connect_status) {
 				$i++;
 				continue;
 			}
@@ -155,13 +157,6 @@ class Database {
 		$this->database_user = $database_user;
 		$this->database_password = $database_password;
 		$this->charset = $charset;
-		if ($this->is_file_debug) {
-			$this->file_debug = fopen($_SERVER['DOCUMENT_ROOT']."/database.log", "a+");
-		}
-
-		if (defined('DEVS') && constant('DEVS')) {
-			$this->is_debug = 1;
-		}
 
 		$this->init();
 	}
@@ -174,11 +169,7 @@ class Database {
 
 	function init() {}
 
-	function error() { # get last error
-		return count($this->debug_array)? $this->debug_array[count($this->debug_array)-1]->error : false;
-	}
-
-	function get_microtime(){
+	function get_microtime() {
 		list($usec, $sec) = explode(" ",microtime());
 		return ((float)$usec + (float)$sec);
 	}
@@ -193,39 +184,59 @@ class Database {
 		$baseSql = $sql;
 		$base_additional = $additional;
 
-		$_startTime = microtime(true);
+		if (\Config::getInstance()->mysql_debug) {
+			$debug_item = new \DB\DebugSQL();
+			$debug_item->sql = $sql . " " . $additional;
+			$debug_item->time_start = microtime(true);
+			$debug_info = debug_backtrace();
+			\krsort($debug_info);
+			$debug_backtrace = '';
+			foreach($debug_info as $item) {
+				$item['file'] = $item['file']??'';
+				$item['line'] = $item['line']??'';
+				$item['class'] = $item['class']??'';
+				$item['type'] = $item['type']??'';
+				$item['function'] = $item['function']??'';
 
-		if ($this->is_debug) {
-			$item = new \DB\DebugSQL();
-			$item->sql = $sql . " " . $additional;
-			$item->time_start = $this->get_microtime();
+				if ($item['file'] || $item['line']) {
+					$debug_backtrace .= $item['file'].':'.$item['line'].' ';
+				}
+				if ($item['class'] || $item['type']) {
+					$debug_backtrace .= $item['class'].$item['type'];
+				}
+				$debug_backtrace .= $item['function'].'()'."\n";
+			}
+			$debug_item->backtrace = $debug_backtrace;
 		}
 
 		if ($additional) $sql .= " " . $additional;
 		$sql = '/* '.$_SERVER['PHP_SELF'].' '.getmypid().' '.$this->host_name.' */ '.$sql;
-		if (!(@$result = mysqli_query($this->dbh, $sql))) {
+
+		$result = null;
+		$is_error = false;
+		try {
+			$result = @$this->dbh->query($sql);
+		} catch (\mysqli_sql_exception) {
 			$is_error = true;
-			$error = mysqli_error($this->dbh);
-			if (!mysqli_ping($this->dbh) || strpos($error, 'server has gone away') !== false) { // если нет соединения попробовать переподключиться и повторить
-				$this->close();
-				if(!$this->connect()) {
-					throw new \Exception($this->connection_error);
-				}
-				if (@$result = mysqli_query($this->dbh, $sql)) {
-					$is_error = false;
-				}
+		}
+		if (!$result || $is_error) {
+			$is_error = true;
+			$error_no = $this->dbh->errno;
+			$error = $this->dbh->error;
+			if ($error_no != 0) {
+				error_log(sprintf("[%s] #%s %s (%s)", date('Y-m-d H:i:s'), $error_no, $error, $sql));
 			}
+
 			if ($is_error) {
 				$this->last_error = $error;
 				if ($count < 10 && (strpos($this->last_error, 'try restarting transaction') !== false || strpos($this->last_error, 'server has gone away') !== false)) {
 					$error_text = sprintf("[%s] #%s %s [Try again] (%s)", date('Y-m-d H:i:s'), mysqli_errno($this->dbh), $this->last_error, substr($sql,0,150));
-					// error_log($error_text);
-					// error_log(sprintf("Can't exec query: %s %s",$this->host_name,$this->database_user)."; Try again");
+					error_log($error_text);
 					$this->close();
-					return $this->execSQL($baseSql, $base_additional,++$count);
+					return $this->execSQL($baseSql, $base_additional, ++$count);
 				}
-				if ($this->is_debug) {
-					$item->error = $this->last_error;
+				if (\Config::getInstance()->mysql_debug) {
+					$debug_item->error = $this->last_error;
 				}
 				if ($this->die_on_error) {
 					$error_text = sprintf("[%s] #%s %s (%s)", date('Y-m-d H:i:s'), mysqli_errno($this->dbh), $this->last_error, $sql);
@@ -235,40 +246,9 @@ class Database {
 				}
 			}
 		}
-		global $DEBUG_MYSQL;
-		if ($DEBUG_MYSQL) {
-			error_log(getmypid().' '.$sql);
+		if (\Config::getInstance()->mysql_debug) {
+			$debug_item->time_end =  microtime(true);
 		}
-
-		if ($this->is_debug) {
-			$item->time_end = $this->get_microtime();
-			if($this->is_debug==2 && !$item->error){
-				$list = [];
-				while (@$row = mysqli_fetch_array($result,MYSQLI_ASSOC)) $list[] = $row;
-				@(mysqli_data_seek($result,0));
-				@($item->result=$list);
-			}
-			$this->debug_array[] = $item;
-
-			if ($item->time_end - $item->time_start > 0.9) {
-				error_log("LONG [ ".($item->time_end - $item->time_start)." ]".($item->sql));
-				error_log(sprintf("Host: %s User: %s",$this->host_name,$this->database_user));
-			}
-		}
-
-		if ($this->is_file_debug) {
-			$debug_info = debug_backtrace();
-			$f = '';
-			for ($i = count($debug_info)-1; $i >= 0; $i--) $f .= $debug_info[$i]['function'].'()->';
-			fwrite($this->file_debug,
-				"\n".date("H:i:s").": (".($item->time_end-$item->time_start).') '.
-				$debug_info[0]['file'].':'.$debug_info[0]['line'].': '.$debug_info[1]['function'].'() ('.$f.')'."\n".
-				$sql . " " . $additional."\n"
-			);
-		}
-
-		global $__MysqlScriptTime;
-		$__MysqlScriptTime += microtime(true) - $_startTime;
 
 		return $result;
 	}

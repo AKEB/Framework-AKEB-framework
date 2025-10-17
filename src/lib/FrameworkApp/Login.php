@@ -322,13 +322,11 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 										<input type="hidden" name="email"  value="<?=$this->email;?>">
 										<input type="hidden" name="password"  value="<?=$this->password;?>">
 										<?php $this->template->html_totp('totp');?>
-										<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3 signInButton" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
+										<button class="btn btn-outline-light btn-lg px-5 mb-3 signInButton" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
 										<?php
 									} else {
 										?>
-										<?php
-										if (\Config::getInstance()->app_signin_active) {
-											?>
+										<?php if (\Config::getInstance()->app_signin_active) { ?>
 											<p class="text-white-50 mb-3"><?=\T::Framework_Login_Subtitle();?></p>
 											<div data-mdb-input-init class="form-outline form-white mb-2">
 												<label class="form-label" for="typeEmailX"><?=\T::Framework_Login_Email();?></label>
@@ -345,9 +343,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 											</div>
 											<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="/forgot/"><?=\T::Framework_Login_ForgotPassword();?></a></p>
 											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
-											<?php
-										}
-										?>
+										<?php } ?>
 										<?php
 										if (\Config::getInstance()->oidc_provider && \Config::getInstance()->oidc_client_id) {
 											?>

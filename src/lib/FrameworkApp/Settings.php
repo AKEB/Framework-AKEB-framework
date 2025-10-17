@@ -89,9 +89,12 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			$this->passwordErrorText = \T::Framework_Settings_OldPasswordIsIncorrect();
 			return;
 		}
+		$newPasswordHash = \Users::password_hash($newPassword);
 		$params = [
 			'id' => $this->currentUser['id'],
-			'password' => md5($newPassword . \Config::getInstance()->password_salt),
+			'password' => $newPasswordHash,
+			'reset_token' => '',
+			'reset_token_expires' => 0,
 			'flags' => $this->currentUser['flags'] & ~\Users::FLAGS_NEED_CHANGE_PASSWORD,
 			'updateTime' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
