@@ -22,12 +22,6 @@
 			"tests/"
 		]
 	},
-	"archive": {
-		"exclude": ["example/", "vendor/", "docker/", "src/css/", "src/js/", "tests/"]
-	},
-	"archive-dev": {
-		"exclude": ["example/", "vendor/", "docker/", "src/css/", "src/js/"]
-	},
 	"description": "Framework",
 	"license": "Apache-2.0",
 	"name": "akeb/framework",
@@ -50,7 +44,6 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": "@stable",
-		"akeb/minify": "@stable",
 		"bissolli/php-css-js-minifier": "^1.1"
 	}
 }

@@ -164,6 +164,8 @@ class Config {
 			// Memcached
 			'memcached_host' => $this->getenv('MEMCACHED_HOST', ConfigEnvType::STRING, ''),
 			'memcached_port' => $this->getenv('MEMCACHED_PORT', ConfigEnvType::INT, 11211),
+			// Telegram
+			'telegram_bot_token' => $this->getenv('TELEGRAM_BOT_TOKEN', ConfigEnvType::STRING, ''),
 			// Other
 			'per_page_counts' => [5, 10, 20, 50, 100, 500, 1000],
 

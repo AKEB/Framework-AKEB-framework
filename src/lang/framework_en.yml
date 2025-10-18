@@ -102,7 +102,11 @@ Framework:
       EnterCode: "Enter verification code"
       ErrorSetup: "Failed to set up two-factor authentication"
 
-
+  Telegram:
+    SuccessfullySentMessage: "Successfully sent message"
+    ErrorSendingMessage: "Error sending message"
+    TelegramIdIsRequired: "Telegram ID is required"
+    TelegramBotTokenIsRequired: "Telegram Bot Token is required"
 
 
   Common:

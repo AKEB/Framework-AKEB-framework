@@ -51,7 +51,7 @@ class Signup extends \Routing_Parent implements \Routing_Interface {
 			'surname' => $data['surname'],
 			'email' => $data['email'],
 			'email_verification_token' => \Users::generate_verification_token(),
-			'telegram_id' => 0,
+			'telegram_id' => '',
 			'password' => \Users::password_hash($data['newPassword']),
 			'reset_token' => '',
 			'reset_token_expires' => 0,

@@ -23,11 +23,11 @@ rm -rf js/framework/
 rm -rf css/framework/
 rm -rf lang/framework/
 
-# cp -R vendor/akeb/framework/src/js js/framework/
-# cp -R vendor/akeb/framework/src/css css/framework/
+cp -R vendor/akeb/framework/src/js js/framework/
+cp -R vendor/akeb/framework/src/css css/framework/
 
-cp -R vendor/akeb/framework/src/dist/css css/framework/
-cp -R vendor/akeb/framework/src/dist/js js/framework/
+# cp -R vendor/akeb/framework/src/dist/css css/framework/
+# cp -R vendor/akeb/framework/src/dist/js js/framework/
 cp -R vendor/akeb/framework/src/lang lang/framework/
 
 cd /app/vendor/akeb/framework/src/ && SERVER_ROOT=/app php migrate.php

@@ -6,8 +6,8 @@
 /.* export-ignore
 /*.sh export-ignore
 /phpunit.xml export-ignore
-/src/css export-ignore
-/src/js export-ignore
+# /src/css export-ignore
+# /src/js export-ignore
 /tests/ export-ignore
 docker-compose.dev.yml export-ignore
 minify.php export-ignore

@@ -75,7 +75,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			}
 			if (isset($data['telegram_id']) && $data['telegram_id'] && $data['telegram_id'] != '') {
 				$data['telegram_id'] = trim($data['telegram_id']);
-				$params['telegram_id'] = intval($data['telegram_id']);
+				$params['telegram_id'] = strval($data['telegram_id']);
 			}
 			if (\Config::getInstance()->app_signin_active) {
 				if ((isset($data['newPassword']) && $data['newPassword']) || (isset($data['confirmNewPassword']) && $data['confirmNewPassword'])) {
@@ -281,7 +281,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 						'type' => 'email',
 					]);
 					echo $this->template->html_input("telegram_id", $this->user['telegram_id']??'', \T::Framework_Settings_UserProfile_TelegramId(), false, [
-						'type' => 'number',
+						'type' => 'text',
 					]);
 					if (\Config::getInstance()->app_signin_active) {
 						echo $this->template->html_input("newPassword", $_POST['newPassword']??'', \T::Framework_Settings_NewPassword(), $this->user['id'] ? false : true, [

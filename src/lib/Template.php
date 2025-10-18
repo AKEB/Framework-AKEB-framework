@@ -95,22 +95,22 @@ class Template {
 		$lang = \T::getCurrentLanguage();
 
 		$css_files = array_merge([
-			'/css/framework/framework.min.css',
-			// '/css/framework/bootstrap-icons.min.css',
-			// '/css/framework/bootstrap.min.css',
-			// '/css/framework/datatables.min.css',
-			// '/css/framework/bootstrap-select.min.css',
-			// '/css/framework/main.css',
+			// '/css/framework/framework.min.css',
+			'/css/framework/bootstrap-icons.min.css',
+			'/css/framework/bootstrap.min.css',
+			'/css/framework/datatables.min.css',
+			'/css/framework/bootstrap-select.min.css',
+			'/css/framework/main.css',
 		], static::getCSSFiles());
 
 		$js_files = array_merge([
-			'/js/framework/framework_'.\T::getCurrentLanguage().'.min.js',
-			// '/js/framework/bootstrap.bundle.min.js',
-			// '/js/framework/datatables.min.js',
-			// '/js/framework/bootstrap-select.min.js',
-			// '/js/framework/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
-			// '/js/framework/locale_'.\T::getCurrentLanguage().'.js',
-			// '/js/framework/main.js',
+			// '/js/framework/framework_'.\T::getCurrentLanguage().'.min.js',
+			'/js/framework/bootstrap.bundle.min.js',
+			'/js/framework/datatables.min.js',
+			'/js/framework/bootstrap-select.min.js',
+			'/js/framework/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
+			'/js/framework/locale_'.\T::getCurrentLanguage().'.js',
+			'/js/framework/main.js',
 		], static::getJSFiles());
 
 		$head_metas = array_merge([
@@ -472,6 +472,8 @@ class Template {
 		if (!isset($params['placeholder'])) $params['placeholder'] = '';
 		if (!isset($params['password-alert'])) $params['password-alert'] = false;
 		if (!isset($params['readonly'])) $params['readonly'] = false;
+		if (!isset($params['add_after'])) $params['add_after'] = '';
+		if (!isset($params['add_before'])) $params['add_before'] = '';
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -483,53 +485,48 @@ class Template {
 		$html .= '	<label for="'.$params['id'].'" class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="'.$params['class2'].'">';
 		if ($params['type'] == 'password') {
-			$html .= '		<div class="input-group has-validation">';
-			$html .= '			<input
-									type="'.$params['type'].'"
-									class="form-control"
-									id="'.$params['id'].'"
-									name="'.$name.'"
-									placeholder="'.$params['placeholder'].'"
-									value="'.$value.'"'.
-									($params['maxlength']? ' maxlength="'.$params['maxlength'].'"': '').
-									($params['minlength']? ' minlength="'.$params['minlength'].'"': '').
-									($params['max']? ' max="'.$params['max'].'"': '').
-									($params['min']? ' min="'.$params['min'].'"': '').
-									($params['step']? ' step="'.$params['step'].'"': '').
+			$button = '';
+			$button .= '<button class="btn btn-secondary togglePassword" data-input-id="'.$name.'" type="button" tabindex="-1">';
+			$button .= '<i class="bi bi-eye" id="'.$name.'-icon"></i>';
+			$button .= '</button>';
 
-									($required ? ' required' : '').'
-									autocomplete="off"
-								>';
-			$html .= '			<button class="btn btn-secondary togglePassword" data-input-id="'.$name.'" type="button" tabindex="-1">';
-			$html .= '				<i class="bi bi-eye" id="'.$name.'-icon"></i>';
-			$html .= '			</button>';
-		} elseif (in_array($params['type'], ['text', 'email', 'phone', 'number', ])) {
-			$html .= '		<input
-								type="'.$params['type'].'"
-								class="'.($params['readonly'] ? 'form-control-plaintext':'form-control').'"
-								id="'.$params['id'].'"
-								name="'.$name.'"
-								placeholder="'.$params['placeholder'].'"
-								value="'.$value.'"'.
-								($required ? ' required' : '').'
-								autocomplete="off"'.
-								($params['maxlength']? ' maxlength="'.$params['maxlength'].'"': '').
-								($params['minlength']? ' minlength="'.$params['minlength'].'"': '').
-								($params['max']? ' max="'.$params['max'].'"': '').
-								($params['min']? ' min="'.$params['min'].'"': '').
-								($params['step']? ' step="'.$params['step'].'"': '').
-								($params['type'] == 'number' ? ' pattern="\d*"':'').
-								($params['readonly'] ? ' readonly' : '').'
-							>';
+			$params['add_after'] = $button. $params['add_after'];
+		}
+
+		if ($params['add_before'] || $params['add_after']) {
+			$html .= '<div class="input-group '.($params['valid-feedback'] || $params['invalid-feedback'] ? 'has-validation':'').'">';
+		}
+		if ($params['add_before']) {
+			$html .= $params['add_before'];
+		}
+		$html .= '<input
+			type="'.$params['type'].'"
+			class="'.($params['readonly'] ? 'form-control-plaintext':'form-control').'"
+			id="'.$params['id'].'"
+			name="'.$name.'"
+			placeholder="'.$params['placeholder'].'"
+			value="'.$value.'"'.
+			($required ? ' required' : '').'
+			autocomplete="off"'.
+			($params['maxlength']? ' maxlength="'.$params['maxlength'].'"': '').
+			($params['minlength']? ' minlength="'.$params['minlength'].'"': '').
+			($params['max']? ' max="'.$params['max'].'"': '').
+			($params['min']? ' min="'.$params['min'].'"': '').
+			($params['step']? ' step="'.$params['step'].'"': '').
+			($params['type'] == 'number' ? ' pattern="\d*"':'').
+			($params['readonly'] ? ' readonly' : '').'
+		>';
+		if ($params['add_after']) {
+			$html .= $params['add_after'];
 		}
 		if ($params['valid-feedback']) {
-			$html .= '		<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
+			$html .= '<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
 		}
 		if ($params['invalid-feedback']) {
-			$html .= '		<div class="invalid-feedback">'.$params['invalid-feedback'].'</div>';
+			$html .= '<div class="invalid-feedback">'.$params['invalid-feedback'].'</div>';
 		}
-		if ($params['type'] == 'password') {
-			$html .= '		</div>';
+		if ($params['add_before'] || $params['add_after']) {
+			$html .= '</div>';
 		}
 
 		if ($params['type'] == 'password' && $params['password-alert']) {

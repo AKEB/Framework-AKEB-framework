@@ -705,6 +705,38 @@ class T {
 	public static function Framework_Settings_TwoFactor_ErrorSetup(...$argv): string { return ''; }
 
 	/**
+	 * Framework_Telegram_SuccessfullySentMessage
+	 * 
+	 * @return string "Successfully sent message"
+	 * @return string "Сообщение успешно отправлено"
+	 */
+	public static function Framework_Telegram_SuccessfullySentMessage(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Telegram_ErrorSendingMessage
+	 * 
+	 * @return string "Error sending message"
+	 * @return string "Ошибка отправки сообщения"
+	 */
+	public static function Framework_Telegram_ErrorSendingMessage(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Telegram_TelegramIdIsRequired
+	 * 
+	 * @return string "Telegram ID is required"
+	 * @return string "Telegram ID необходим для отправки сообщений"
+	 */
+	public static function Framework_Telegram_TelegramIdIsRequired(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Telegram_TelegramBotTokenIsRequired
+	 * 
+	 * @return string "Telegram Bot Token is required"
+	 * @return string "Telegram Bot Token необходим для отправки сообщений"
+	 */
+	public static function Framework_Telegram_TelegramBotTokenIsRequired(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Common_Cancel
 	 * 
 	 * @return string "Cancel"

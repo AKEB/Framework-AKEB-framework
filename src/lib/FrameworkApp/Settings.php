@@ -56,6 +56,41 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		// Обработка POST данных
 		if (!isset($data)) return;
 
+		if (isset($data['sendTelegram'])) {
+			$return = [];
+			$telegramId = trim($data['telegram_id']??'');
+			if (!$telegramId) {
+				$return['status'] = -1;
+				$return['error'] = \T::Framework_Telegram_TelegramIdIsRequired();
+			}
+			if (!\Config::getInstance()->telegram_bot_token) {
+				$return['status'] = -2;
+				$return['error'] = \T::Framework_Telegram_TelegramBotTokenIsRequired();
+			}
+			$telegramIds = explode(':', $telegramId);
+			$telegram_channel_id = $telegramIds[0];
+			$telegram_thread_id = 0;
+			if (isset($telegramIds[1])) {
+				$telegram_thread_id = $telegramIds[1];
+			}
+			try {
+				$bot = new \TelegramBot\Api\BotApi(\Config::getInstance()->telegram_bot_token);
+				$bot->sendMessage(
+					$telegram_channel_id,
+					'Test Message '.date('Y-m-d H:i:s',time()).'',
+					'HTML', true, null, null, false,
+					$telegram_thread_id
+				);
+			} catch (\Exception $e) {
+				$return['status'] = -3;
+				$return['error'] = $e->getMessage();
+			}
+			$return['status'] = 0;
+			echo json_encode($return);
+			exit;
+		}
+
+
 		if (\Config::getInstance()->app_signin_active && isset($data['changePassword']) && $data['changePassword'] == 'true') {
 			$this->changePassword($data['oldPassword']??'', $data['newPassword']??'', $data['confirmNewPassword']??'');
 		}
@@ -158,7 +193,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		$name = trim($data['name']??'');
 		$surname = trim($data['surname']??'');
 		$email = trim($data['email']??'');
-		$telegramId = intval(trim($data['telegram_id']??''));
+		$telegramId = trim($data['telegram_id']??'');
 		if (!$name || !$surname || !$email) {
 			$this->errorText = \T::Framework_Settings_AllFieldsAreRequired();
 			return;
@@ -222,15 +257,51 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 				echo $this->template->html_input("surname", $this->currentUser['surname']??'', \T::Framework_Settings_UserProfile_Surname(), true);
 				echo $this->template->html_input("email", $this->currentUser['email']??'', \T::Framework_Settings_UserProfile_Email(), true, [
 					'type' => 'email',
+					'add_before' => '<i class="input-group-text bi bi-envelope"></i>',
 				]);
 				echo $this->template->html_input("telegram_id", $this->currentUser['telegram_id']??'', \T::Framework_Settings_UserProfile_TelegramId(), false, [
-					'type' => 'number',
+					'type' => 'text',
+					'add_before' => '<i class="input-group-text bi bi-telegram"></i>',
+					'add_after' => (\Config::getInstance()->telegram_bot_token ? '<button class="btn btn-outline-warning sendTelegramButton" type="button">Test</button>' : ''),
 				]);
 				?>
 				<div class="d-flex flex-row-reverse">
 					<button type="submit" class="btn btn-primary" name="changeUserProfile" value="true"><?=\T::Framework_Settings_UserProfile_Change();?></button>
 				</div>
 			</form>
+			<script nonce="<?=\CSP::nonceRandom();?>">
+				$(document).ready(function(){
+					validateEqualInputs('newPassword', 'confirmNewPassword');
+					$('.sendTelegramButton').on('click', function(event) {
+						new bootstrap.Toast(showSuccessToast('<?=\T::Framework_Telegram_SuccessfullySentMessage();?>')).show();
+						const telegramId = $('#telegram_id').val();
+						if (telegramId.length > 0) {
+							$.ajax({
+								type: "POST",
+								url : "?t="+Math.round((new Date()).getTime() / 1000),
+								cache: false,
+								dataType: "json",
+								data : {
+									telegram_id : telegramId,
+									sendTelegram : true
+								},
+								success : function(d) {
+									if (!d) {
+										new bootstrap.Toast(showErrorToast('<?=\T::Framework_Telegram_ErrorSendingMessage();?>')).show();
+									} else if (d.error) {
+										new bootstrap.Toast(showErrorToast(d.error)).show();
+									} else {
+										new bootstrap.Toast(showSuccessToast('<?=\T::Framework_Telegram_SuccessfullySentMessage();?>')).show();
+									}
+								},
+								error : function(jqXHR, textStatus, errorThrown) {
+									new bootstrap.Toast(showErrorToast('<?=\T::Framework_Telegram_ErrorSendingMessage();?>')).show();
+								}
+							});
+						}
+					});
+				});
+			</script>
 		</div>
 		<?php
 	}
