@@ -21,7 +21,7 @@ function showSuccessToast(successText) {
 	const dateTime = new Date();
 	let uid = 'toast-' + dateTime.getTime() + '' + Math.random();
 	let html = ' \
-	<div class="toast fade" id="' + uid + '" role="alert" aria-live="assertive" aria-atomic="true"> \
+	<div class="toast fade show" id="' + uid + '" role="alert" aria-live="assertive" aria-atomic="true"> \
 		<div class="toast-header text-success"> \
 			<strong class="me-auto"><i class="bi bi-exclamation-octagon"></i> Success</strong> \
 			<small>'+dateTime.toLocaleDateString("ru")+'</small> \
@@ -43,7 +43,7 @@ function showErrorToast(errorText) {
 	const dateTime = new Date();
 	let uid = 'toast-' + dateTime.getTime() + '' + Math.random();
 	let html = ' \
-	<div class="toast fade" id="' + uid + '" role="alert" aria-live="assertive" aria-atomic="true"> \
+	<div class="toast fade show" id="' + uid + '" role="alert" aria-live="assertive" aria-atomic="true"> \
 		<div class="toast-header text-danger"> \
 			<strong class="me-auto"><i class="bi bi-x-circle"></i> Error</strong> \
 			<small>'+dateTime.toLocaleDateString("ru")+'</small> \

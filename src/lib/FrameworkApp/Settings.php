@@ -75,7 +75,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			}
 			try {
 				$bot = new \TelegramBot\Api\BotApi(\Config::getInstance()->telegram_bot_token);
-				$bot->sendMessage(
+				@$bot->sendMessage(
 					$telegram_channel_id,
 					'Test Message '.date('Y-m-d H:i:s',time()).'',
 					'HTML', true, null, null, false,
@@ -273,7 +273,6 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 				$(document).ready(function(){
 					validateEqualInputs('newPassword', 'confirmNewPassword');
 					$('.sendTelegramButton').on('click', function(event) {
-						new bootstrap.Toast(showSuccessToast('<?=\T::Framework_Telegram_SuccessfullySentMessage();?>')).show();
 						const telegramId = $('#telegram_id').val();
 						if (telegramId.length > 0) {
 							$.ajax({
@@ -287,15 +286,15 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 								},
 								success : function(d) {
 									if (!d) {
-										new bootstrap.Toast(showErrorToast('<?=\T::Framework_Telegram_ErrorSendingMessage();?>')).show();
+										showErrorToast('<?=\T::Framework_Telegram_ErrorSendingMessage();?>');
 									} else if (d.error) {
-										new bootstrap.Toast(showErrorToast(d.error)).show();
+										showErrorToast(d.error);
 									} else {
-										new bootstrap.Toast(showSuccessToast('<?=\T::Framework_Telegram_SuccessfullySentMessage();?>')).show();
+										showSuccessToast('<?=\T::Framework_Telegram_SuccessfullySentMessage();?>');
 									}
 								},
 								error : function(jqXHR, textStatus, errorThrown) {
-									new bootstrap.Toast(showErrorToast('<?=\T::Framework_Telegram_ErrorSendingMessage();?>')).show();
+									showErrorToast('<?=\T::Framework_Telegram_ErrorSendingMessage();?>');
 								}
 							});
 						}
@@ -448,16 +447,16 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 								},
 								success : function(d) {
 									if (!d) {
-										new bootstrap.Toast(showErrorToast('<?=\T::Framework_Settings_TwoFactor_ErrorSetup();?>')).show();
+										showErrorToast('<?=\T::Framework_Settings_TwoFactor_ErrorSetup();?>');
 									} else if (d.error) {
-										new bootstrap.Toast(showErrorToast(d.error)).show();
+										showErrorToast(d.error);
 									} else {
 										window.location.href="/settings/";
 									}
 
 								},
 								error : function(jqXHR, textStatus, errorThrown) {
-									new bootstrap.Toast(showErrorToast('<?=\T::Framework_Settings_TwoFactor_ErrorSetup();?>')).show();
+									showErrorToast('<?=\T::Framework_Settings_TwoFactor_ErrorSetup();?>');
 								}
 							});
 						}

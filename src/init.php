@@ -1,5 +1,5 @@
 <?php
-error_reporting(E_ALL &~ E_NOTICE);
+error_reporting(E_ALL &~ E_NOTICE &~ E_DEPRECATED);
 
 if (!isset($_POST) || !is_array($_POST)) $_POST = [];
 if (!isset($_GET) || !is_array($_GET)) $_GET = [];
