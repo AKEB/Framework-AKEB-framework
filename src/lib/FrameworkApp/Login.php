@@ -90,15 +90,15 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 
 	private function openIdCode($data) {
 		if (!isset($data['oidc']) || !isset($data['code']) || !isset($data['state'])) return false;
-		$provider_url = \Config::getInstance()->oidc_provider;
+		$provider_url = \Config::getInstance()->openidconnect_provider;
 		$provider_url = str_replace('/.well-known/openid-configuration', '', $provider_url);
-		$client_id = \Config::getInstance()->oidc_client_id;
-		$client_secret = \Config::getInstance()->oidc_client_secret;
+		$client_id = \Config::getInstance()->openidconnect_client_id;
+		$client_secret = \Config::getInstance()->openidconnect_client_secret;
 		if (!$provider_url || !$client_id || !$client_secret) return false;
 
 		$oidc = new \Jumbojett\OpenIDConnectClient($provider_url, $client_id, $client_secret);
 		$oidc->setRedirectURL(strval($_SERVER['HTTP_REFERER'] ?? '').'?oidc=true');
-		$oidc->addScope(explode(' ', \Config::getInstance()->oidc_scope));
+		$oidc->addScope(explode(' ', \Config::getInstance()->openidconnect_scope));
 		try{
 			$oidc->authenticate();
 			$data = $oidc->requestUserInfo();
@@ -124,7 +124,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 				if ($check_user['status'] == \Users::STATUS_INACTIVE) return false;
 				return $this->loginUserWithId($check_user['id']);
 			}
-			if (!\Config::getInstance()->oidc_register) return false;
+			if (!\Config::getInstance()->openidconnect_register) return false;
 			$userId = \Users::save([
 				'name' => $data['name'],
 				'surname' => $data['surname'],
@@ -162,15 +162,15 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 	}
 
 	private function openIdRedirect() {
-		$provider_url = \Config::getInstance()->oidc_provider;
+		$provider_url = \Config::getInstance()->openidconnect_provider;
 		$provider_url = str_replace('/.well-known/openid-configuration', '', $provider_url);
-		$client_id = \Config::getInstance()->oidc_client_id;
-		$client_secret = \Config::getInstance()->oidc_client_secret;
+		$client_id = \Config::getInstance()->openidconnect_client_id;
+		$client_secret = \Config::getInstance()->openidconnect_client_secret;
 		if (!$provider_url || !$client_id || !$client_secret) return false;
 
 		$oidc = new \Jumbojett\OpenIDConnectClient($provider_url, $client_id, $client_secret);
 		$oidc->setRedirectURL(strval($_SERVER['HTTP_REFERER'] ?? '').'?oidc=true');
-		$oidc->addScope(explode(' ', \Config::getInstance()->oidc_scope));
+		$oidc->addScope(explode(' ', \Config::getInstance()->openidconnect_scope));
 		try{
 			$oidc->authenticate();
 		} catch (\Throwable) {
@@ -395,9 +395,9 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
 										<?php } ?>
 										<?php
-										if (\Config::getInstance()->oidc_provider && \Config::getInstance()->oidc_client_id) {
+										if (\Config::getInstance()->openidconnect_provider && \Config::getInstance()->openidconnect_client_id) {
 											?>
-											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mt-5 mb-3" name="openID" type="submit"><?=\T::Framework_Login_LoginWith(\Config::getInstance()->oidc_button??\T::Framework_Login_OpenID());?></button>
+											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mt-5 mb-3" name="openID" type="submit"><?=\T::Framework_Login_LoginWith(\Config::getInstance()->openidconnect_button??\T::Framework_Login_OpenID());?></button>
 											<?php
 										}
 										?>

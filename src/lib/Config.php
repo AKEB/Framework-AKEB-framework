@@ -1,176 +1,245 @@
 <?php
 
+enum ConfigEnvType {
+	case INT;
+	case FLOAT;
+	case BOOL;
+	case STRING;
+	case ARRAY;
+	case OBJECT;
+	case DEFAULT;
+}
+
 class Config {
-	public readonly string $timezone;
-	public readonly string $password_salt;
-
-	public readonly bool $mysql_debug;
-	public readonly string $mysql_host;
-	public readonly int $mysql_port;
-	public readonly string $mysql_username;
-	public readonly string $mysql_password;
-	public readonly string $mysql_db_name;
-	public readonly bool $mysql_dont_use_slave;
-	public readonly string $mysql_slave_host;
-	public readonly int $mysql_slave_port;
-	public readonly string $mysql_slave_username;
-	public readonly string $mysql_slave_password;
-	public readonly string $mysql_slave_db_name;
-
-
-	public readonly bool $app_signin_active;
-	public readonly bool $app_signup_active;
-	public readonly bool $app_debug;
-
-	public readonly string $smtp_host;
-	public readonly string $smtp_port;
-	public readonly string $smtp_username;
-	public readonly string $smtp_password;
-	public readonly bool $smtp_tls;
-	public readonly bool $smtp_ssl;
-
-	public readonly string $oidc_provider;
-	public readonly string $oidc_client_id;
-	public readonly string $oidc_client_secret;
-	public readonly string $oidc_button;
-	public readonly string $oidc_scope;
-	public readonly bool $oidc_register;
-
-	public readonly string $oauth_client_id;
-	public readonly string $oauth_client_secret;
-	public readonly string $oauth_authorization_endpoint;
-	public readonly string $oauth_token_endpoint;
-	public readonly string $oauth_userinfo_endpoint;
-	public readonly string $oauth_button;
-	public readonly string $oauth_scope;
-	public readonly bool $oauth_register;
-
-	public readonly string $memcached_host;
-	public readonly int $memcached_port;
-
-	public readonly array $per_page_counts;
 
 	private static $_instance;
+
+	private $_params = [];
 
 	// public function __construct() {
 	// 	$this->server_url = strval($_ENV['SERVER_URL'] ?? '');
 	// }
 
+	private array $_dont_use_keys = [
+		'hostname',
+		'php_version',
+		'pwd',
+		'mysql_root_password',
+		'tz',
+		'container',
+		'home',
+		'server_version',
+		'shlvl',
+		'nginx_port',
+		'phpmyadmin_port',
+		'path',
+		'_',
+		'user',
+		'http_cookie',
+		'http_priority',
+		'http_accept_language',
+		'http_accept_encoding',
+		'http_referer',
+		'http_sec_fetch_dest',
+		'http_sec_fetch_user',
+		'http_sec_fetch_mode',
+		'http_sec_fetch_site',
+		'http_accept',
+		'http_user_agent',
+		'http_upgrade_insecure_requests',
+		'http_sec_ch_ua_platform',
+		'http_sec_ch_ua_mobile',
+		'http_sec_ch_ua',
+		'http_cache_control',
+		'http_x_real_ip',
+		'http_x_forwarded_for',
+		'http_x_forwarded_proto',
+		'http_x_forwarded_scheme',
+		'http_host',
+		'redirect_status',
+		'server_name',
+		'server_port',
+		'server_addr',
+		'remote_user',
+		'remote_port',
+		'remote_addr',
+		'server_software',
+		'gateway_interface',
+		'request_scheme',
+		'server_protocol',
+		'document_root',
+		'document_uri',
+		'request_uri',
+		'script_name',
+		'content_length',
+		'content_type',
+		'request_method',
+		'query_string',
+		'php_value',
+		'script_filename',
+		'fcgi_role',
+	];
+
 	private function __construct() {}
 	private function __clone() {}
 	public function __wakeup() {}
 
+	public function __get($name): mixed {
+		if (!array_key_exists(strtolower($name), $this->_params)) {
+			return null;
+		}
+		return $this->_params[strtolower($name)];
+	}
+
+	public function get(string $name, ConfigEnvType $type=ConfigEnvType::DEFAULT, $default_value=null): mixed {
+		$value = $this->__get($name);
+		if ($value === null) {
+			$value = $default_value;
+		}
+		switch ($type) {
+			case ConfigEnvType::INT:
+				$value = (int) $value;
+				break;
+			case ConfigEnvType::FLOAT:
+				$value = (float) $value;
+				break;
+			case ConfigEnvType::BOOL:
+				$value = ($value == 'true') ? true : false;
+				break;
+			case ConfigEnvType::STRING:
+				$value = (string) $value;
+				break;
+			case ConfigEnvType::ARRAY:
+				$value = (array) $value;
+				break;
+			case ConfigEnvType::OBJECT:
+				$value = (object) $value;
+				break;
+			default:
+				break;
+		}
+		return $value;
+	}
+
+	private function _get_params() {
+		$this->_params = [
+			// General
+			'timezone' => $this->getenv('TZ', ConfigEnvType::STRING, 'UTC'),
+			'password_salt' => $this->getenv('PASSWORD_SALT', ConfigEnvType::STRING, 'bHchLzC3B99Ss2ghc2gkDdtgCG7vKtoj'),
+			// MySQL
+			'mysql_debug' => $this->getenv('MYSQL_DEBUG', ConfigEnvType::BOOL, false),
+			'mysql_host' => $this->getenv('MYSQL_HOST', ConfigEnvType::STRING, 'localhost'),
+			'mysql_port' => $this->getenv('MYSQL_PORT', ConfigEnvType::INT, 3306),
+			'mysql_username' => $this->getenv('MYSQL_USERNAME', ConfigEnvType::STRING, 'root'),
+			'mysql_password' => $this->getenv('MYSQL_PASSWORD', ConfigEnvType::STRING, ''),
+			'mysql_db_name' => $this->getenv('MYSQL_DB_NAME', ConfigEnvType::STRING, 'example'),
+			'mysql_dont_use_slave' => $this->getenv('MYSQL_DONT_USE_SLAVE', ConfigEnvType::BOOL, true),
+			// APP
+			'app_signin_active' => $this->getenv('APP_SIGNIN_ACTIVE', ConfigEnvType::BOOL, true),
+			'app_signup_active' => $this->getenv('APP_SIGNUP_ACTIVE', ConfigEnvType::BOOL, true),
+			'app_debug' => $this->getenv('APP_DEBUG', ConfigEnvType::BOOL, false),
+			// SMTP
+			'smtp_host' => $this->getenv('SMTP_HOST', ConfigEnvType::STRING, ''),
+			'smtp_port' => $this->getenv('SMTP_PORT', ConfigEnvType::INT, 25),
+			'smtp_username' => $this->getenv('SMTP_USERNAME', ConfigEnvType::STRING, ''),
+			'smtp_password' => $this->getenv('SMTP_PASSWORD', ConfigEnvType::STRING, ''),
+			'smtp_tls' => $this->getenv('SMTP_TLS', ConfigEnvType::BOOL, false),
+			'smtp_ssl' => $this->getenv('SMTP_SSL', ConfigEnvType::BOOL, false),
+			// OIDC
+			'openidconnect_provider' => $this->getenv('OPENIDCONNECT_PROVIDER', ConfigEnvType::STRING, ''),
+			'openidconnect_client_id' => $this->getenv('OPENIDCONNECT_CLIENT_ID', ConfigEnvType::STRING, ''),
+			'openidconnect_client_secret' => $this->getenv('OPENIDCONNECT_CLIENT_SECRET', ConfigEnvType::STRING, ''),
+			'openidconnect_button' => $this->getenv('OPENIDCONNECT_BUTTON', ConfigEnvType::STRING, ''),
+			'openidconnect_scope' => $this->getenv('OPENIDCONNECT_SCOPE', ConfigEnvType::STRING, 'email profile openid'),
+			'openidconnect_register' => $this->getenv('OPENIDCONNECT_REGISTER', ConfigEnvType::BOOL, true),
+			// OAuth
+			'oauth_client_id' => $this->getenv('OAUTH_CLIENT_ID', ConfigEnvType::STRING, ''),
+			'oauth_client_secret' => $this->getenv('OAUTH_CLIENT_SECRET', ConfigEnvType::STRING, ''),
+			'oauth_authorization_endpoint' => $this->getenv('OAUTH_AUTHORIZATION_ENDPOINT', ConfigEnvType::STRING, ''),
+			'oauth_token_endpoint' => $this->getenv('OAUTH_TOKEN_ENDPOINT', ConfigEnvType::STRING, ''),
+			'oauth_userinfo_endpoint' => $this->getenv('OAUTH_USERINFO_ENDPOINT', ConfigEnvType::STRING, ''),
+			'oauth_button' => $this->getenv('OAUTH_BUTTON', ConfigEnvType::STRING, ''),
+			'oauth_scope' => $this->getenv('OAUTH_SCOPE', ConfigEnvType::STRING, 'self_profile'),
+			'oauth_register' => $this->getenv('OAUTH_REGISTER', ConfigEnvType::BOOL, true),
+			// Memcached
+			'memcached_host' => $this->getenv('MEMCACHED_HOST', ConfigEnvType::STRING, ''),
+			'memcached_port' => $this->getenv('MEMCACHED_PORT', ConfigEnvType::INT, 11211),
+			// Other
+			'per_page_counts' => [5, 10, 20, 50, 100, 500, 1000],
+
+		];
+
+		$this->_params['mysql_slave_host'] = $this->getenv('MYSQL_SLAVE_HOST', ConfigEnvType::STRING, $this->_params['mysql_host']);
+		$this->_params['mysql_slave_port'] = $this->getenv('MYSQL_SLAVE_PORT', ConfigEnvType::INT, $this->_params['mysql_port']);
+		$this->_params['mysql_slave_username'] = $this->getenv('MYSQL_SLAVE_USERNAME', ConfigEnvType::STRING, $this->_params['mysql_username']);
+		$this->_params['mysql_slave_password'] = $this->getenv('MYSQL_SLAVE_PASSWORD', ConfigEnvType::STRING, $this->_params['mysql_password']);
+		$this->_params['mysql_slave_db_name'] = $this->getenv('MYSQL_SLAVE_DB_NAME', ConfigEnvType::STRING, $this->_params['mysql_db_name']);
+
+		$all_env = getenv();
+		foreach ($all_env as $key=>$value) {
+			if (in_array(strtolower($key), $this->_dont_use_keys)) {
+				continue;
+			}
+			if (!array_key_exists(strtolower($key), $this->_params)) {
+				$this->_params[strtolower($key)] = $value;
+			}
+		}
+	}
+
+	private function getenv(string $key, ConfigEnvType $type=ConfigEnvType::DEFAULT, $default_value=null): mixed {
+		$value = getenv(strtoupper($key));
+		if ($value === false) {
+			$value = $default_value;
+		}
+		switch ($type) {
+			case ConfigEnvType::INT:
+				$value = (int) $value;
+				break;
+			case ConfigEnvType::FLOAT:
+				$value = (float) $value;
+				break;
+			case ConfigEnvType::BOOL:
+				$value = ($value == 'true') ? true : false;
+				break;
+			case ConfigEnvType::STRING:
+				$value = (string) $value;
+				break;
+			case ConfigEnvType::ARRAY:
+				$value = (array) $value;
+				break;
+			case ConfigEnvType::OBJECT:
+				$value = (object) $value;
+				break;
+			default:
+				break;
+		}
+		return $value;
+	}
+
 	public static function getInstance(): self {
 		if (self::$_instance === null) {
 			self::$_instance = new self;
-
-			// General
-			self::$_instance->timezone = strval($_ENV['TZ'] ?? 'UTC');
-			self::$_instance->password_salt = strval($_ENV['PASSWORD_SALT'] ?? "bHchLzC3B99Ss2ghc2gkDdtgCG7vKtoj");
-
-			// Mysql
-			self::$_instance->mysql_debug = (isset($_ENV['MYSQL_DEBUG']) && $_ENV['MYSQL_DEBUG'] == 'true') ? true : false;
-			self::$_instance->mysql_host = strval($_ENV['MYSQL_HOST'] ?? 'localhost');
-			self::$_instance->mysql_port = intval($_ENV['MYSQL_PORT'] ?? 3306);
-			self::$_instance->mysql_username = strval($_ENV['MYSQL_USERNAME'] ?? 'root');
-			self::$_instance->mysql_password = strval($_ENV['MYSQL_PASSWORD'] ?? '');
-			self::$_instance->mysql_db_name = strval($_ENV['MYSQL_DB_NAME'] ?? 'example');
-			self::$_instance->mysql_dont_use_slave = (isset($_ENV['MYSQL_DONT_USE_SLAVE']) && $_ENV['MYSQL_DONT_USE_SLAVE'] == 'false') ? false : true;
-			self::$_instance->mysql_slave_host = strval($_ENV['MYSQL_SLAVE_HOST'] ?? self::$_instance->mysql_host);
-			self::$_instance->mysql_slave_port = intval($_ENV['MYSQL_SLAVE_PORT'] ?? self::$_instance->mysql_port);
-			self::$_instance->mysql_slave_username = strval($_ENV['MYSQL_SLAVE_USERNAME'] ?? self::$_instance->mysql_username);
-			self::$_instance->mysql_slave_password = strval($_ENV['MYSQL_SLAVE_PASSWORD'] ?? self::$_instance->mysql_password);
-			self::$_instance->mysql_slave_db_name = strval($_ENV['MYSQL_SLAVE_DB_NAME'] ?? self::$_instance->mysql_db_name);
-			// APP
-			self::$_instance->app_signin_active = (isset($_ENV['APP_SIGNIN_ACTIVE']) && $_ENV['APP_SIGNIN_ACTIVE'] == 'false') ? false : true;
-			self::$_instance->app_signup_active = (isset($_ENV['APP_SIGNUP_ACTIVE']) && $_ENV['APP_SIGNUP_ACTIVE'] == 'false') ? false : true;
-			self::$_instance->app_debug = (isset($_ENV['APP_DEBUG']) && $_ENV['APP_DEBUG'] == 'true') ? true : false;
-			// SMTP
-			self::$_instance->smtp_host = strval($_ENV['SMTP_HOST'] ?? '');
-			self::$_instance->smtp_port = intval($_ENV['SMTP_PORT'] ?? 25);
-			self::$_instance->smtp_username = strval($_ENV['SMTP_USERNAME'] ?? '');
-			self::$_instance->smtp_password = strval($_ENV['SMTP_PASSWORD'] ?? '');
-			self::$_instance->smtp_tls = (isset($_ENV['SMTP_TLS']) && $_ENV['SMTP_TLS'] == 'true') ? true : false;
-			self::$_instance->smtp_ssl = (isset($_ENV['SMTP_SSL']) && $_ENV['SMTP_SSL'] == 'true') ? true : false;
-
-			// OIDC
-			self::$_instance->oidc_provider = strval($_ENV['OPENIDCONNECT_PROVIDER'] ?? '');
-			self::$_instance->oidc_client_id = strval($_ENV['OPENIDCONNECT_CLIENT_ID'] ?? '');
-			self::$_instance->oidc_client_secret = strval($_ENV['OPENIDCONNECT_CLIENT_SECRET'] ?? '');
-			self::$_instance->oidc_button = strval($_ENV['OPENIDCONNECT_BUTTON'] ?? '');
-			self::$_instance->oidc_scope = strval($_ENV['OPENIDCONNECT_SCOPE'] ?? 'email profile openid');
-			self::$_instance->oidc_register = (isset($_ENV['OPENIDCONNECT_REGISTER']) && $_ENV['OPENIDCONNECT_REGISTER'] == 'false') ? false : true;
-
-			// OAuth
-			self::$_instance->oauth_client_id = strval($_ENV['OAUTH_CLIENT_ID'] ?? '');
-			self::$_instance->oauth_client_secret = strval($_ENV['OAUTH_CLIENT_SECRET'] ?? '');
-			self::$_instance->oauth_authorization_endpoint = strval($_ENV['OAUTH_AUTHORIZATION_ENDPOINT'] ?? '');
-			self::$_instance->oauth_token_endpoint = strval($_ENV['OAUTH_TOKEN_ENDPOINT'] ?? '');
-			self::$_instance->oauth_userinfo_endpoint = strval($_ENV['OAUTH_USERINFO_ENDPOINT'] ?? '');
-			self::$_instance->oauth_button = strval($_ENV['OAUTH_BUTTON'] ?? '');
-			self::$_instance->oauth_scope = strval($_ENV['OAUTH_SCOPE'] ?? 'self_profile');
-			self::$_instance->oauth_register = (isset($_ENV['OAUTH_REGISTER']) && $_ENV['OAUTH_REGISTER'] == 'false') ? false : true;
-
-			// Memcached
-			self::$_instance->memcached_host = strval($_ENV['MEMCACHED_HOST'] ?? '');
-			self::$_instance->memcached_port = intval($_ENV['MEMCACHED_PORT'] ?? 11211);
-
-			self::$_instance->per_page_counts = [5, 10, 20, 50, 100, 500, 1000];
+			self::$_instance->_get_params();
 		}
 		return self::$_instance;
 	}
 
+	private function _hide_password(?string $password): string {
+		if (!$password) return '';
+		$len = mb_strlen($password);
+		$dont_hide_length = max(intval(($len*25/100)/2),1);
+		return substr($password, 0, $dont_hide_length) . str_repeat('*', $len - 2*$dont_hide_length) . substr($password, -$dont_hide_length, $dont_hide_length);
+	}
+
 	public function toArray() {
-		return [
-			'timezone' => $this->timezone,
-			'password_salt' => $this->password_salt ? '*****************':'',
-
-			'mysql_debug' => $this->mysql_debug,
-			'mysql_host' => $this->mysql_host,
-			'mysql_port' => $this->mysql_port,
-			'mysql_username' => $this->mysql_username,
-			'mysql_password' => $this->mysql_password,
-			'mysql_db_name' => $this->mysql_db_name,
-			'mysql_dont_use_slave' => $this->mysql_dont_use_slave,
-			'mysql_slave_host' => $this->mysql_slave_host,
-			'mysql_slave_port' => $this->mysql_slave_port,
-			'mysql_slave_username' => $this->mysql_slave_username,
-			'mysql_slave_password' => $this->mysql_slave_password,
-			'mysql_slave_db_name' => $this->mysql_slave_db_name,
-
-			'app_signin_active' => $this->app_signin_active,
-			'app_signup_active' => $this->app_signup_active,
-			'app_debug' => $this->app_debug,
-
-			'smtp_host' => $this->smtp_host,
-			'smtp_port' => $this->smtp_port,
-			'smtp_username' => $this->smtp_username,
-			'smtp_password' => $this->smtp_password ? '*****************':'',
-			'smtp_tls' => $this->smtp_tls,
-			'smtp_ssl' => $this->smtp_ssl,
-
-			'oidc_provider' => $this->oidc_provider,
-			'oidc_client_id' => $this->oidc_client_id,
-			'oidc_client_secret' => $this->oidc_client_secret ? '*****************':'',
-			'oidc_button' => $this->oidc_button,
-			'oidc_scope' => $this->oidc_scope,
-			'oidc_register' => $this->oidc_register,
-
-			'oauth_client_id' => $this->oauth_client_id,
-			'oauth_client_secret' => $this->oauth_client_secret ? '*****************':'',
-			'oauth_authorization_endpoint' => $this->oauth_authorization_endpoint,
-			'oauth_token_endpoint' => $this->oauth_token_endpoint,
-			'oauth_userinfo_endpoint' => $this->oauth_userinfo_endpoint,
-			'oauth_button' => $this->oauth_button,
-			'oauth_scope' => $this->oauth_scope,
-			'oauth_register' => $this->oauth_register,
-
-			'memcached_host' => $this->memcached_host,
-			'memcached_port' => $this->memcached_port,
-
-			'per_page_counts' => $this->per_page_counts,
-
-		];
+		$params = $this->_params;
+		$params['mysql_password'] = $this->_hide_password($this->mysql_password);
+		$params['mysql_slave_password'] = $this->_hide_password($this->mysql_slave_password);
+		$params['password_salt'] = $this->_hide_password($this->password_salt);
+		$params['smtp_password'] = $this->_hide_password($this->smtp_password);
+		$params['oauth_client_secret'] = $this->_hide_password($this->oauth_client_secret);
+		$params['openidconnect_client_secret'] = $this->_hide_password($this->openidconnect_client_secret);
+		return $params;
 	}
 
 	public function __debugInfo() {

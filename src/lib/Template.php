@@ -95,20 +95,22 @@ class Template {
 		$lang = \T::getCurrentLanguage();
 
 		$css_files = array_merge([
-			'/css/framework/bootstrap-icons.min.css',
-			'/css/framework/bootstrap.min.css',
-			'/css/framework/datatables.min.css',
-			'/css/framework/bootstrap-select.min.css',
-			'/css/framework/main.css',
+			'/css/framework/framework.min.css',
+			// '/css/framework/bootstrap-icons.min.css',
+			// '/css/framework/bootstrap.min.css',
+			// '/css/framework/datatables.min.css',
+			// '/css/framework/bootstrap-select.min.css',
+			// '/css/framework/main.css',
 		], static::getCSSFiles());
 
 		$js_files = array_merge([
-			'/js/framework/bootstrap.bundle.min.js',
-			'/js/framework/datatables.min.js',
-			'/js/framework/bootstrap-select.min.js',
-			'/js/framework/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
-			'/js/framework/locale_'.\T::getCurrentLanguage().'.js',
-			'/js/framework/main.js',
+			'/js/framework/framework_'.\T::getCurrentLanguage().'.min.js',
+			// '/js/framework/bootstrap.bundle.min.js',
+			// '/js/framework/datatables.min.js',
+			// '/js/framework/bootstrap-select.min.js',
+			// '/js/framework/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
+			// '/js/framework/locale_'.\T::getCurrentLanguage().'.js',
+			// '/js/framework/main.js',
 		], static::getJSFiles());
 
 		$head_metas = array_merge([

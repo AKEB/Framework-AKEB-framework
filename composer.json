@@ -37,9 +37,12 @@
 		"akeb/cache": "@stable",
 		"phpmailer/phpmailer": "@stable",
 		"jumbojett/openid-connect-php": "@stable",
-		"chillerlan/php-qrcode": "@stable"
+		"chillerlan/php-qrcode": "@stable",
+		"telegram-bot/api": "@stable"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "@stable"
+		"phpunit/phpunit": "@stable",
+		"akeb/minify": "@stable",
+		"bissolli/php-css-js-minifier": "^1.1"
 	}
 }

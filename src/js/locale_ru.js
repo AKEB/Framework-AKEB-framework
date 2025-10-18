@@ -1,1 +1,2 @@
-var lang="ru"
+
+var lang="ru";
