@@ -30,8 +30,6 @@ cp -R vendor/akeb/framework/src/dist/css css/framework/
 cp -R vendor/akeb/framework/src/dist/js js/framework/
 cp -R vendor/akeb/framework/src/lang lang/framework/
 
-
-
 cd /app/vendor/akeb/framework/src/ && SERVER_ROOT=/app php migrate.php
 
 cd /app/vendor/akeb/framework/src/crons/ && SERVER_ROOT=/app ./run_all.sh
@@ -40,4 +38,7 @@ cd /app/crons/ && ./run_all.sh
 
 echo "Server started successfully.";
 echo "For run server in browser type: http://127.0.0.1:${NGINX_PORT}"
-echo "For run phpmyadmin in browser type: http://127.0.0.1:${PHPMYADMIN_PORT}"
+
+if [ "$DEVELOPMENT" = "true" ] && [ -d "/app_framework" ]; then
+	echo "For run phpmyadmin in browser type: http://127.0.0.1:${PHPMYADMIN_PORT}"
+fi
