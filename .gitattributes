@@ -6,5 +6,5 @@
 /.* export-ignore
 /*.sh export-ignore
 /phpunit.xml export-ignore
-/src/css
-/src/js
+/src/css export-ignore
+/src/js export-ignore
