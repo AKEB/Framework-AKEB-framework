@@ -9,16 +9,26 @@ class Main extends \Routing_Parent implements \Routing_Interface {
 		$template = new \Template();
 		echo '<h1>'.\T::MainPage().'</h1>';
 		// echo 'IP: ' . \Sessions::client_ip();
+		?>
 
-		if (\Config::getInstance()->telegram_bot_token && \Config::getInstance()->telegram_channel_id && \Config::getInstance()->telegram_thread_id) {
-			$bot = new \TelegramBot\Api\BotApi(\Config::getInstance()->telegram_bot_token);
-			$bot->sendMessage(\Config::getInstance()->telegram_channel_id, "Test Message ".date('Y-m-d H:i:s'), null, false, null, null, false, \Config::getInstance()->telegram_thread_id);
-		}
+		<button class="btn btn-warning websocket_getUserName">getUserName Button</button>
+		<button class="btn btn-warning websocket_test">test Button</button>
 
-		// if ($_ENV['TELEGRAM_BOT_TOKEN'] && $_ENV['TELEGRAM_CHANNEL_ID'] && $_ENV['TELEGRAM_THREAD_ID']) {
-		// 	$bot = new \TelegramBot\Api\BotApi($_ENV['TELEGRAM_BOT_TOKEN']);
-		// 	$bot->sendMessage($_ENV['TELEGRAM_CHANNEL_ID'], "Test Message", null, false, null, null, false, $_ENV['TELEGRAM_THREAD_ID']);
-		// }
+		<script nonce="<?=\CSP::nonceRandom();?>">
+			$(document).ready(function() {
+				$('.websocket_getUserName').on('click', function(){
+					wss.send('getUserName',{},(response)=>{
+						showSuccessToast(response.message, true);
+					})
+				});
+				$('.websocket_test').on('click', function(){
+					wss.send('test',null,(response)=>{
+						showSuccessToast(response.message, false, 2000);
+					})
+				});
+			});
+		</script>
+		<?php
 	}
 
 }

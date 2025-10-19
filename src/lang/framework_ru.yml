@@ -106,6 +106,9 @@ Framework:
     TelegramIdIsRequired: "Telegram ID необходим для отправки сообщений"
     TelegramBotTokenIsRequired: "Telegram Bot Token необходим для отправки сообщений"
 
+  Notifications:
+    Title: "Уведомления"
+
   Common:
     Cancel: "Отмена"
     Delete: "Удалить"

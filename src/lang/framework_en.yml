@@ -108,6 +108,9 @@ Framework:
     TelegramIdIsRequired: "Telegram ID is required"
     TelegramBotTokenIsRequired: "Telegram Bot Token is required"
 
+  Notifications:
+    Title: "Notifications"
+
 
   Common:
     Cancel: "Cancel"

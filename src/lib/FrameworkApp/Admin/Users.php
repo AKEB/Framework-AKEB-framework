@@ -103,6 +103,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 				\Logs::add_tag($log_id, \Users::LOGS_OBJECT, $UserGroup['user_id']);
 				\Logs::add_tag($log_id, \Groups::LOGS_OBJECT, $UserGroup['group_id']);
 			}
+			\Users::clear_session_cache($userId);
 		}
 		$sql = [];
 		$sql[] = sql_pholder(" (`object` = 'user' AND `object_id` = ?) ", $userId);
@@ -149,13 +150,13 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 			<table class="table table-transparent table-responsive" id="UsersTable">
 				<thead class="">
 					<tr>
-					<th scope="col" class="d-none d-sm-table-cell align-middle">ID</th>
-					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Name();?></th>
-					<th scope="col" class="d-none d-md-table-cell align-middle"><?=\T::Framework_Users_Table_Surname();?></th>
+					<th scope="col" class="align-middle" data-priority="1">ID</th>
+					<th scope="col" class="align-middle" data-priority="2"><?=\T::Framework_Users_Table_Name();?></th>
+					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Surname();?></th>
 					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Email();?></th>
 					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Status();?></th>
-					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Framework_Common_RegisterTime();?></th>
-					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Framework_Common_LoginTime();?></th>
+					<th scope="col" class="align-middle text-center"><?=\T::Framework_Common_RegisterTime();?></th>
+					<th scope="col" class="align-middle text-center"><?=\T::Framework_Common_LoginTime();?></th>
 					<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Groups();?></th>
 					<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Permissions();?></th>
 					<?php if ($this->can_impersonate) { ?>
@@ -164,7 +165,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 					<?php if ($this->can_delete) {?>
 						<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Delete();?></th>
 					<?php } ?>
-					<th scope="col" class="d-table-cell d-xl-none align-middle text-center"><?=\T::Framework_Users_Table_Actions();?></th>
+					<th scope="col" class="d-table-cell d-xl-none align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Actions();?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -198,7 +199,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 
 						?>
 						<tr>
-							<th scope="row" class="d-none d-sm-table-cell align-middle"><?=$params['id'];?></th>
+							<th scope="row" class="align-middle"><?=$params['id'];?></th>
 							<td class="align-middle">
 								<?php
 								if ($can_write_user) {
@@ -216,7 +217,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 								}
 								?>
 							</td>
-							<td class="d-none d-md-table-cell align-middle">
+							<td class="align-middle">
 								<?php
 								if ($can_write_user) {
 									?>
@@ -235,8 +236,8 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 							</td>
 							<td class="align-middle text-center"><?=$params['email'];?></td>
 							<td class="align-middle text-center"><?=$params['status'];?></td>
-							<td class="d-none d-lg-table-cell align-middle text-center"><?=$params['register_time'];?></td>
-							<td class="d-none d-lg-table-cell align-middle text-center"><?=$params['login_time'];?></td>
+							<td class="align-middle text-center"><?=$params['register_time'];?></td>
+							<td class="align-middle text-center"><?=$params['login_time'];?></td>
 							<td class="d-none d-xl-table-cell align-middle text-center">
 								<?php
 								if ($can_read_groups || $can_write_groups) {
@@ -297,7 +298,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 								<?php
 								if ($can_read_groups || $can_write_groups) {
 									?>
-									<a href="/admin/users/groups/?user_id=<?=$params['id'];?>"><i class="bi bi-people fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Groups();?>"></i></a>
+									<a href="/admin/users/<?=$params['id'];?>/groups/"><i class="bi bi-people fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Groups();?>"></i></a>
 									<?php
 								} else {
 									?><i class="bi bi-people fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Groups();?>"></i><?php
@@ -306,7 +307,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 								<?php
 								if ($can_read_permissions || $can_write_permissions) {
 									?>
-									<a href="/admin/permissions/?user_id=<?=$params['id'];?>"><i class="bi bi-file-earmark-lock fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Permissions();?>"></i></a>
+									<a href="/admin/permissions/user/<?=$params['id'];?>/"><i class="bi bi-file-earmark-lock fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Permissions();?>"></i></a>
 									<?php
 								} else {
 									?><i class="bi bi-file-earmark-lock fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Permissions();?>"></i><?php

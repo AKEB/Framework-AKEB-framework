@@ -75,6 +75,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			return;
 		}
 		\UserGroups::delete($old['id']);
+		\Users::clear_session_cache($this->user_id);
 		$log_id = \Logs::delete_log(\UserGroups::LOGS_OBJECT, $old['id'], $old);
 		\Logs::add_tag($log_id, \Groups::LOGS_OBJECT, $groupId);
 		\Logs::add_tag($log_id, \Users::LOGS_OBJECT, $this->user_id);

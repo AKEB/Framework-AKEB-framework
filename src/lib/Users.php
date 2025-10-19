@@ -98,4 +98,19 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 			\Permissions::IMPERSONATE_USER => \T::Framework_Permissions_ImpersonateUser(),
 		];
 	}
+
+	static public function clear_session_cache($user_id): void {
+		$sessions = \Sessions::data(['user_id' => $user_id]);
+		foreach($sessions as $session) {
+			$cache = new \Cache('session_init_'.md5($session['id']));
+			$cache->remove();
+		}
+	}
+
+	static public function save($param, $table_fields='', $ref_name='id', $add=''): int|bool {
+		if ($param['id']??false) {
+			static::clear_session_cache($param['id']);
+		}
+		return parent::save($param, $table_fields, $ref_name, $add);
+	}
 }

@@ -737,6 +737,14 @@ class T {
 	public static function Framework_Telegram_TelegramBotTokenIsRequired(...$argv): string { return ''; }
 
 	/**
+	 * Framework_Notifications_Title
+	 * 
+	 * @return string "Notifications"
+	 * @return string "Уведомления"
+	 */
+	public static function Framework_Notifications_Title(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Common_Cancel
 	 * 
 	 * @return string "Cancel"

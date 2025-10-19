@@ -43,7 +43,6 @@
 		"telegram-bot/api": "@stable"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "@stable",
-		"bissolli/php-css-js-minifier": "^1.1"
+		"phpunit/phpunit": "@stable"
 	}
 }

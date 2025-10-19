@@ -11,6 +11,7 @@
 | ---------------------------- | -------------------- | -------- | ----------------------------- |
 | TZ                           | UTC                  | string   | Timezone                      |
 | PASSWORD_SALT                |                      | string   | Password Salt                 |
+| WEBSOCKET_PORT               | 8080                 | integer  | Websocket port                |
 | ---------------------------- | -------------------- | -------- | ----------------------------- |
 | MYSQL_HOST                   | localhost            | string   | MySQL Host                    |
 | MYSQL_PORT                   | 3306                 | integer  | MySQL Port                    |

@@ -235,20 +235,17 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			$this->user['status'] = 1;
 		} else {
 			$this->user['register_time'] = (
-				isset($this->user['register_time']) ? (
-					is_string($this->user['register_time']) ? $this->user['register_time'] : date('Y-m-d H:i:s', $this->user['register_time'])
-				) :
-			'');
+				isset($this->user['register_time']) && $this->user['register_time'] > 0 ?
+				date('Y-m-d H:i:s', $this->user['register_time']) : ''
+			);
 			$this->user['update_time'] = (
-				isset($this->user['update_time']) ? (
-					is_string($this->user['update_time']) ? $this->user['update_time'] : date('Y-m-d H:i:s', $this->user['update_time'])
-				) :
-			'');
+				isset($this->user['update_time']) && $this->user['update_time'] > 0 ?
+				date('Y-m-d H:i:s', $this->user['update_time']) : ''
+			);
 			$this->user['login_time'] = (
-				isset($this->user['login_time']) ? (
-					is_string($this->user['login_time']) ? $this->user['login_time'] : date('Y-m-d H:i:s', $this->user['login_time'])
-				) :
-			'');
+				isset($this->user['login_time']) && $this->user['login_time'] > 0 ?
+				date('Y-m-d H:i:s', $this->user['login_time']) : ''
+			);
 		}
 	}
 

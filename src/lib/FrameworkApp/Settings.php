@@ -389,7 +389,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 					<div class="modal-content bg-dark">
 						<form method="post" action="" class="enable-two-factor-form needs-validation m-0" novalidate>
 							<div class="modal-header">
-								<h1 class="modal-title fs-5" id="staticBackdropLiveLabel"><?=\T::Framework_Settings_TwoFactor_Title();?></h1>
+								<h1 class="modal-title fs-5"><?=\T::Framework_Settings_TwoFactor_Title();?></h1>
 								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">

@@ -125,6 +125,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		$UserGroups = \UserGroups::data(['group_id' => $group_id]);
 		if ($UserGroups) {
 			foreach($UserGroups as $UserGroup) {
+				\Users::clear_session_cache($UserGroup['user_id']);
 				\UserGroups::delete(['id' => $UserGroup['id']]);
 				$log_id = \Logs::delete_log(\UserGroups::LOGS_OBJECT, $UserGroup['id'], $UserGroup);
 				\Logs::add_tag($log_id, \Users::LOGS_OBJECT, $UserGroup['user_id']);
@@ -207,13 +208,13 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			<table class="table table-transparent table-responsive" id="GroupsTable">
 				<thead class="">
 					<tr>
-					<th scope="col" class="d-none d-lg-table-cell align-middle">ID</th>
-					<th scope="col" class="align-middle"><?=\T::Framework_Groups_Table_Title();?></th>
+					<th scope="col" class="align-middle" data-priority="1">ID</th>
+					<th scope="col" class="align-middle" data-priority="2"><?=\T::Framework_Groups_Table_Title();?></th>
 					<th scope="col" class="align-middle text-center"><?=\T::Framework_Groups_Table_UsersCount();?></th>
 					<th scope="col" class="d-none d-lg-table-cell align-middle text-center"><?=\T::Framework_Common_CreateTime();?></th>
-					<th scope="col" class="align-middle text-center"><?=\T::Framework_Groups_Table_Permissions();?></th>
+					<th scope="col" class="align-middle text-center" data-priority="3"><?=\T::Framework_Groups_Table_Permissions();?></th>
 					<?php if ($this->can_delete) {?>
-						<th scope="col" class="align-middle text-center"><?=\T::Framework_Groups_Table_Delete();?></th>
+						<th scope="col" class="align-middle text-center" data-priority="4"><?=\T::Framework_Groups_Table_Delete();?></th>
 					<?php } ?>
 					</tr>
 				</thead>
@@ -243,7 +244,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 						?>
 						<tr>
-							<th scope="row" class="d-none d-lg-table-cell align-middle"><?=$params['id'];?></th>
+							<th scope="row" class="align-middle"><?=$params['id'];?></th>
 							<td class="align-middle">
 								<?php
 								if ($can_write_group) {

@@ -94,24 +94,50 @@ class Template {
 	public function __construct(bool $withHeader=true) {
 		$lang = \T::getCurrentLanguage();
 
-		$css_files = array_merge([
-			// '/css/framework/framework.min.css',
-			'/css/framework/bootstrap-icons.min.css',
-			'/css/framework/bootstrap.min.css',
-			'/css/framework/datatables.min.css',
-			'/css/framework/bootstrap-select.min.css',
-			'/css/framework/main.css',
-		], static::getCSSFiles());
+		$css_files = [];
+		$js_files = [];
 
-		$js_files = array_merge([
-			// '/js/framework/framework_'.\T::getCurrentLanguage().'.min.js',
-			'/js/framework/bootstrap.bundle.min.js',
-			'/js/framework/datatables.min.js',
-			'/js/framework/bootstrap-select.min.js',
-			'/js/framework/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
-			'/js/framework/locale_'.\T::getCurrentLanguage().'.js',
-			'/js/framework/main.js',
-		], static::getJSFiles());
+		if (\Config::getInstance()->development) {
+			$css_files = [
+				// '/vendor/akeb/framework/src/dist/css/framework.min.css',
+				'/vendor/akeb/framework/src/css/bootstrap-icons.min.css',
+				'/vendor/akeb/framework/src/css/bootstrap.min.css',
+				'/vendor/akeb/framework/src/css/datatables.min.css',
+				'/vendor/akeb/framework/src/css/bootstrap-select.min.css',
+				'/vendor/akeb/framework/src/css/main.css',
+			];
+			$js_files = [
+				// '/vendor/akeb/framework/src/dist/js/framework_'.\T::getCurrentLanguage().'.min.js',
+				'/vendor/akeb/framework/src/js/bootstrap.bundle.min.js',
+				'/vendor/akeb/framework/src/js/datatables.min.js',
+				'/vendor/akeb/framework/src/js/bootstrap-select.min.js',
+				'/vendor/akeb/framework/src/js/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
+				'/vendor/akeb/framework/src/js/locale_'.\T::getCurrentLanguage().'.js',
+				'/vendor/akeb/framework/src/js/main.js',
+			];
+		} else {
+			$css_files = [
+				// '/css/framework/framework.min.css',
+				'/css/framework/bootstrap-icons.min.css',
+				'/css/framework/bootstrap.min.css',
+				'/css/framework/datatables.min.css',
+				'/css/framework/bootstrap-select.min.css',
+				'/css/framework/main.css',
+			];
+			$js_files = [
+				// '/js/framework/framework_'.\T::getCurrentLanguage().'.min.js',
+				'/js/framework/bootstrap.bundle.min.js',
+				'/js/framework/datatables.min.js',
+				'/js/framework/bootstrap-select.min.js',
+				'/js/framework/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
+				'/js/framework/locale_'.\T::getCurrentLanguage().'.js',
+				'/js/framework/main.js',
+			];
+		}
+
+		$css_files = array_merge($css_files, static::getCSSFiles());
+
+		$js_files = array_merge($js_files, static::getJSFiles());
 
 		$head_metas = array_merge([
 			['charset' => 'UTF-8'],
@@ -174,6 +200,9 @@ class Template {
 				?>
 				<script nonce="<?=\CSP::nonceRandom();?>">
 					setStoredTheme('<?=static::getTheme();?>');
+					<?php if ($withHeader) { ?>
+						let wss = new WWS('<?=\Sessions::get_session_id();?>');
+					<?php } ?>
 				</script>
 			</head>
 			<body class="d-flex flex-column min-vh-100 min-hw-100 gradient-custom">
@@ -309,6 +338,16 @@ class Template {
 						}
 						?>
 					</div>
+					<button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#notificationCanvas" aria-controls="notificationCanvas">
+						<i id="notificationButton" class="bi bi-bell h4"></i>
+					</button>
+					<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationCanvas" aria-labelledby="notificationCanvasLabel">
+						<div class="offcanvas-header">
+							<h5 class="offcanvas-title" id="notificationCanvasLabel"><?=\T::Framework_Notifications_Title();?></h5>
+						</div>
+						<div class="offcanvas-body" id="notificationBody"></div>
+					</div>
+
 					<div class="dropdown text-end me-4">
 						<a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 							<img src="<?=$userAvatar;?>" alt="avatar" width="32" height="32" class="rounded-circle"> <?=$currentUser['name'];?>
@@ -652,7 +691,7 @@ class Template {
 					$(document).ready(function(){
 						showErrorToast('<?=addslashes(str_replace("\n","<br/>",$error));?>');
 						showSuccessToast('<?=addslashes(str_replace("\n","<br/>",$success));?>');
-						showAllToasts();
+						// showAllToasts();
 					});
 				</script>
 			</body></html>

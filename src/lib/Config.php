@@ -126,6 +126,8 @@ class Config {
 			// General
 			'timezone' => $this->getenv('TZ', ConfigEnvType::STRING, 'UTC'),
 			'password_salt' => $this->getenv('PASSWORD_SALT', ConfigEnvType::STRING, 'bHchLzC3B99Ss2ghc2gkDdtgCG7vKtoj'),
+			'development' => $this->getenv('DEVELOPMENT', ConfigEnvType::BOOL, false),
+
 			// MySQL
 			'mysql_debug' => $this->getenv('MYSQL_DEBUG', ConfigEnvType::BOOL, false),
 			'mysql_host' => $this->getenv('MYSQL_HOST', ConfigEnvType::STRING, 'localhost'),

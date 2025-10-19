@@ -75,6 +75,8 @@ class Sessions extends \DB\MySQLObject{
 			'_mode' => \DB\Common::CSMODE_REPLACE,
 		];
 		static::save($session);
+		$cache = new \Cache('session_init_'.md5(static::$sessionId));
+		$cache->remove();
 	}
 
 	static private function new_session_id(): string {
@@ -91,7 +93,7 @@ class Sessions extends \DB\MySQLObject{
 		return static::$sessionId;
 	}
 
-	static private function get_session_id(): string {
+	static public function get_session_id(): string {
 		if (
 			!isset($_COOKIE[static::$session_name]) ||
 			!$_COOKIE[static::$session_name] ||
@@ -104,6 +106,8 @@ class Sessions extends \DB\MySQLObject{
 	}
 
 	static public function clear_session(): void {
+		$cache = new \Cache('session_init_'.md5(static::$sessionId));
+		$cache->remove();
 		if (static::$sessionId) {
 			static::delete(['id' => static::$sessionId]);
 		}
@@ -155,6 +159,8 @@ class Sessions extends \DB\MySQLObject{
 		];
 		static::save($sessionUpdate);
 		static::$currentUserId = $impersonateUserId;
+		$cache = new \Cache('session_init_'.md5($session['id']));
+		$cache->remove();
 		return true;
 	}
 
@@ -181,6 +187,8 @@ class Sessions extends \DB\MySQLObject{
 			];
 			static::save($sessionUpdate);
 			static::$currentUserId = static::$originalUserId;
+			$cache = new \Cache('session_init_'.md5($session['id']));
+			$cache->remove();
 		}
 		return true;
 	}
@@ -451,13 +459,32 @@ class Sessions extends \DB\MySQLObject{
 	}
 
 
-	static public function session_init(bool $WithoutRedirect=false): bool {
+	static public function session_init(bool $WithoutRedirect=false, ?string $sessionId=null): bool {
 		if (!static::$current_user) {
 			static::$current_user = [];
+			static::$sessionId = '';
+			static::$originalUserId = 0;
+			static::$currentUserId = 0;
+
 			do {
-				static::get_session_id();
+				if (isset($sessionId) && $sessionId) {
+					static::$sessionId = $sessionId;
+				} else {
+					static::get_session_id();
+				}
 				if (!static::$sessionId) {
 					break;
+				}
+
+				$cache = new \Cache('session_init_'.md5(static::$sessionId));
+				if ($cache->isValid()) {
+					$from_cache = json_decode($cache->get(), true);
+					if ($from_cache && isset($from_cache['current_user']) && is_array($from_cache['current_user'])) {
+						static::$current_user = $from_cache['current_user'];
+						static::$originalUserId = $from_cache['originalUserId'];
+						static::$currentUserId = $from_cache['currentUserId'];
+						break;
+					}
 				}
 
 				$session = static::get(['id' => static::$sessionId]);
@@ -516,9 +543,15 @@ class Sessions extends \DB\MySQLObject{
 					];
 					static::save($sessionUpdate);
 				}
-
+				$to_cache = [
+					'current_user' => static::$current_user,
+					'originalUserId' => static::$originalUserId,
+					'currentUserId' => static::$currentUserId,
+				];
+				$cache->update(json_encode($to_cache), 300);
 			} while(0);
 		}
+
 		if (!static::$current_user) {
 			if ($WithoutRedirect) return false;
 			setcookie('target', urlencode($_SERVER['REQUEST_URI']), time() + 86400, '/');

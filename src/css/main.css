@@ -12,6 +12,73 @@
 .gradient-custom {
 
 }
+/* XS */
+@media (min-width: 0px) {
+	.card {
+		padding: 1rem !important;
+		--bs-card-spacer-y: 0.2rem;
+		--bs-card-spacer-x: 0.2rem;
+	}
+}
+/* SM */
+@media (min-width: 576px) {
+	.card {
+		padding: 1rem !important;
+		--bs-card-spacer-y: 0.2rem;
+		--bs-card-spacer-x: 0.2rem;
+	}
+}
+/* MD */
+@media (min-width: 768px) {
+	.card {
+		padding: 1rem !important;
+		--bs-card-spacer-y: 0.4rem;
+		--bs-card-spacer-x: 0.4rem;
+	}
+}
+/* LG */
+@media (min-width: 992px) {
+	.card {
+		padding: 1rem !important;
+		--bs-card-spacer-y: 0.5rem;
+		--bs-card-spacer-x: 0.5rem;
+	}
+}
+/* XL */
+@media (min-width: 1200px) {
+	.card {
+		padding: 1.5rem !important;
+		--bs-card-spacer-y: 1rem;
+		--bs-card-spacer-x: 1rem;
+	}
+}
+/* XXL */
+@media (min-width: 1400px) {
+	.card {
+		padding: 1.5rem !important;
+		--bs-card-spacer-y: 1rem;
+		--bs-card-spacer-x: 1rem;
+	}
+}
+
+
+
+.ml-auto {
+	margin-left: auto;
+}
+
+.border-red {
+	border: 1px solid red;
+}
+
+.border-green {
+	border: 1px solid green;
+}
+
+.toast {
+	--bs-toast-spacing: 0.5rem;
+}
+
 .table-transparent { --bs-table-bg: transparent !important; }
 .table-transparent > :not(caption) > * > * {
 	--bs-table-bg: transparent !important;
@@ -113,4 +180,12 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+html.dark table.dataTable>tbody>tr>th.dtr-control:before,html[data-bs-theme=dark] table.dataTable>tbody>tr>th.dtr-control:before {
+    border-left-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+html.dark table.dataTable>tbody>tr>th.dtr-control.arrow-right::before,html[data-bs-theme=dark] table.dataTable>tbody>tr>th.dtr-control.arrow-right::before {
+    border-right-color: rgba(255, 255, 255, 0.5) !important
 }

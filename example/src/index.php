@@ -24,6 +24,8 @@ require_once("./autoload.php");
 	],
 ]);
 
+\Websocket::addAction('test', '\\Test');
+
 // ADD Another Routes
 // \Routes::addRoute('/test/', '\\App\\Test');
 new \Routing();

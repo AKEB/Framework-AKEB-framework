@@ -39,6 +39,7 @@ class Routing {
 
 		\Routes::addRoute('/signup/', '\\FrameworkApp\\Signup');
 
+		\Routes::addRoute('/wss/', '\\Websocket');
 	}
 
 

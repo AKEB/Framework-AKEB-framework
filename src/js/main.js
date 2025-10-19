@@ -14,14 +14,14 @@ function togglePassword(inputId) {
 	}
 }
 
-function showSuccessToast(successText) {
+function showSuccessToast(successText, persisit=false, delay=5000) {
 	if (successText == undefined || !successText ||successText.length < 1) {
 		return;
 	}
 	const dateTime = new Date();
 	let uid = 'toast-' + dateTime.getTime() + '' + Math.random();
 	let html = ' \
-	<div class="toast fade show" id="' + uid + '" role="alert" aria-live="assertive" aria-atomic="true"> \
+	<div class="toast show" '+(persisit ? 'data-bs-autohide="false"' : 'data-bs-delay="'+delay+'"')+' id="' + uid + '" role="alert" aria-live="assertive" aria-atomic="true"> \
 		<div class="toast-header text-success"> \
 			<strong class="me-auto"><i class="bi bi-exclamation-octagon"></i> Success</strong> \
 			<small>'+dateTime.toLocaleDateString("ru")+'</small> \
@@ -34,16 +34,26 @@ function showSuccessToast(successText) {
 	';
 	const toast_container = document.getElementById('toast-container');
 	toast_container.innerHTML = toast_container.innerHTML + html;
+	if (!persisit) {
+		setTimeout(() => {
+			object = document.getElementById(uid);
+			if (object == null) {
+				return;
+			}
+			object.remove();
+		}, delay);
+	}
+	return uid;
 }
 
-function showErrorToast(errorText) {
+function showErrorToast(errorText, persisit=false, delay=5000) {
 	if (errorText == undefined || !errorText ||errorText.length < 1) {
 		return;
 	}
 	const dateTime = new Date();
 	let uid = 'toast-' + dateTime.getTime() + '' + Math.random();
 	let html = ' \
-	<div class="toast fade show" id="' + uid + '" role="alert" aria-live="assertive" aria-atomic="true"> \
+	<div class="toast show" '+(persisit ? 'data-bs-autohide="false"' : 'data-bs-delay="'+delay+'"')+' id="' + uid + '" role="alert" aria-live="assertive" aria-atomic="true"> \
 		<div class="toast-header text-danger"> \
 			<strong class="me-auto"><i class="bi bi-x-circle"></i> Error</strong> \
 			<small>'+dateTime.toLocaleDateString("ru")+'</small> \
@@ -56,7 +66,16 @@ function showErrorToast(errorText) {
 	';
 	const toast_container = document.getElementById('toast-container');
 	toast_container.innerHTML = toast_container.innerHTML + html;
-	return document.getElementById(uid);
+	if (!persisit) {
+		setTimeout(() => {
+			object = document.getElementById(uid);
+			if (object == null) {
+				return;
+			}
+			object.remove();
+		}, delay);
+	}
+	return uid;
 }
 
 function validateForms() {
@@ -390,6 +409,104 @@ function changeThemeColorPrefers() {
 	setTheme(getPreferredTheme());
 }
 
+function showNotifications(response) {
+	const notificationButton = $('#notificationButton');
+	const notificationBody = $('#notificationBody');
+	notificationBody.empty();
+	if (response.message) {
+		if (response.message.count && response.message.count > 0) {
+			notificationButton.removeClass('bi-bell').addClass('bi-bell-fill text-danger');
+		} else {
+			notificationButton.removeClass('bi-bell-fill text-danger').addClass('bi-bell');
+		}
+		response.message.messages.forEach(message => {
+			if (message.read_time == '0') message.read_time = 0;
+			if (message.send_time == '0') message.send_time = 0;
+			const html = ' \
+				<div class="card mb-2 notification_card" data-id="'+message.id+'"> \
+					<div class="card-header d-flex align-items-center"> \
+						'+message.title+' \
+						' + (!message.read_time ? ' \
+							<span class="ms-2 badge text-bg-danger rounded-circle">&nbsp;</span> \
+						' : '') + ' \
+						<button type="button" data-id="'+message.id+'" class="ml-auto btn-close notification_card_close" aria-label="Close"></button> \
+					</div> \
+					<div class="card-body"> \
+						<p class="card-text"> \
+							'+message.body+' \
+						</p> \
+					</div> \
+				</div> \
+			';
+			notificationBody.append(html);
+			if (!message.read_time && !message.send_time) {
+				showSuccessToast(message.body, false, 2000);
+			}
+		});
+		// showSuccessToast(response.message, false, 5000);
+	}
+}
+
+function getNotifications(wss) {
+	wss.send('notifications', null, function(response) {
+		showNotifications(response);
+	});
+	setTimeout(function() {
+		getNotifications(wss);
+	}, 10000);
+}
+
+class WWS {
+	constructor(session_uid) {
+		console.log("WWS::constructor");
+		this.message = [];
+		this.session_uid=session_uid;
+		getNotifications(this);
+	}
+
+	send(action, params, func) {
+		this.sendRequest(action, params, func);
+	}
+
+	sendRequest(action, params, func) {
+		let sendParams = {
+			'session_uid': this.session_uid,
+			'action': action,
+			'params': params,
+		}
+		$.ajax({
+			type: "POST",
+			url : "/wss/?t="+Math.round((new Date()).getTime() / 1000),
+			cache: false,
+			dataType: "json",
+			data : sendParams,
+			beforeSend: function() {
+				console.log("WWS::send", sendParams);
+			},
+			success : function(response) {
+				if (!response) {
+					console.log("WWS::error");
+					showErrorToast("Error Websocket response", false, 2000);
+				} else if (response.error) {
+					console.log("WWS::error", response);
+					if (response.status && response.status == 401) {
+						window.location.href='/login/';
+					} else {
+						showErrorToast(response.error);
+					}
+				} else {
+					console.log("WWS::success", response);
+					func(response);
+				}
+			},
+			error : function(jqXHR, textStatus, errorThrown) {
+				console.log("WWS::error", textStatus, errorThrown);
+				showErrorToast("Error Websocket request", false, 2000);
+			}
+		});
+	}
+}
+
 Object.assign(DataTable.defaults, {
 	"pageLength": 50, // Default entries per page
 	"lengthMenu": [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
@@ -410,5 +527,20 @@ $(document).ready(function() {
 	darkModeMediaQuery.addEventListener('change', changeThemeColorPrefers);
 	validateForms();
 	togglePasswordButtons();
+
+	$('body').delegate('.notification_card', 'click', function(){
+		const notification_id = $(this).data('id');
+		if ($(this).find('.badge').length > 0) {
+			wss.send('notifications_read', {'id': notification_id}, function(response) {
+				$('.notification_card[data-id="'+notification_id+'"]>.card-header>.badge').remove();
+			});
+		}
+	});
+	$('body').delegate('.notification_card_close', 'click', function(){
+		const notification_id = $(this).data('id');
+		wss.send('notifications_delete', {'id': notification_id}, function(response) {
+			$('.notification_card[data-id="'+notification_id+'"]').remove();
+		});
+	});
 });
 
