@@ -1,6 +1,6 @@
 <?php
 
-class _Workers implements \PermissionSubject_Interface {
+class Workers implements \PermissionSubject_Interface {
 
 	const PERMISSION_WORKER = 'worker';
 
