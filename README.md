@@ -130,3 +130,5 @@ Default username: **```admin@admin.com```** and password: **```Admin@123```**
 | ---------------------------- | -------------------- | -------- | ----------------------------- |
 | MEMCACHED_HOST               |                      | string   | Memcached Host                |
 | MEMCACHED_PORT               | 11211                | integer  | Memcached Port                |
+| ---------------------------- | -------------------- | -------- | ----------------------------- |
+| TELEGRAM_BOT_TOKEN           |                      | string   | Telegram Bot Token            |

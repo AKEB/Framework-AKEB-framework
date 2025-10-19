@@ -11,13 +11,13 @@
 | ---------------------------- | -------------------- | -------- | ----------------------------- |
 | TZ                           | UTC                  | string   | Timezone                      |
 | PASSWORD_SALT                |                      | string   | Password Salt                 |
-| WEBSOCKET_PORT               | 8080                 | integer  | Websocket port                |
 | ---------------------------- | -------------------- | -------- | ----------------------------- |
+| MYSQL_DEBUG                  | false                | boolean  | MySQL Debug logs              |
 | MYSQL_HOST                   | localhost            | string   | MySQL Host                    |
 | MYSQL_PORT                   | 3306                 | integer  | MySQL Port                    |
 | MYSQL_USERNAME               | root                 | string   | MySQL User                    |
 | MYSQL_PASSWORD               |                      | string   | MySQL Password                |
-| MYSQL_DB_NAME                | mygoodip             | string   | MySQL DB Name                 |
+| MYSQL_DB_NAME                | example              | string   | MySQL DB Name                 |
 | MYSQL_DONT_USE_SLAVE         | true                 | boolean  | MySQL Dont Use Slave          |
 | MYSQL_SLAVE_HOST             | MYSQL_HOST           | string   | MySQL Slave Host              |
 | MYSQL_SLAVE_PORT             | MYSQL_PORT           | string   | MySQL Slave Port              |
@@ -54,3 +54,5 @@
 | ---------------------------- | -------------------- | -------- | ----------------------------- |
 | MEMCACHED_HOST               |                      | string   | Memcached Host                |
 | MEMCACHED_PORT               | 11211                | integer  | Memcached Port                |
+| ---------------------------- | -------------------- | -------- | ----------------------------- |
+| TELEGRAM_BOT_TOKEN           |                      | string   | Telegram Bot Token            |
