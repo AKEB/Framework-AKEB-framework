@@ -2,7 +2,6 @@
 
 interface PermissionSubject_Interface {
 
-	static public function permissions_get_type(): string;
 	static public function permissions_hash(): array;
 	static public function permissions_subject_hash(): array;
 

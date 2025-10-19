@@ -4,11 +4,6 @@ class Workers implements \PermissionSubject_Interface {
 
 	const PERMISSION_WORKER = 'worker';
 
-
-	static public function permissions_get_type(): string {
-		return 'worker';
-	}
-
 	static public function subject_hash(): array {
 		$data_hash = [];
 		foreach(static::permissions_subject_hash() as $subject_id=>$permissionTitle) {

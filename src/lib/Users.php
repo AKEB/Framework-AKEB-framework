@@ -66,10 +66,6 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 		return $user['id'];
 	}
 
-	static public function permissions_get_type(): string {
-		return 'user';
-	}
-
 	static public function subject_hash(): array {
 		$data_hash = [];
 		foreach(static::permissions_subject_hash() as $subject_id=>$permissionTitle) {

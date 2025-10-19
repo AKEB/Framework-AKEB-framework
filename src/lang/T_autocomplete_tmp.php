@@ -1097,6 +1097,22 @@ class T {
 	public static function Framework_Permissions_Group(...$argv): string { return ''; }
 
 	/**
+	 * Framework_Permissions_SubjectTypes_Group
+	 * 
+	 * @return string "Group"
+	 * @return string "Группа"
+	 */
+	public static function Framework_Permissions_SubjectTypes_Group(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Permissions_SubjectTypes_User
+	 * 
+	 * @return string "User"
+	 * @return string "Пользователь"
+	 */
+	public static function Framework_Permissions_SubjectTypes_User(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Permission_Table_Title
 	 * 
 	 * @return string "Permission"

@@ -13,31 +13,31 @@ class Permissions extends \DB\MySQLObjectTranslate {
 	const MANAGE_GROUP_PERMISSIONS = 'manage_group_permissions';
 	const IMPERSONATE_USER = 'impersonate_user';
 
-	static public function permissions_get_type(): string {
-		return 'permission';
-	}
+	private static array $permission_subject_types = [];
 
-	static public function set_subject_class(string $subject_class): bool {
-		if (!$subject_class) return false;
-		if (!class_exists($subject_class)) return false;
-		if (!in_array('PermissionSubject_Interface', class_implements($subject_class, true))) return false;
-		$param = [
-			'subject_type' => $subject_class::permissions_get_type(),
+	static public function set_subject_type(string $subject_type, string $subject_class, string $title): bool {
+		$item = [
+			'subject_type' => $subject_type,
 			'subject_class' => $subject_class,
-			'_mode' => \DB\Common::CSMODE_REPLACE,
+			'title' => $title,
 		];
-		\PermissionsSubjectTypes::save($param);
+		if (!$item['subject_type']) return false;
+		if (!$item['subject_class']) return false;
+		if (!$item['title']) return false;
+		if (!class_exists($item['subject_class'])) return false;
+		if (!in_array('PermissionSubject_Interface', class_implements($item['subject_class'], true))) return false;
+
+		static::$permission_subject_types[] = $item;
 		return true;
 	}
 
 	static public function subject_types_hash(): array {
-		$data = \PermissionsSubjectTypes::data();
-		if (!$data) return [];
-		return get_hash($data, 'subject_type', 'title');
+		if (!static::$permission_subject_types) return [];
+		return get_hash(static::$permission_subject_types, 'subject_type', 'title');
 	}
 
 	static public function get_subject_classes(): array {
-		$data = \PermissionsSubjectTypes::data();
+		$data = static::$permission_subject_types;
 		if (!$data) return [];
 		$subject_types_hash = [];
 		foreach($data as $item) {

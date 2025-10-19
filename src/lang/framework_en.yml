@@ -161,6 +161,9 @@ Framework:
     ManageGroupPermissions: "Manage Group Permissions"
     ImpersonateUser: "Impersonate Users"
     Group: "Group"
+    SubjectTypes:
+      Group: "Group"
+      User: "User"
 
   Permission:
     Table:

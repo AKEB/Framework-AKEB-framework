@@ -146,6 +146,7 @@ Framework:
     EditUser: "Редактирование пользователя &laquo;%s&raquo; id=%d"
 
 
+
   Permissions:
     Admin: "Admin"
     ManageUsers: "Управление пользователями"
@@ -159,6 +160,10 @@ Framework:
     ManageGroupPermissions: "Управление правами группы"
     ImpersonateUser: "Вход под пользователем"
     Group: "Группа"
+    SubjectTypes:
+      Group: "Группа"
+      User: "Пользователь"
+
 
   Permission:
     Table:

@@ -90,9 +90,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 		if (!isset($data['permissionsType'])) {
 			return;
 		}
-		// if (!isset(\Permissions::permissions_type()[$data['permissionsType']]) || !\Permissions::permissions_type()[$data['permissionsType']]) {
-		// 	return;
-		// }
+
 		$params = [];
 		if ($this->group_id > 0) {
 			$params['object'] = 'group';

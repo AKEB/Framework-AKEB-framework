@@ -9,10 +9,6 @@ class Groups extends \DB\MySQLObject implements \PermissionSubject_Interface {
 
 	const DEFAULT_GROUP_ID = 2;
 
-	static public function permissions_get_type(): string {
-		return 'group';
-	}
-
 	static public function subject_hash(): array {
 		$data_hash = [];
 		foreach(static::permissions_subject_hash() as $subject_id=>$permissionTitle) {

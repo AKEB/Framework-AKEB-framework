@@ -57,6 +57,9 @@ new \T([
 ]);
 new \T();
 
+\Permissions::set_subject_type('user', '\\Users', \T::Framework_Permissions_SubjectTypes_User());
+\Permissions::set_subject_type('group', '\\Groups', \T::Framework_Permissions_SubjectTypes_Group());
+
 global $error;
 $error = '';
 global $success;
