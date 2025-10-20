@@ -201,7 +201,7 @@ class Template {
 				<script nonce="<?=\CSP::nonceRandom();?>">
 					setStoredTheme('<?=static::getTheme();?>');
 					<?php if ($withHeader) { ?>
-						let wss = new WWS('<?=\Sessions::get_session_id();?>');
+						let wss = new WSS('<?=\Sessions::get_session_id();?>');
 					<?php } ?>
 				</script>
 			</head>

@@ -456,9 +456,9 @@ function getNotifications(wss) {
 	}, 10000);
 }
 
-class WWS {
+class WSS {
 	constructor(session_uid) {
-		console.log("WWS::constructor");
+		console.log("WSS::constructor");
 		this.message = [];
 		this.session_uid=session_uid;
 		getNotifications(this);
@@ -481,26 +481,26 @@ class WWS {
 			dataType: "json",
 			data : sendParams,
 			beforeSend: function() {
-				console.log("WWS::send", sendParams);
+				console.log("WSS::send", sendParams);
 			},
 			success : function(response) {
 				if (!response) {
-					console.log("WWS::error");
+					console.log("WSS::error");
 					showErrorToast("Error Websocket response", false, 2000);
 				} else if (response.error) {
-					console.log("WWS::error", response);
+					console.log("WSS::error", response);
 					if (response.status && response.status == 401) {
 						window.location.href='/login/';
 					} else {
 						showErrorToast(response.error);
 					}
 				} else {
-					console.log("WWS::success", response);
+					console.log("WSS::success", response);
 					func(response);
 				}
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
-				console.log("WWS::error", textStatus, errorThrown);
+				console.log("WSS::error", textStatus, errorThrown);
 				showErrorToast("Error Websocket request", false, 2000);
 			}
 		});
