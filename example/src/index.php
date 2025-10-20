@@ -5,12 +5,12 @@ require_once("./autoload.php");
 \ContentSecurityPolicy::init();
 
 // Add another Content Security Policy style-src
-\ContentSecurityPolicy::set_style_src([]);
-\ContentSecurityPolicy::add_style_src("'self'");
-\ContentSecurityPolicy::add_style_src("'unsafe-inline'");
+// \ContentSecurityPolicy::set_style_src([]);
+// \ContentSecurityPolicy::add_style_src("'self'");
+// \ContentSecurityPolicy::add_style_src("'unsafe-inline'");
 
 // Add another Content Security Policy media-src
-\ContentSecurityPolicy::add_media_src('https://fonts.ninja/');
+// \ContentSecurityPolicy::add_media_src('https://fonts.ninja/');
 
 // Print Content Security Policy Header
 \ContentSecurityPolicy::print_header();
