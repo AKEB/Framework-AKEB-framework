@@ -48,6 +48,7 @@ require_once("./autoload.php");
 // Add another Websocket item
 \Websocket::addAction('test', '\\Test');
 \Websocket::addAction('notification_test', '\\Test');
+\Websocket::addAction('mattermost_test', '\\Test');
 
 // ADD Another Routes
 // \Routes::addRoute('/test/', '\\App\\Test');

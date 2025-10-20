@@ -45,6 +45,7 @@ Default username: **```admin@admin.com```** and password: **```Admin@123```**
 
 - [x] Авторизация
 - [x] Локализация
+- [x] Миграции базы данных
 - [x] Права доступа
 - [x] Меню
 - [x] Изменение пароль
@@ -77,7 +78,8 @@ Default username: **```admin@admin.com```** and password: **```Admin@123```**
 - [x] Нотификация через Почту
 - [x] Нотификации на сайте
 - [x] WebSockets
-- [ ] Нотификация через Mattermost
+- [x] Content Security Policy
+- [x] Нотификация через Mattermost
 - [ ] Просмотр логов изменений
 
 ## Environments

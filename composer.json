@@ -40,7 +40,8 @@
 		"phpmailer/phpmailer": "@stable",
 		"jumbojett/openid-connect-php": "@stable",
 		"chillerlan/php-qrcode": "@stable",
-		"telegram-bot/api": "@stable"
+		"telegram-bot/api": "@stable",
+		"gnello/php-mattermost-driver": "@stable"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "@stable"

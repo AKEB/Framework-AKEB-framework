@@ -273,7 +273,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 			e403();
 		}
 
-		if (!isset(\Permissions::permissions_type()[$this->subject])) {
+		if (!in_array($this->subject, ['group', 'user'])) {
 			e403();
 		}
 

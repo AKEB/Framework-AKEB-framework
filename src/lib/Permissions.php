@@ -59,11 +59,4 @@ class Permissions extends \DB\MySQLObjectTranslate {
 		return get_hash($data, 'permission', 'title');
 	}
 
-	static public function permissions_type(): array {
-		return [
-			'group' => \T::Framework_Menu_Groups(),
-			'user' => \T::Framework_Menu_Users(),
-		];
-	}
-
 }

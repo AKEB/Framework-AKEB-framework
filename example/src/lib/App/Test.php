@@ -6,12 +6,24 @@ class Test extends \Routing_Parent implements \Routing_Interface {
 
 	public function Run() {
 		$this->check_auth();
+		$this->check_permissions();
+
 		$this->template = new \Template();
 		$this->print_header();
 
 		$this->testPermissions();
 		$this->testWebSocket();
 		$this->testNotifications();
+		$this->testMattermost();
+	}
+
+	private function check_permissions() {
+		// \Sessions::requestPermission('test_page', 0, READ);
+
+		// $can_read = \Sessions::checkPermission('test_page', 0, READ);
+		// if (!$can_read) {
+		// 	e403();
+		// }
 	}
 
 	private function print_header() {
@@ -71,6 +83,26 @@ class Test extends \Routing_Parent implements \Routing_Interface {
 				$('.notification_test').on('click', function(){
 					wss.send('notification_test',null,(response)=>{
 						// showSuccessToast(response.message, false, 2000);
+					})
+				});
+			});
+		</script>
+		<?php
+	}
+
+	private function testMattermost() {
+		?>
+		<h2 class="mt-3">Testing Mattermost</h2>
+		<button class="btn btn-warning mattermost_test">Send test message</button>
+		<script nonce="<?=\CSP::nonceRandom();?>">
+			$(document).ready(function() {
+				$('.mattermost_test').on('click', function(){
+					wss.send('mattermost_test',null,(response)=>{
+						if (response.message == false) {
+							showErrorToast('Error sending message', false, 5000);
+						} else {
+							showSuccessToast('Message sent successfully', false, 5000);
+						}
 					})
 				});
 			});
