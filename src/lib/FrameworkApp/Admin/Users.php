@@ -151,19 +151,19 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 				<thead class="">
 					<tr>
 					<th scope="col" class="align-middle" data-priority="1">ID</th>
-					<th scope="col" class="align-middle" data-priority="2"><?=\T::Framework_Users_Table_Name();?></th>
-					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Surname();?></th>
-					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Email();?></th>
-					<th scope="col" class="align-middle"><?=\T::Framework_Users_Table_Status();?></th>
-					<th scope="col" class="align-middle text-center"><?=\T::Framework_Common_RegisterTime();?></th>
-					<th scope="col" class="align-middle text-center"><?=\T::Framework_Common_LoginTime();?></th>
-					<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Groups();?></th>
-					<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Permissions();?></th>
+					<th scope="col" class="align-middle" data-priority="5"><?=\T::Framework_Users_Table_Name();?></th>
+					<th scope="col" class="align-middle" data-priority="5"><?=\T::Framework_Users_Table_Surname();?></th>
+					<th scope="col" class="align-middle" data-priority="2"><?=\T::Framework_Users_Table_Email();?></th>
+					<th scope="col" class="align-middle" data-priority="4"><?=\T::Framework_Users_Table_Status();?></th>
+					<th scope="col" class="align-middle text-center" data-priority="6"><?=\T::Framework_Common_RegisterTime();?></th>
+					<th scope="col" class="align-middle text-center" data-priority="6"><?=\T::Framework_Common_LoginTime();?></th>
+					<th scope="col" class="d-none d-xl-table-cell align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Groups();?></th>
+					<th scope="col" class="d-none d-xl-table-cell align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Permissions();?></th>
 					<?php if ($this->can_impersonate) { ?>
-						<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_ImpersonateUser();?></th>
+						<th scope="col" class="d-none d-xl-table-cell align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_ImpersonateUser();?></th>
 					<?php } ?>
 					<?php if ($this->can_delete) {?>
-						<th scope="col" class="d-none d-xl-table-cell align-middle text-center"><?=\T::Framework_Users_Table_Delete();?></th>
+						<th scope="col" class="d-none d-xl-table-cell align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Delete();?></th>
 					<?php } ?>
 					<th scope="col" class="d-table-cell d-xl-none align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Actions();?></th>
 					</tr>
@@ -234,7 +234,23 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 								}
 								?>
 							</td>
-							<td class="align-middle text-center"><?=$params['email'];?></td>
+							<td class="align-middle">
+								<?php
+								if ($can_write_user) {
+									?>
+									<span class="d-inline pointer text-info editUserAction" data-user-id="<?=$params['id'];?>">
+										<?=$params['email'];?>
+									</span>
+									<?php
+								} else {
+									?>
+									<span class="d-inline">
+										<?=$params['email'];?>
+									</span>
+									<?php
+								}
+								?>
+							</td>
 							<td class="align-middle text-center"><?=$params['status'];?></td>
 							<td class="align-middle text-center"><?=$params['register_time'];?></td>
 							<td class="align-middle text-center"><?=$params['login_time'];?></td>

@@ -289,11 +289,11 @@ class Template {
 		?>
 		<header class="p-3 mb-3 ">
 			<div class="container pb-3 border-bottom">
-				<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-					<a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
+				<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start">
+					<a href="/" class="d-flex align-items-center mb-2 mb-md-0 link-body-emphasis text-decoration-none">
 						<img src="/images/android-icon-48x48.png" alt="<?=static::getProjectName();?>" width="48" height="48" class="rounded-circle">
 					</a>
-					<ul class="nav nav-underline col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+					<ul class="nav nav-underline col-12 col-md-auto me-md-auto mb-2 justify-content-center mb-md-0">
 						<?php
 						foreach ($menu_items as $item) {
 							if (isset($item['items'])) {
@@ -341,14 +341,7 @@ class Template {
 					<button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#notificationCanvas" aria-controls="notificationCanvas">
 						<i id="notificationButton" class="bi bi-bell h4"></i>
 					</button>
-					<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationCanvas" aria-labelledby="notificationCanvasLabel">
-						<div class="offcanvas-header">
-							<h5 class="offcanvas-title" id="notificationCanvasLabel"><?=\T::Framework_Notifications_Title();?></h5>
-						</div>
-						<div class="offcanvas-body" id="notificationBody"></div>
-					</div>
-
-					<div class="dropdown text-end me-4">
+					<div class="dropdown text-md-end me-4">
 						<a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 							<img src="<?=$userAvatar;?>" alt="avatar" width="32" height="32" class="rounded-circle"> <?=$currentUser['name'];?>
 						</a>
@@ -358,6 +351,12 @@ class Template {
 							<li><a class="dropdown-item" href="/logout/"><i class="bi bi-box-arrow-right"></i> <?=\T::Framework_SignOut();?></a></li>
 						</ul>
 					</div>
+				</div>
+				<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationCanvas" aria-labelledby="notificationCanvasLabel">
+					<div class="offcanvas-header">
+						<h5 class="offcanvas-title" id="notificationCanvasLabel"><?=\T::Framework_Notifications_Title();?></h5>
+					</div>
+					<div class="offcanvas-body" id="notificationBody"></div>
 				</div>
 			</div>
 		</header>
