@@ -385,13 +385,16 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 	private function print_header() {
 		?>
 		<div class="float-start">
-			<h1><i class="bi bi-file-earmark-lock"></i>
-			<?php if ($this->group_id && $this->group) {
-				echo \T::Framework_Menu_GroupPermissions($this->group['title'], $this->group['id']);
-			} elseif ($this->user_id && $this->user) {
-				echo \T::Framework_Menu_UserPermissions($this->user['name'], $this->user['surname'], $this->user['id']);
-			}
-			?>
+			<h1>
+				<?php if ($this->group_id && $this->group) { ?>
+					<a href="/admin/groups/" class="text-info"><i class="bi bi-arrow-left-circle"></i></a>
+					<i class="bi bi-file-earmark-lock"></i>
+					<?=\T::Framework_Menu_GroupPermissions($this->group['title'], $this->group['id']);?>
+				<?php } elseif ($this->user_id && $this->user) { ?>
+					<a href="/admin/users/" class="text-info"><i class="bi bi-arrow-left-circle"></i></a>
+					<i class="bi bi-file-earmark-lock"></i>
+					<?=\T::Framework_Menu_UserPermissions($this->user['name'], $this->user['surname'], $this->user['id']);?>
+				<?php } ?>
 		</div>
 		<?php
 			if ($this->can_write) {

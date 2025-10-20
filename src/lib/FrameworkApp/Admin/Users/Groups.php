@@ -161,7 +161,9 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 	private function print_header() {
 		?>
-		<div class="float-start"><h1><i class="bi bi-person"></i> <?=\T::Framework_Menu_UserGroups($this->user['name'], $this->user['surname'], $this->user['id']);?></h1></div>
+		<div class="float-start"><h1>
+			<a href="/admin/users/" class="text-info"><i class="bi bi-arrow-left-circle"></i></a>
+			<i class="bi bi-person"></i> <?=\T::Framework_Menu_UserGroups($this->user['name'], $this->user['surname'], $this->user['id']);?></h1></div>
 		<?php
 			if ($this->can_write) {
 				?>

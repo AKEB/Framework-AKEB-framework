@@ -157,15 +157,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 					<th scope="col" class="align-middle" data-priority="4"><?=\T::Framework_Users_Table_Status();?></th>
 					<th scope="col" class="align-middle text-center" data-priority="6"><?=\T::Framework_Common_RegisterTime();?></th>
 					<th scope="col" class="align-middle text-center" data-priority="6"><?=\T::Framework_Common_LoginTime();?></th>
-					<th scope="col" class="d-none d-xl-table-cell align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Groups();?></th>
-					<th scope="col" class="d-none d-xl-table-cell align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Permissions();?></th>
-					<?php if ($this->can_impersonate) { ?>
-						<th scope="col" class="d-none d-xl-table-cell align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_ImpersonateUser();?></th>
-					<?php } ?>
-					<?php if ($this->can_delete) {?>
-						<th scope="col" class="d-none d-xl-table-cell align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Delete();?></th>
-					<?php } ?>
-					<th scope="col" class="d-table-cell d-xl-none align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Actions();?></th>
+					<th scope="col" class="align-middle text-center" data-priority="3"><?=\T::Framework_Users_Table_Actions();?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -254,63 +246,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 							<td class="align-middle text-center"><?=$params['status'];?></td>
 							<td class="align-middle text-center"><?=$params['register_time'];?></td>
 							<td class="align-middle text-center"><?=$params['login_time'];?></td>
-							<td class="d-none d-xl-table-cell align-middle text-center">
-								<?php
-								if ($can_read_groups || $can_write_groups) {
-									?>
-									<a href="/admin/users/<?=$params['id'];?>/groups/"><i class="bi bi-people fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Groups();?>"></i></a>
-									<?php
-								} else {
-									?><i class="bi bi-people fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Groups();?>"></i><?php
-								}
-								?>
-							</td>
-							<td class="d-none d-xl-table-cell align-middle text-center">
-								<?php
-								if ($can_read_permissions || $can_write_permissions) {
-									?>
-									<a href="/admin/permissions/user/<?=$params['id'];?>/"><i class="bi bi-file-earmark-lock fs-4 text-info pointer" title="<?=\T::Framework_Users_Table_Permissions();?>"></i></a>
-									<?php
-								} else {
-									?><i class="bi bi-file-earmark-lock fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Permissions();?>"></i><?php
-								}
-								?>
-							</td>
-							<?php if ($this->can_impersonate) { ?>
-								<td class="d-none d-xl-table-cell align-middle text-center">
-									<?php
-									if ($can_impersonate_user) {
-										?>
-										<i class="bi bi-box-arrow-in-right fs-4 text-warning pointer impersonateUserAction"
-											data-user-id = "<?=$params['id'];?>"
-											title="<?=\T::Framework_Users_Table_ImpersonateUser();?>"
-										></i>
-										<?php
-									} else {
-										?><i class="bi bi-box-arrow-in-right fs-4 text-secondary" title="<?=\T::Framework_Users_Table_ImpersonateUser();?>"></i><?php
-									}
-									?>
-								</td>
-							<?php } ?>
-							<?php if ($this->can_delete) {?>
-								<td class="d-none d-xl-table-cell align-middle text-center">
-									<?php
-									if ($can_delete_user) {
-										?>
-										<i class="bi bi-trash fs-4 text-danger pointer deleteUserAction"
-											data-user-id = "<?=$params['id'];?>"
-											data-user-name = "<?=addslashes($params['name'].' '.$params['surname']);?>"
-											title="<?=\T::Framework_Users_Table_Delete();?>"
-										></i>
-										<?php
-									} else {
-										?><i class="bi bi-trash fs-4 text-secondary" title="<?=\T::Framework_Users_Table_Delete();?>"></i><?php
-									}
-									?>
-								</td>
-							<?php } ?>
-
-							<td class="d-table-cell d-xl-none align-middle text-center">
+							<td class="align-middle text-center">
 								<?php
 								if ($can_read_groups || $can_write_groups) {
 									?>

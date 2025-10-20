@@ -322,22 +322,22 @@ class Template {
 						}
 						?>
 					</ul>
-					<div>
-						<?php
-						if (\Config::getInstance()->app_debug) {
-							?>
-							<div class="d-inline me-4 fs-6 text-info-emphasis">
-								<span class="d-inline d-sm-none">XS</span>
-								<span class="d-none d-sm-inline d-md-none">SM</span>
-								<span class="d-none d-md-inline d-lg-none">MD</span>
-								<span class="d-none d-lg-inline d-xl-none">LG</span>
-								<span class="d-none d-xl-inline d-xxl-none">XL</span>
-								<span class="d-none d-xxl-inline">XXL</span>
-							</div>
-							<?php
-						}
+					<?php
+					if (\Config::getInstance()->app_debug) {
 						?>
-					</div>
+						<div>
+						<div class="d-inline me-4 fs-6 text-warning-emphasis">
+							<span class="d-inline d-sm-none">XS</span>
+							<span class="d-none d-sm-inline d-md-none">SM</span>
+							<span class="d-none d-md-inline d-lg-none">MD</span>
+							<span class="d-none d-lg-inline d-xl-none">LG</span>
+							<span class="d-none d-xl-inline d-xxl-none">XL</span>
+							<span class="d-none d-xxl-inline">XXL</span>
+						</div>
+						</div>
+						<?php
+					}
+					?>
 					<button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#notificationCanvas" aria-controls="notificationCanvas">
 						<i id="notificationButton" class="bi bi-bell h4"></i>
 					</button>
@@ -354,7 +354,10 @@ class Template {
 				</div>
 				<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationCanvas" aria-labelledby="notificationCanvasLabel">
 					<div class="offcanvas-header">
-						<h5 class="offcanvas-title" id="notificationCanvasLabel"><?=\T::Framework_Notifications_Title();?></h5>
+						<h5 class="offcanvas-title" id="notificationCanvasLabel">
+							<i class="bi bi-arrow-left-circle text-info pointer" data-bs-dismiss="offcanvas" aria-label="Close"></i>
+							<?=\T::Framework_Notifications_Title();?>
+						</h5>
 					</div>
 					<div class="offcanvas-body" id="notificationBody"></div>
 				</div>
