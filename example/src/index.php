@@ -1,6 +1,20 @@
 <?php
 require_once("./autoload.php");
 
+// Content Security Policy
+\ContentSecurityPolicy::init();
+
+// Add another Content Security Policy style-src
+\ContentSecurityPolicy::set_style_src([]);
+\ContentSecurityPolicy::add_style_src("'self'");
+\ContentSecurityPolicy::add_style_src("'unsafe-inline'");
+
+// Add another Content Security Policy media-src
+\ContentSecurityPolicy::add_media_src('https://fonts.ninja/');
+
+// Print Content Security Policy Header
+\ContentSecurityPolicy::print_header();
+
 // Add another permissions subject types
 \Permissions::set_subject_type('worker', '\\Workers', 'Workers');
 
@@ -33,6 +47,7 @@ require_once("./autoload.php");
 
 // Add another Websocket item
 \Websocket::addAction('test', '\\Test');
+\Websocket::addAction('notification_test', '\\Test');
 
 // ADD Another Routes
 // \Routes::addRoute('/test/', '\\App\\Test');

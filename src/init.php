@@ -44,7 +44,6 @@ if (\Config::getInstance()->memcached_host) {
 	\Cache::$memcache_cache_enable=false;
 }
 
-new \CSP();
 new \T([
 	'en' => \Config::getInstance()->development ?
 		'vendor/akeb/framework/src/lang/framework_en.yml'

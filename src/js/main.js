@@ -440,7 +440,7 @@ function showNotifications(response) {
 			';
 			notificationBody.append(html);
 			if (!message.read_time && !message.send_time) {
-				showSuccessToast(message.body, false, 2000);
+				showSuccessToast(message.body, false, 5000);
 			}
 		});
 		// showSuccessToast(response.message, false, 5000);
@@ -453,7 +453,7 @@ function getNotifications(wss) {
 	});
 	setTimeout(function() {
 		getNotifications(wss);
-	}, 10000);
+	}, 5000);
 }
 
 class WSS {

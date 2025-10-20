@@ -9,15 +9,37 @@ class Test extends \Routing_Parent implements \Routing_Interface {
 		$this->template = new \Template();
 		$this->print_header();
 
+		$this->testPermissions();
+		$this->testWebSocket();
+		$this->testNotifications();
+	}
+
+	private function print_header() {
+		?>
+		<div class="float-start"><h1><i class="bi bi-code-square"></i> <?=\T::TestPage();?></h1></div>
+		<div class="clearfix"></div>
+		<?php
+	}
+
+	private function testPermissions() {
 		?>
 		<h2 class="mt-3">Testing Permissions</h2>
 		<?php
-		if (\Sessions::checkPermission('worker', 1, READ)) echo "worker 1<br/>\n";
-		if (\Sessions::checkPermission('worker', 2, READ)) echo "worker 2<br/>\n";
-		if (\Sessions::checkPermission('worker', 3, READ)) echo "worker 3<br/>\n";
-		if (\Sessions::checkPermission('worker', 4, READ)) echo "worker 4<br/>\n";
-		if (\Sessions::checkPermission('worker', 5, READ)) echo "worker 5<br/>\n";
+		$worker_objects = [
+			'1' => 'worker',
+			'2' => 'worker',
+			'3' => 'worker',
+			'4' => 'worker',
+			'5' => 'worker',
+		];
+		echo '<ul>';
+		foreach($worker_objects as $worker_object=>$worker_permission) {
+			echo '<li> <i class="bi '.(\Sessions::checkPermission($worker_permission, $worker_object, READ) ? 'bi-check-circle text-success':'bi-dash-circle text-danger').'"></i> '.ucfirst($worker_permission).' '.$worker_object.'</li>';
+		}
+		echo '</ul>';
+	}
 
+	private function testWebSocket() {
 		?>
 		<h2 class="mt-3">Testing WebSocket</h2>
 		<button class="btn btn-warning websocket_getUserName">Get user name Button</button>
@@ -40,10 +62,19 @@ class Test extends \Routing_Parent implements \Routing_Interface {
 		<?php
 	}
 
-	private function print_header() {
+	private function testNotifications() {
 		?>
-		<div class="float-start"><h1><i class="bi bi-code-square"></i> <?=\T::TestPage();?></h1></div>
-		<div class="clearfix"></div>
+		<h2 class="mt-3">Testing Notifications</h2>
+		<button class="btn btn-warning notification_test">Send test notification</button>
+		<script nonce="<?=\CSP::nonceRandom();?>">
+			$(document).ready(function() {
+				$('.notification_test').on('click', function(){
+					wss.send('notification_test',null,(response)=>{
+						// showSuccessToast(response.message, false, 2000);
+					})
+				});
+			});
+		</script>
 		<?php
 	}
 }
