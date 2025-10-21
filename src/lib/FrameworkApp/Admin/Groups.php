@@ -61,7 +61,9 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			];
 			\Groups::save($params);
 			$newGroup = \Groups::get(['id' => $groupId]);
-			\Logs::update_log(\Groups::LOGS_OBJECT, $groupId, $oldGroup, $newGroup);
+			\Logs::update_log(\Groups::LOGS_OBJECT, $groupId, $oldGroup, $newGroup,[
+				'_save_fields' => ['id'],
+			]);
 			common_redirect('/admin/groups/');
 		} else {
 			// Create

@@ -216,7 +216,9 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 			$new_permission = \ObjectPermissions::get($new_id);
 			$log_id = 0;
 			if ($old_perm) {
-				$log_id = \Logs::update_log(\ObjectPermissions::LOGS_OBJECT, $new_id, $old_perm, $new_permission);
+				$log_id = \Logs::update_log(\ObjectPermissions::LOGS_OBJECT, $new_id, $old_perm, $new_permission, [
+					'_save_fields' => ['subject', 'subject_id', 'object', 'object_id'],
+				]);
 			} else {
 				$log_id = \Logs::create_log(\ObjectPermissions::LOGS_OBJECT, $new_id, $new_permission);
 

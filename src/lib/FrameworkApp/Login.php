@@ -44,6 +44,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 				$new_user = \Users::get(['id' => $user['id']]);
 				\Logs::update_log(\Users::LOGS_OBJECT, $user['id'], $user, $new_user,[
 					'ip' => \Sessions::client_ip(),
+					'_save_fields' => ['id'],
 				],'',$user['id'],$user['id']);
 				$this->token = '';
 				$this->email_verification_user = 0;

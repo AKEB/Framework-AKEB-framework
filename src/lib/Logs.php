@@ -88,10 +88,12 @@ class Logs extends \DB\MySQLObject{
 			$json_data['data'][$key]['new'] = $value;
 		}
 		foreach($json_data['data'] as $key => $value) {
+			if (isset($json_data['_save_fields']) && in_array($key, $json_data['_save_fields'])) continue;
 			if ($value['old'] == $value['new']) {
 				unset($json_data['data'][$key]);
 			}
 		}
+		if (isset($json_data['_save_fields'])) unset($json_data['_save_fields']);
 		return static::log($code, static::ACTION_UPDATE, $object, $object_id, $json_data);
 	}
 
@@ -128,7 +130,7 @@ class Logs extends \DB\MySQLObject{
 		if (strpos($k, 'password') !== false || strpos($k, '2fa') !== false || strpos($k, 'secret') !== false) {
 			return \Config::getInstance()->_hide_password($v);
 		}
-		return $v ? $v : '';
+		return $v ? $v : "''";
 	}
 
 	static public function format_json_data(array $json_data=[], int $space=0): string {
@@ -144,20 +146,22 @@ class Logs extends \DB\MySQLObject{
 			$return .= ': ';
 			if ($array) {
 				$return .= "{\n";
-				$return .= static::format_json_data($v, ++$space);
+				$return .= static::format_json_data($v, $space+1);
 				$return .= "}\n";
 			} else {
 				if (is_array($v) && count($v) == 2 && isset($v['old']) && isset($v['new'])) {
-					$return .= '<span class="text-secondary">'.static::_print_k_v($k, $v['old']).'</span>';
-					$return .= ' => ';
+					if ($v['old'] != $v['new']) {
+						$return .= '<span class="text-secondary">'.static::_print_k_v($k, $v['old']).'</span>';
+						$return .= ' => ';
+					}
 					$return .= '<span class="text-info">'.static::_print_k_v($k, $v['new']).'</span>';
 				} elseif (is_array($v)) {
 					$return .= '<span class="text-info">'.json_encode($v).'</span>';
 				} else {
 					$return .= '<span class="text-info">'.static::_print_k_v($k, $v).'</span>';
 				}
+				$return .= "\n";
 			}
-			$return .= "\n";
 		}
 
 		return $return;

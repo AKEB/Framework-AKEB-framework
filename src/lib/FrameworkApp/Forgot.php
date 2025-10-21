@@ -67,6 +67,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 			$new_user = \Users::get(['id' => $user['id']]);
 			\Logs::update_log(\Users::LOGS_OBJECT, $this->user['id'], $user, $new_user,[
 				'ip' => \Sessions::client_ip(),
+				'_save_fields' => ['id'],
 			],'',$this->user['id'],$this->user['id']);
 			// Assuming you have a mailer service
 			\Mail::send($user['email'], $subject, $body);
@@ -110,6 +111,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 		$new_user = \Users::get(['id' => $this->user['id']]);
 		\Logs::update_log(\Users::LOGS_OBJECT, $this->user['id'], $old_user, $new_user,[
 			'ip' => \Sessions::client_ip(),
+			'_save_fields' => ['id'],
 		],'',$this->user['id'],$this->user['id']);
 		// Redirect to login page with a success message
 		common_redirect('/login/');

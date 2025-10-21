@@ -137,7 +137,10 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		$old_user = \Users::get(['id' => $this->currentUser['id']]);
 		\Users::save($params);
 		$new_user = \Users::get(['id' => $this->currentUser['id']]);
-		\Logs::update_log(\Users::LOGS_OBJECT, $this->currentUser['id'], $old_user, $new_user);
+		\Logs::update_log(\Users::LOGS_OBJECT, $this->currentUser['id'], $old_user, $new_user,[
+			'ip' => \Sessions::client_ip(),
+			'_save_fields' => ['id'],
+		]);
 		$_POST = [];
 		$this->currentUser['flags'] = $this->currentUser['flags'] & ~\Users::FLAGS_NEED_CHANGE_PASSWORD;
 		\Sessions::set_current_user($this->currentUser['id']);
@@ -225,7 +228,10 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		$old_user = \Users::get(['id' => $this->currentUser['id']]);
 		\Users::save($params);
 		$new_user = \Users::get(['id' => $this->currentUser['id']]);
-		\Logs::update_log(\Users::LOGS_OBJECT, $this->currentUser['id'], $old_user, $new_user);
+		\Logs::update_log(\Users::LOGS_OBJECT, $this->currentUser['id'], $old_user, $new_user,[
+			'ip' => \Sessions::client_ip(),
+			'_save_fields' => ['id'],
+		]);
 		$this->successText = \T::Framework_Settings_ProfileUpdatedSuccessfully();
 		$this->currentUser = \Users::get(['id' => $this->currentUser['id']]);
 	}

@@ -131,7 +131,9 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				$params['_mode'] = \DB\Common::CSMODE_UPDATE;
 				$user_id = \Users::save($params);
 				$new_user = \Users::get(['id' => $params['id']]);
-				\Logs::update_log(\Users::LOGS_OBJECT, $params['id'], $old_user, $new_user);
+				\Logs::update_log(\Users::LOGS_OBJECT, $params['id'], $old_user, $new_user,[
+					'_save_fields' => ['id'],
+				]);
 				$user = \Users::get(['id' => $user_id]);
 				if (!$user) {
 					$this->error = \T::Framework_Settings_UserNotFound();
