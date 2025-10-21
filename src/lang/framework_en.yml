@@ -246,6 +246,7 @@ Framework:
       Time: "Date"
       Trace: "Trace"
     Filter:
+      Group: "Group"
       User: "User"
       Date: "Date"
       Code: "Code"

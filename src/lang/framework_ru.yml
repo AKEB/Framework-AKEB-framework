@@ -239,6 +239,7 @@ Framework:
       StartImpersonate: "Вход под пользователем"
       StopImpersonate: "Выход из под пользователя"
     Report:
+      Group: "Группа"
       User: "Пользователь"
       Code: "Код"
       Action: "Действие"

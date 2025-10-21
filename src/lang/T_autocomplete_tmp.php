@@ -1625,6 +1625,22 @@ class T {
 	public static function Framework_Logs_Report_Trace(...$argv): string { return ''; }
 
 	/**
+	 * Framework_Logs_Report_Group
+	 * 
+	 * @return string "Группа"
+	 * @return string ""
+	 */
+	public static function Framework_Logs_Report_Group(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_Group
+	 * 
+	 * @return string "Group"
+	 * @return string ""
+	 */
+	public static function Framework_Logs_Filter_Group(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Logs_Filter_User
 	 * 
 	 * @return string "User"

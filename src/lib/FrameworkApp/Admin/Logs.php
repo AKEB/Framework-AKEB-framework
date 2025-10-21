@@ -70,10 +70,11 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 		}
 		if ($this->object || $this->object_id) {
 			$params['_join'] = 'LEFT JOIN `log_tags` AS lt ON lt.`log_id`=t.`id` OR lt.`log_id` is NULL ';
-			if ($this->object) {
+			if ($this->object && $this->object_id) {
+				$sql .= sql_pholder(' AND ((t.`object` IN (?@) AND t.`object_id`=?) OR (lt.`object` IN (?@) AND lt.`object_id`=?))', $this->object, $this->object_id, $this->object, $this->object_id);
+			} elseif ($this->object) {
 				$sql .= sql_pholder(' AND (t.`object` IN (?@) OR lt.`object` IN (?@))', $this->object, $this->object);
-			}
-			if ($this->object_id) {
+			} elseif ($this->object_id) {
 				$sql .= sql_pholder(' AND (t.`object_id`=? OR lt.`object_id`=?)', $this->object_id, $this->object_id);
 			}
 		}
@@ -82,7 +83,7 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 		$logs = \Logs::data(false, $sql, 't.*', false, false, $params);
 		$this->logs_action_hash = \Logs::action_hash();
 		$user_ids = [];
-		$group_ids = [];
+		// $group_ids = [];
 		$log_ids = [];
 		$this->logs = [];
 		$this->users = [];
@@ -102,14 +103,10 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 			];
 			if ($log['object'] == \Users::LOGS_OBJECT) {
 				$user_ids[$log['object_id']] = $log['object_id'];
-			} elseif ($log['object'] == \Groups::LOGS_OBJECT) {
-				$group_ids[$log['object_id']] = $log['object_id'];
+			// } elseif ($log['object'] == \Groups::LOGS_OBJECT) {
+			// 	$group_ids[$log['object_id']] = $log['object_id'];
 			}
 			$log['objects'] = [];
-			// if (!isset($log['objects'][$log['object']])) {
-				// $log['objects'][$log['object']] = [];
-			// }
-			// $log['objects'][$log['object']][$log['object_id']] = $log['object'].'_'.$log['object_id'];
 
 			$this->logs[$log['id']] = $log;
 			$log_ids[$log['id']] = $log['id'];
@@ -123,13 +120,13 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 				if (isset($this->logs[$log_tag['log_id']])) {
 					if ($log_tag['object'] == \Users::LOGS_OBJECT) {
 						$user_ids[$log_tag['object_id']] = $log_tag['object_id'];
-					} elseif ($log_tag['object'] == \Groups::LOGS_OBJECT) {
-						$group_ids[$log_tag['object_id']] = $log_tag['object_id'];
+					// } elseif ($log_tag['object'] == \Groups::LOGS_OBJECT) {
+					// 	$group_ids[$log_tag['object_id']] = $log_tag['object_id'];
 					}
 					if (!isset($this->logs[$log_tag['log_id']]['objects'][$log_tag['object']])) {
 						$this->logs[$log_tag['log_id']]['objects'][$log_tag['object']] = [];
 					}
-					$this->logs[$log_tag['log_id']]['objects'][$log_tag['object']][$log_tag['object_id']] = $log_tag['object'].'_'.$log_tag['object_id'];
+					$this->logs[$log_tag['log_id']]['objects'][$log_tag['object']][$log_tag['object_id']] = true;
 				}
 			}
 		}
@@ -139,12 +136,12 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 				$this->users[$user['id']] = sprintf('%s %s (%s) [ID=%d]', $user['name'], $user['surname'], $user['email'], $user['id']);
 			}
 		}
-		if ($group_ids) {
-			$groups = \Groups::data(['id' => array_keys($group_ids)],'','id, title');
-			foreach($groups as $group) {
-				$this->groups[$group['id']] = sprintf('%s [ID=%d]', $group['title'], $group['id']);
-			}
-		}
+		// if ($group_ids) {
+		// 	$groups = \Groups::data(['id' => array_keys($group_ids)],'','id, title');
+		// 	foreach($groups as $group) {
+		// 		$this->groups[$group['id']] = sprintf('%s [ID=%d]', $group['title'], $group['id']);
+		// 	}
+		// }
 	}
 
 	private function print_header() {
@@ -369,17 +366,21 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 					foreach ($this->logs as $log) {
 						$objects = [];
 						foreach($log['objects'] as $object=>$v) {
+							$object_title = $object;
+							if (isset(\Logs::object_hash()[$object_title])) {
+								$object_title = \Logs::object_hash()[$object_title];
+							}
 							if ($object == \Users::LOGS_OBJECT) {
-								foreach($v as $id=>$name) {
-									$objects[] = '<span class="badge text-bg-info">'.($this->users[$id] ?? $name).'</span>';
+								foreach($v as $id=>$_) {
+									$objects[] = '<span class="badge text-bg-info">'.($this->users[$id] ?? ($object_title.' [ID='.$id.']')).'</span>';
 								}
 							} elseif ($object == \Groups::LOGS_OBJECT) {
-								foreach($v as $id=>$name) {
-									$objects[] = '<span class="badge text-bg-warning">'.($this->groups[$id] ?? $name).'</span>';
+								foreach($v as $id=>$_) {
+									$objects[] = '<span class="badge text-bg-warning">'.$object_title.' [ID='.$id.']'.'</span>';
 								}
 							} else {
-								foreach($v as $id=>$name) {
-									$objects[] = '<span class="badge text-bg-secondary">'.$name.'</span>';
+								foreach($v as $id=>$_) {
+									$objects[] = '<span class="badge text-bg-secondary">'.$object_title.' [ID='.$id.']'.'</span>';
 								}
 							}
 						}
