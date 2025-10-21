@@ -187,7 +187,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 	private function print_header() {
 		?>
-		<div class="float-start"><h1><i class="bi bi-people"></i> <?=\T::Framework_Menu_Groups();?></h1></div>
+		<div class="float-start"><h2><i class="bi bi-people"></i> <?=\T::Framework_Menu_Groups();?></h2></div>
 		<?php if ($this->can_create_group) {
 			?>
 			<div class="float-end">
@@ -313,7 +313,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		?>
 		<div class="modal" id="deleteGroupModal" tabindex="-1" role="dialog" aria-labelledby="deleteGroupModalLabel" aria-modal="true">
 			<div class="modal-dialog" role="document">
-				<div class="modal-content bg-dark">
+				<div class="modal-content">
 				<div class="modal-header border-secondary">
 					<h5 class="modal-title" id="deleteGroupModalLabel"><?=\T::Framework_Groups_Delete_Title();?></h5>
 					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Framework_Common_Close();?>" title="<?=\T::Framework_Common_Close();?>"></button>
@@ -331,7 +331,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 		<div class="modal" id="createGroupModal" tabindex="-1" role="dialog" aria-labelledby="createGroupModalLabel" aria-modal="true">
 			<div class="modal-dialog modal-fullscreen-md-down" role="document">
-				<div class="modal-content bg-dark">
+				<div class="modal-content">
 					<form action="/admin/groups/save/" class="needs-validation" method="post" novalidate>
 						<div class="modal-header border-secondary">
 							<h5 class="modal-title" id="createGroupModalLabel"><?=\T::Framework_Groups_ModalTitle();?></h5>
@@ -413,6 +413,12 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 				createGroupId.value = groupId;
 				createGroupTitle.value = groupTitle;
+
+				if (createGroupId.value) {
+					confirmCreateBtn.textContent = '<?=\T::Framework_Common_Save();?>';
+				} else {
+					confirmCreateBtn.textContent = '<?=\T::Framework_Common_Create();?>';
+				}
 
 				modal.show();
 

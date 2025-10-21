@@ -286,7 +286,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		];
 		\Users::save($params);
-		\Logs::log('Login',\Logs::ACTION_LOGIN,'user', $currentUser['id'],[
+		\Logs::log('Login',\Logs::ACTION_LOGIN,\Users::LOGS_OBJECT, $currentUser['id'],[
 			'ip' => \Sessions::client_ip(),
 			'user_agent' => $_SERVER['HTTP_USER_AGENT'],
 
@@ -345,7 +345,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		<div class="container py-5 h-100">
 			<div class="row d-flex justify-content-center align-items-center h-100">
 				<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-					<div class="card bg-dark text-white loginCard">
+					<div class="card loginCard">
 						<div class="card-body p-5 pt-1 text-center">
 							<form action="/login/" method="post">
 								<input type="hidden" name="action" value="signin"/>
@@ -371,18 +371,18 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 										<input type="hidden" name="email"  value="<?=$this->email;?>">
 										<input type="hidden" name="password"  value="<?=$this->password;?>">
 										<?php $this->template->html_totp('totp');?>
-										<button class="btn btn-outline-light btn-lg px-5 mb-3 signInButton" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
+										<button class="btn btn-outline-secondary btn-lg px-5 mb-3 signInButton" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
 									<?php } elseif ($this->email_verification_user) { ?>
 										<input type="hidden" name="user_id"  value="<?=$this->email_verification_user;?>">
-										<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3" name="resendEmail" value="true" type="submit"><?=\T::Framework_Login_ResendEmailVerificationButton();?></button><br/>
+										<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-secondary btn-lg px-5 mb-3" name="resendEmail" value="true" type="submit"><?=\T::Framework_Login_ResendEmailVerificationButton();?></button><br/>
 									<?php } else { ?>
 										<?php if (\Config::getInstance()->app_signin_active) { ?>
-											<p class="text-white-50 mb-3"><?=\T::Framework_Login_Subtitle();?></p>
-											<div data-mdb-input-init class="form-outline form-white mb-2">
+											<p class="text-secondary-50 mb-3"><?=\T::Framework_Login_Subtitle();?></p>
+											<div data-mdb-input-init class="form-outline form-secondary mb-2">
 												<label class="form-label" for="typeEmailX"><?=\T::Framework_Login_Email();?></label>
 												<input type="email" id="typeEmailX" name="email" class="form-control form-control-lg" value="<?=isset($_POST['email']) && $_POST['email'] ?htmlspecialchars($_POST['email']) : ''?>"/>
 											</div>
-											<div data-mdb-input-init class="form-outline form-white mb-2">
+											<div data-mdb-input-init class="form-outline form-secondary mb-2">
 												<label class="form-label" for="typePasswordX"><?=\T::Framework_Login_Password();?></label>
 												<div class="input-group">
 													<input type="password" class="form-control form-control-lg" id="typePasswordX" name="password">
@@ -391,20 +391,20 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 													</button>
 												</div>
 											</div>
-											<p class="small mb-3 pb-lg-2"><a class="text-white-50" href="/forgot/"><?=\T::Framework_Login_ForgotPassword();?></a></p>
-											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mb-3" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
+											<p class="small mb-3 pb-lg-2"><a class="text-secondary-50" href="/forgot/"><?=\T::Framework_Login_ForgotPassword();?></a></p>
+											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-secondary btn-lg px-5 mb-3" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
 										<?php } ?>
 										<?php
 										if (\Config::getInstance()->openidconnect_provider && \Config::getInstance()->openidconnect_client_id) {
 											?>
-											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mt-5 mb-3" name="openID" type="submit"><?=\T::Framework_Login_LoginWith(\Config::getInstance()->openidconnect_button??\T::Framework_Login_OpenID());?></button>
+											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-secondary btn-lg px-5 mt-5 mb-3" name="openID" type="submit"><?=\T::Framework_Login_LoginWith(\Config::getInstance()->openidconnect_button??\T::Framework_Login_OpenID());?></button>
 											<?php
 										}
 										?>
 										<?php
 										if (\Config::getInstance()->oauth_client_id && \Config::getInstance()->oauth_client_secret) {
 											?>
-											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-light btn-lg px-5 mt-5 mb-3" name="oAuth" type="submit"><?=\T::Framework_Login_LoginWith(\Config::getInstance()->oauth_button??\T::Framework_Login_OAuth());?></button>
+											<button data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-secondary btn-lg px-5 mt-5 mb-3" name="oAuth" type="submit"><?=\T::Framework_Login_LoginWith(\Config::getInstance()->oauth_button??\T::Framework_Login_OAuth());?></button>
 											<?php
 										}
 										?>
@@ -412,7 +412,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 										if (\Config::getInstance()->app_signin_active && \Config::getInstance()->app_signup_active) {
 											?>
 											<div class="mt-4">
-												<p class="mb-0"><?=\T::Framework_Login_NoAccount();?> <a href="/signup/" class="text-white-50 fw-bold"><?=\T::Framework_Login_SignUp();?></a></p>
+												<p class="mb-0"><?=\T::Framework_Login_NoAccount();?> <a href="/signup/" class="text-secondary-50 fw-bold"><?=\T::Framework_Login_SignUp();?></a></p>
 											</div>
 											<?php
 										}

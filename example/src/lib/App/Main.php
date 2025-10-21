@@ -7,7 +7,7 @@ class Main extends \Routing_Parent implements \Routing_Interface {
 	public function Run() {
 		$this->check_auth();
 		$template = new \Template();
-		echo '<h1>'.\T::MainPage().'</h1>';
+		echo '<h2>'.\T::MainPage().'</h2>';
 	}
 
 }

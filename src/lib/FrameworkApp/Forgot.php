@@ -120,7 +120,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 		<div class="container py-5 h-100">
 			<div class="row d-flex justify-content-center align-items-center h-100">
 				<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-					<div class="card bg-dark text-white loginCard">
+					<div class="card loginCard">
 						<div class="card-body p-5 pt-1 text-center">
 							<div class="mb-md-3 mt-md-4 pb-5">
 								<img src="/images/apple-icon-120x120.png" alt="Icon" width="120" height="120" class="rounded-circle">
@@ -137,7 +137,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 
 								<?php if ($this->token && $this->user) { ?>
 									<!-- Reset Password Form -->
-									<p class="text-white-50 mb-3"><?= \T::Framework_Forgot_ResetSubtitle() ?></p>
+									<p class="text-secondary-50 mb-3"><?= \T::Framework_Forgot_ResetSubtitle() ?></p>
 									<form action="/forgot/" class="change-password-form card-body needs-validation" method="post" novalidate>
 										<input type="hidden" name="action" value="reset_password"/>
 										<input type="hidden" name="token" value="<?= htmlspecialchars($this->token) ?>"/>
@@ -155,7 +155,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 											'class2' => 'col-12',
 										]);
 										?>
-										<button class="btn btn-outline-light btn-lg px-5 mt-3" type="submit"><?= \T::Framework_Forgot_ResetButton() ?></button>
+										<button class="btn btn-outline-secondary btn-lg px-5 mt-3" type="submit"><?= \T::Framework_Forgot_ResetButton() ?></button>
 									</form>
 									<script nonce="<?=\CSP::nonceRandom();?>">
 										$(document).ready(function(){
@@ -172,18 +172,18 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 									</script>
 								<?php } elseif (!$this->successText) { ?>
 									<!-- Request Reset Form -->
-									<p class="text-white-50 mb-3"><?= \T::Framework_Forgot_Subtitle() ?></p>
+									<p class="text-secondary-50 mb-3"><?= \T::Framework_Forgot_Subtitle() ?></p>
 									<form action="/forgot/" method="post">
 										<input type="hidden" name="action" value="request_reset"/>
-										<div data-mdb-input-init class="form-outline form-white mb-2">
+										<div data-mdb-input-init class="form-outline form-secondary mb-2">
 											<label class="form-label" for="email"><?=\T::Framework_Login_Email();?></label>
 											<input type="email" id="email" name="email" class="form-control form-control-lg" value="<?=isset($_POST['email']) && $_POST['email'] ?htmlspecialchars($_POST['email']) : ''?>"/>
 										</div>
-										<button class="btn btn-outline-light btn-lg px-5 mt-3" type="submit"><?= \T::Framework_Forgot_RequestButton() ?></button>
+										<button class="btn btn-outline-secondary btn-lg px-5 mt-3" type="submit"><?= \T::Framework_Forgot_RequestButton() ?></button>
 									</form>
 								<?php } ?>
 								<div class="mt-4">
-									<p class="mb-0"><a href="/login/" class="text-white-50 fw-bold"><?= \T::Framework_Forgot_BackToLogin() ?></a></p>
+									<p class="mb-0"><a href="/login/" class="text-secondary-50 fw-bold"><?= \T::Framework_Forgot_BackToLogin() ?></a></p>
 								</div>
 							</div>
 						</div>

@@ -12,6 +12,11 @@
 .gradient-custom {
 
 }
+
+.btn-outline-secondary {
+	--bs-btn-color: var(--bs-body-color);
+}
+
 /* XS */
 @media (min-width: 0px) {
 	.card {

@@ -120,7 +120,7 @@ function common_assemble_flags(array|int $flags=0): int {
 
 function e403() {
 	header('HTTP/1.1 403 Forbidden');
-	echo "<h1>403 Forbidden</h1>";
+	echo "<h2>403 Forbidden</h2>";
 	echo "<p>You don't have permission to access this page.</p>";
 	exit;
 }

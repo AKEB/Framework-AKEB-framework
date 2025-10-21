@@ -231,7 +231,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 	}
 
 	private function print_header() {
-		echo '<h1>'.\T::Framework_Settings_Title().'</h1>';
+		echo '<h2>'.\T::Framework_Settings_Title().'</h2>';
 		echo \T::Framework_Settings_Subtitle();
 	}
 
@@ -386,7 +386,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		<?php if (!$currentUser['two_factor_secret']) { ?>
 			<div class="modal p-0" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="twoFactorModalLabel" aria-modal="true">
 				<div class="modal-dialog modal-fullscreen-md-down p-0" role="document">
-					<div class="modal-content bg-dark">
+					<div class="modal-content">
 						<form method="post" action="" class="enable-two-factor-form needs-validation m-0" novalidate>
 							<div class="modal-header">
 								<h1 class="modal-title fs-5"><?=\T::Framework_Settings_TwoFactor_Title();?></h1>

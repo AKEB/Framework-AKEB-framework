@@ -385,7 +385,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 	private function print_header() {
 		?>
 		<div class="float-start">
-			<h1>
+			<h2>
 				<?php if ($this->group_id && $this->group) { ?>
 					<a href="/admin/groups/" class="text-info"><i class="bi bi-arrow-left-circle"></i></a>
 					<i class="bi bi-file-earmark-lock"></i>
@@ -395,6 +395,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 					<i class="bi bi-file-earmark-lock"></i>
 					<?=\T::Framework_Menu_UserPermissions($this->user['name'], $this->user['surname'], $this->user['id']);?>
 				<?php } ?>
+			</h2>
 		</div>
 		<?php
 			if ($this->can_write) {
@@ -623,7 +624,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 		?>
 		<div class="modal" id="createPermissionModal" tabindex="-1" role="dialog" aria-labelledby="createPermissionModalLabel" aria-modal="true">
 			<div class="modal-dialog modal-fullscreen-md-down" role="document">
-				<div class="modal-content bg-dark">
+				<div class="modal-content">
 					<form action="<?=$this->url;?>" class="needs-validation" method="post" novalidate>
 						<div class="modal-header border-secondary">
 							<h5 class="modal-title" id="createPermissionModalLabel"><?=\T::Framework_Permission_ModalTitle();?></h5>
@@ -631,11 +632,11 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 						</div>
 						<div class="modal-body" id="createPermissionModalBody">
 							<?php
-							echo $this->template->html_select('permissionsType', \Permissions::subject_types_hash(), 0, \T::Framework_Permission_ModalType(), true,[
+							echo $this->template?->html_select('permissionsType', \Permissions::subject_types_hash(), 0, \T::Framework_Permission_ModalType(), true,[
 								'with-undefined' => true,
 								'data-container' => '#createPermissionModal',
 							]);
-							echo $this->template->html_select('subject-select', [], '', \T::Framework_Menu_Subject(), true,[
+							echo $this->template?->html_select('subject-select', [], '', \T::Framework_Menu_Subject(), true,[
 								'with-undefined' => true,
 								'global-id' => 'subject-select-div',
 								'data-container' => '#createPermissionModal',

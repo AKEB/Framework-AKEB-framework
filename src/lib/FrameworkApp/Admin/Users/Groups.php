@@ -161,9 +161,10 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 	private function print_header() {
 		?>
-		<div class="float-start"><h1>
+		<div class="float-start"><h2>
 			<a href="/admin/users/" class="text-info"><i class="bi bi-arrow-left-circle"></i></a>
-			<i class="bi bi-person"></i> <?=\T::Framework_Menu_UserGroups($this->user['name'], $this->user['surname'], $this->user['id']);?></h1></div>
+			<i class="bi bi-person"></i> <?=\T::Framework_Menu_UserGroups($this->user['name'], $this->user['surname'], $this->user['id']);?>
+		</h2></div>
 		<?php
 			if ($this->can_write) {
 				?>
@@ -251,7 +252,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		?>
 		<div class="modal" id="deleteGroupModal" tabindex="-1" role="dialog" aria-labelledby="deleteGroupModalLabel" aria-modal="true">
 			<div class="modal-dialog" role="document">
-				<div class="modal-content bg-dark">
+				<div class="modal-content">
 				<div class="modal-header border-secondary">
 					<h5 class="modal-title" id="deleteGroupModalLabel"><?=\T::Framework_Groups_Delete_Title();?></h5>
 					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Framework_Common_Close();?>" title="<?=\T::Framework_Common_Close();?>"></button>
@@ -269,7 +270,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 		<div class="modal" id="createGroupModal" tabindex="-1" role="dialog" aria-labelledby="createGroupModalLabel" aria-modal="true">
 			<div class="modal-dialog modal-fullscreen-md-down" role="document">
-				<div class="modal-content bg-dark">
+				<div class="modal-content">
 					<form action="<?=$this->url;?>save/" class="needs-validation" method="post" novalidate>
 						<div class="modal-header border-secondary">
 							<h5 class="modal-title" id="createGroupModalLabel"><?=\T::Framework_Groups_ModalTitle();?></h5>
@@ -277,7 +278,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 						</div>
 						<div class="modal-body" id="createGroupModalBody">
 							<?php
-							echo $this->template->html_select('groups-select', $this->groups_hash, 0, \T::Framework_Menu_Groups(), true,[
+							echo $this->template?->html_select('groups-select', $this->groups_hash, 0, \T::Framework_Menu_Groups(), true,[
 								'with-undefined' => false,
 								'data-container' => '#createGroupModal',
 							]);

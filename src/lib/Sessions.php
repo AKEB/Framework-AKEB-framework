@@ -507,7 +507,7 @@ class Sessions extends \DB\MySQLObject{
 				$currentIP = static::client_ip();
 				if (!isset(static::$current_user['cookie']['client_ip'])) static::$current_user['cookie']['client_ip'] = '';
 				if (static::$current_user['cookie']['client_ip'] != $currentIP) {
-					\Logs::log('IP Changed',\Logs::ACTION_LOGIN,'user', static::$current_user['id'],[
+					\Logs::log('IP Changed',\Logs::ACTION_LOGIN,\Users::LOGS_OBJECT, static::$current_user['id'],[
 						'ip' => [
 							'old' => static::$current_user['cookie']['client_ip'],
 							'new' => $currentIP,

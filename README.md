@@ -80,7 +80,8 @@ Default username: **```admin@admin.com```** and password: **```Admin@123```**
 - [x] WebSockets
 - [x] Content Security Policy
 - [x] Нотификация через Mattermost
-- [ ] Просмотр логов изменений
+- [x] Просмотр логов изменений
+- [x] Фильтры на странице логов
 
 ## Environments
 

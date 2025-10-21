@@ -228,7 +228,7 @@ class Config {
 		return self::$_instance;
 	}
 
-	private function _hide_password(?string $password): string {
+	public function _hide_password(?string $password): string {
 		if (!$password) return '';
 		$len = mb_strlen($password);
 		$dont_hide_length = max(intval(($len*25/100)/2),1);

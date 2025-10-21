@@ -13,10 +13,10 @@ class Impersonate extends \Routing_Parent implements \Routing_Interface {
 		$this->check_permissions();
 
 		\Sessions::start_impersonate_user($this->user_id);
-		$log_id = \Logs::log('Start_impersonate_user',\Logs::ACTION_START_IMPERSONATE,'user', \Sessions::currentUserId(),[
+		$log_id = \Logs::log('Start_impersonate_user',\Logs::ACTION_START_IMPERSONATE,\Users::LOGS_OBJECT, \Sessions::currentUserId(),[
 			'ip' => \Sessions::client_ip(),
 		]);
-		\Logs::add_tag($log_id, \Users::LOGS_OBJECT, \Sessions::currentUserId());
+		\Logs::add_tag($log_id, \Users::LOGS_OBJECT, \Sessions::originalUserId());
 		common_redirect('/');
 	}
 

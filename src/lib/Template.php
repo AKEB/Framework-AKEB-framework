@@ -99,37 +99,39 @@ class Template {
 
 		if (\Config::getInstance()->development) {
 			$css_files = [
-				// '/vendor/akeb/framework/src/dist/css/framework.min.css',
 				'/vendor/akeb/framework/src/css/bootstrap-icons.min.css',
 				'/vendor/akeb/framework/src/css/bootstrap.min.css',
 				'/vendor/akeb/framework/src/css/datatables.min.css',
 				'/vendor/akeb/framework/src/css/bootstrap-select.min.css',
+				'/vendor/akeb/framework/src/css/tempus-dominus.min.css',
 				'/vendor/akeb/framework/src/css/main.css',
 			];
 			$js_files = [
-				// '/vendor/akeb/framework/src/dist/js/framework_'.\T::getCurrentLanguage().'.min.js',
+				'/vendor/akeb/framework/src/js/popper.min.js',
 				'/vendor/akeb/framework/src/js/bootstrap.bundle.min.js',
 				'/vendor/akeb/framework/src/js/datatables.min.js',
 				'/vendor/akeb/framework/src/js/bootstrap-select.min.js',
 				'/vendor/akeb/framework/src/js/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
+				'/vendor/akeb/framework/src/js/tempus-dominus.min.js',
 				'/vendor/akeb/framework/src/js/locale_'.\T::getCurrentLanguage().'.js',
 				'/vendor/akeb/framework/src/js/main.js',
 			];
 		} else {
 			$css_files = [
-				// '/css/framework/framework.min.css',
 				'/css/framework/bootstrap-icons.min.css',
 				'/css/framework/bootstrap.min.css',
 				'/css/framework/datatables.min.css',
 				'/css/framework/bootstrap-select.min.css',
+				'/css/framework/tempus-dominus.min.css',
 				'/css/framework/main.css',
 			];
 			$js_files = [
-				// '/js/framework/framework_'.\T::getCurrentLanguage().'.min.js',
+				'/js/framework/popper.min.js',
 				'/js/framework/bootstrap.bundle.min.js',
 				'/js/framework/datatables.min.js',
 				'/js/framework/bootstrap-select.min.js',
 				'/js/framework/bootstrap-select-'.\T::getCurrentLanguage().'.min.js',
+				'/js/framework/tempus-dominus.min.js',
 				'/js/framework/locale_'.\T::getCurrentLanguage().'.js',
 				'/js/framework/main.js',
 			];
@@ -226,7 +228,7 @@ class Template {
 					}
 					?>
 					<main>
-						<div class="container">
+						<div class="container-xxl">
 		<?php
 	}
 
@@ -252,6 +254,12 @@ class Template {
 					'link'=>'/admin/groups/',
 					'permission' => \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, -1, READ)
 									|| \Sessions::checkPermission(\Permissions::CREATE_GROUP, 0, WRITE)
+				],
+				[
+					'icon' => "bi bi-journal-text",
+					'title' => \T::Framework_Menu_Logs(),
+					'link'=>'/admin/logs/',
+					'permission' => \Sessions::checkPermission(\Permissions::LOGS, 0, READ),
 				],
 			]
 		];
@@ -288,7 +296,7 @@ class Template {
 		$userAvatar = "https://gravatar.com/avatar/".hash('sha256', strtolower(trim($currentUser['email'])));
 		?>
 		<header class="p-3 mb-3 ">
-			<div class="container pb-3 border-bottom">
+			<div class="container-xxl pb-3 border-bottom">
 				<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start">
 					<a href="/" class="d-flex align-items-center mb-2 mb-md-0 link-body-emphasis text-decoration-none">
 						<img src="/images/android-icon-48x48.png" alt="<?=static::getProjectName();?>" width="48" height="48" class="rounded-circle">
@@ -615,7 +623,7 @@ class Template {
 		if (!isset($params['undefined-title'])) $params['undefined-title'] = '-- None --';
 		if (!isset($params['global-id'])) $params['global-id'] = '';
 		if (!isset($params['data-container'])) $params['data-container'] = '';
-
+		if (!isset($params['vertical'])) $params['vertical'] = false;
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -623,11 +631,18 @@ class Template {
 		}
 
 		$html = '';
-		$html .= '<div class="mb-3 row" '.($params['global-id'] ? 'id="'.$params['global-id'].'"':'').'>';
+		if (!$params['vertical']) {
+			$html .= '<div class="mb-3 row" '.($params['global-id'] ? 'id="'.$params['global-id'].'"':'').'>';
+		}
 		$html .= '	<label for="'.$params['id'].'" class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="'.$params['class2'].'">';
 
-		$html .= '	<select class="selectpicker" data-live-search="true" '.($params['data-container'] ? 'data-container="'.$params['data-container'].'"':'').' aria-label="" id="'.$params['id'].'" name="'.$name.'" '.($required ? 'required' : '').' '.($params['multiple'] ? 'multiple' : '').'>';
+		$html .= '	<select class="selectpicker" data-mobile="false" data-live-search="true" '.
+			($params['data-container'] ? 'data-container="'.$params['data-container'].'" ':'').
+			'aria-label="" id="'.$params['id'].'" name="'.$name.'" data-size="20" '.
+			($required ? 'required ' : '').
+			($params['multiple'] ? 'multiple data-selected-text-format="count" data-actions-box="true" ' : '').
+		'>';
 		if ($params['with-undefined']) {
 			$html .= '		<option value="'.$params['undefined-value'].'">'.$params['undefined-title'].'</option>';
 		}
@@ -652,7 +667,9 @@ class Template {
 			$html .= '		<div class="invalid-feedback">'.$params['invalid-feedback'].'</div>';
 		}
 		$html .= '	</div>';
-		$html .= '</div>';
+		if (!$params['vertical']) {
+			$html .= '</div>';
+		}
 		return $html;
 	}
 
@@ -683,7 +700,7 @@ class Template {
 						</div>
 					</main>
 					<footer class="footer mt-auto py-3">
-						<div class="container border-top d-flex flex-wrap justify-content-between align-items-center">
+						<div class="container-xxl border-top d-flex flex-wrap justify-content-between align-items-center">
 							<span class="mt-3 mb-3 text-body-secondary justify-content-start">© 2025 Vadim Babadzhanyan</span>
 							<span class="mt-3 mb-3 text-body-secondary justify-content-end"><?=\T::Framework_Version();?>: <?=constant('SERVER_VERSION');?></span>
 						</div>

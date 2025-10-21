@@ -28,6 +28,9 @@ class Routing {
 		\Routes::addRoute('/admin/impersonate/(?P<user_id>\d+)/', '\\FrameworkApp\\Admin\\Impersonate');
 		\Routes::addRoute('/admin/impersonate/', '\\FrameworkApp\\Admin\\Impersonate');
 
+		\Routes::addRoute('/admin/logs/', '\\FrameworkApp\\Admin\\Logs');
+		\Routes::addRoute('/admin/logs/(?P<start_date>[^/]+)/(?P<end_date>[^/]+)/', '\\FrameworkApp\\Admin\\Logs');
+
 		\Routes::addRoute('/settings/disable_2fa/', '\\FrameworkApp\\Settings');
 		\Routes::addRoute('/settings/', '\\FrameworkApp\\Settings');
 
@@ -116,7 +119,7 @@ class Routing {
 	public function e404() {
 		header('HTTP/1.1 404 Page Not Found');
 		$template = new \Template(false);
-		echo '<div class="row d-flex justify-content-center align-middle text-center mt-5"><h1>404<br/>Page Not Found!</h1></div>';
+		echo '<div class="row d-flex justify-content-center align-middle text-center mt-5"><h2>404<br/>Page Not Found!</h2></div>';
 		exit;
 	}
 }

@@ -12,6 +12,7 @@ class Permissions extends \DB\MySQLObjectTranslate {
 	const CREATE_GROUP = 'create_group';
 	const MANAGE_GROUP_PERMISSIONS = 'manage_group_permissions';
 	const IMPERSONATE_USER = 'impersonate_user';
+	const LOGS = 'logs';
 
 	private static array $permission_subject_types = [];
 

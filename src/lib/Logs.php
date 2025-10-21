@@ -12,6 +12,9 @@ class Logs extends \DB\MySQLObject{
 	const ACTION_START_IMPERSONATE = 7;
 	const ACTION_STOP_IMPERSONATE  = 8;
 
+	static private array $objects = [];
+
+
 	static public function action_hash() {
 		$data = \LogActions::data();
 		if (!$data) return [];
@@ -19,9 +22,22 @@ class Logs extends \DB\MySQLObject{
 	}
 
 	static public function object_hash() {
-		$data = \LogObjects::data();
-		if (!$data) return [];
-		return get_hash($data, 'object', 'title');
+		return array_merge(static::get_default_objects(), static::$objects);
+	}
+
+	static private function get_default_objects() {
+		return [
+			\Groups::LOGS_OBJECT => \T::Framework_Logs_Objects_Group(),
+			\ObjectPermissions::LOGS_OBJECT => \T::Framework_Logs_Objects_ObjectPermissions(),
+			\Sessions::LOGS_OBJECT => \T::Framework_Logs_Objects_Session(),
+			\UserGroups::LOGS_OBJECT => \T::Framework_Logs_Objects_UserGroup(),
+			\Users::LOGS_OBJECT => \T::Framework_Logs_Objects_User(),
+			\Notifications::LOGS_OBJECT => \T::Framework_Logs_Objects_Notification(),
+		];
+	}
+
+	static public function add_object(string $object, string $title): void {
+		static::$objects[$object] = $title;
 	}
 
 	static public function log(string $code, int $action=0, string $object='', int $object_id=0, array $json_data=[], string $comment='', int $original_user_id=0, int $user_id=0): int|bool {
@@ -102,5 +118,48 @@ class Logs extends \DB\MySQLObject{
 			'_mode' => \DB\Common::CSMODE_INSERT,
 		];
 		return \LogTags::save($param);
+	}
+
+	static private function _print_k_v($k, $v) {
+		if (!isset($v)) return '';
+		if (strpos($k, '_time') !== false || strpos($k, 'Time') !== false) {
+			return $v ? date("Y-m-d H:i:s", $v) : $v;
+		}
+		if (strpos($k, 'password') !== false || strpos($k, '2fa') !== false || strpos($k, 'secret') !== false) {
+			return \Config::getInstance()->_hide_password($v);
+		}
+		return $v ? $v : '';
+	}
+
+	static public function format_json_data(array $json_data=[], int $space=0): string {
+		$return = '';
+		foreach($json_data as $k=>$v) {
+			$array = false;
+			if (is_array($v)) {
+				if (count($v) == 2 && isset($v['old']) && isset($v['new'])) $array = false;
+				else $array = true;
+			}
+			$return .= str_repeat('    ', $space);
+			$return .= $k;
+			$return .= ': ';
+			if ($array) {
+				$return .= "{\n";
+				$return .= static::format_json_data($v, ++$space);
+				$return .= "}\n";
+			} else {
+				if (is_array($v) && count($v) == 2 && isset($v['old']) && isset($v['new'])) {
+					$return .= '<span class="text-secondary">'.static::_print_k_v($k, $v['old']).'</span>';
+					$return .= ' => ';
+					$return .= '<span class="text-info">'.static::_print_k_v($k, $v['new']).'</span>';
+				} elseif (is_array($v)) {
+					$return .= '<span class="text-info">'.json_encode($v).'</span>';
+				} else {
+					$return .= '<span class="text-info">'.static::_print_k_v($k, $v).'</span>';
+				}
+			}
+			$return .= "\n";
+		}
+
+		return $return;
 	}
 }

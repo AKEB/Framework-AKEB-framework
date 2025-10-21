@@ -804,7 +804,7 @@ class T {
 	 * Framework_Common_Filter
 	 * 
 	 * @return string "Filter"
-	 * @return string "Фильтровать"
+	 * @return string "Фильтр"
 	 */
 	public static function Framework_Common_Filter(...$argv): string { return ''; }
 
@@ -935,6 +935,14 @@ class T {
 	 * @return string "Группы"
 	 */
 	public static function Framework_Menu_Groups(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Menu_Logs
+	 * 
+	 * @return string "Logs"
+	 * @return string "Логи"
+	 */
+	public static function Framework_Menu_Logs(...$argv): string { return ''; }
 
 	/**
 	 * Framework_Menu_User
@@ -1561,6 +1569,382 @@ class T {
 	public static function Framework_Logs_Actions_StopImpersonate(...$argv): string { return ''; }
 
 	/**
+	 * Framework_Logs_Report_User
+	 * 
+	 * @return string "User"
+	 * @return string "Пользователь"
+	 */
+	public static function Framework_Logs_Report_User(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Report_Code
+	 * 
+	 * @return string "Code"
+	 * @return string "Код"
+	 */
+	public static function Framework_Logs_Report_Code(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Report_Action
+	 * 
+	 * @return string "Action"
+	 * @return string "Действие"
+	 */
+	public static function Framework_Logs_Report_Action(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Report_Object
+	 * 
+	 * @return string "Object"
+	 * @return string "Объект"
+	 */
+	public static function Framework_Logs_Report_Object(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Report_Data
+	 * 
+	 * @return string "Data"
+	 * @return string "Данные"
+	 */
+	public static function Framework_Logs_Report_Data(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Report_Time
+	 * 
+	 * @return string "Date"
+	 * @return string "Время"
+	 */
+	public static function Framework_Logs_Report_Time(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Report_Trace
+	 * 
+	 * @return string "Trace"
+	 * @return string "Trace"
+	 */
+	public static function Framework_Logs_Report_Trace(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_User
+	 * 
+	 * @return string "User"
+	 * @return string "Пользователь"
+	 */
+	public static function Framework_Logs_Filter_User(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_Date
+	 * 
+	 * @return string "Date"
+	 * @return string "Дата"
+	 */
+	public static function Framework_Logs_Filter_Date(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_Code
+	 * 
+	 * @return string "Code"
+	 * @return string "Код"
+	 */
+	public static function Framework_Logs_Filter_Code(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_Action
+	 * 
+	 * @return string "Action"
+	 * @return string "Действие"
+	 */
+	public static function Framework_Logs_Filter_Action(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_Object
+	 * 
+	 * @return string "Object"
+	 * @return string "Объект"
+	 */
+	public static function Framework_Logs_Filter_Object(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_ObjectId
+	 * 
+	 * @return string "Object ID"
+	 * @return string "ID объекта"
+	 */
+	public static function Framework_Logs_Filter_ObjectId(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_Reset
+	 * 
+	 * @return string "Reset"
+	 * @return string "Сбросить"
+	 */
+	public static function Framework_Logs_Filter_Reset(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Filter_Apply
+	 * 
+	 * @return string "Apply"
+	 * @return string "Применить"
+	 */
+	public static function Framework_Logs_Filter_Apply(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Objects_Group
+	 * 
+	 * @return string "Group"
+	 * @return string "Группа"
+	 */
+	public static function Framework_Logs_Objects_Group(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Objects_ObjectPermissions
+	 * 
+	 * @return string "Object permissions"
+	 * @return string "Права доступа"
+	 */
+	public static function Framework_Logs_Objects_ObjectPermissions(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Objects_Session
+	 * 
+	 * @return string "Session"
+	 * @return string "Сессия"
+	 */
+	public static function Framework_Logs_Objects_Session(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Objects_UserGroup
+	 * 
+	 * @return string "User group"
+	 * @return string "Группа пользователя"
+	 */
+	public static function Framework_Logs_Objects_UserGroup(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Objects_User
+	 * 
+	 * @return string "User"
+	 * @return string "Пользователь"
+	 */
+	public static function Framework_Logs_Objects_User(...$argv): string { return ''; }
+
+	/**
+	 * Framework_Logs_Objects_Notification
+	 * 
+	 * @return string "Notification"
+	 * @return string "Уведомление"
+	 */
+	public static function Framework_Logs_Objects_Notification(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_today
+	 * 
+	 * @return string "Go to today"
+	 * @return string "Перейти сегодня"
+	 */
+	public static function Framework_DateTimePicker_today(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_clear
+	 * 
+	 * @return string "Clear selection"
+	 * @return string "Очистить выделение"
+	 */
+	public static function Framework_DateTimePicker_clear(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_close
+	 * 
+	 * @return string "Close the picker"
+	 * @return string "Закрыть сборщик"
+	 */
+	public static function Framework_DateTimePicker_close(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_selectMonth
+	 * 
+	 * @return string "Select Month"
+	 * @return string "Выбрать месяц"
+	 */
+	public static function Framework_DateTimePicker_selectMonth(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_previousMonth
+	 * 
+	 * @return string "Previous Month"
+	 * @return string "Предыдущий месяц"
+	 */
+	public static function Framework_DateTimePicker_previousMonth(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_nextMonth
+	 * 
+	 * @return string "Next Month"
+	 * @return string "В следующем месяце"
+	 */
+	public static function Framework_DateTimePicker_nextMonth(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_selectYear
+	 * 
+	 * @return string "Select Year"
+	 * @return string "Выбрать год"
+	 */
+	public static function Framework_DateTimePicker_selectYear(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_previousYear
+	 * 
+	 * @return string "Previous Year"
+	 * @return string "Предыдущий год"
+	 */
+	public static function Framework_DateTimePicker_previousYear(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_nextYear
+	 * 
+	 * @return string "Next Year"
+	 * @return string "В следующем году"
+	 */
+	public static function Framework_DateTimePicker_nextYear(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_selectDecade
+	 * 
+	 * @return string "Select Decade"
+	 * @return string "Выбрать десятилетие"
+	 */
+	public static function Framework_DateTimePicker_selectDecade(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_previousDecade
+	 * 
+	 * @return string "Previous Decade"
+	 * @return string "Предыдущее десятилетие"
+	 */
+	public static function Framework_DateTimePicker_previousDecade(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_nextDecade
+	 * 
+	 * @return string "Next Decade"
+	 * @return string "Следующее десятилетие"
+	 */
+	public static function Framework_DateTimePicker_nextDecade(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_previousCentury
+	 * 
+	 * @return string "Previous Century"
+	 * @return string "Предыдущий век"
+	 */
+	public static function Framework_DateTimePicker_previousCentury(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_nextCentury
+	 * 
+	 * @return string "Next Century"
+	 * @return string "Следующий век"
+	 */
+	public static function Framework_DateTimePicker_nextCentury(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_pickHour
+	 * 
+	 * @return string "Pick Hour"
+	 * @return string "Выберите час"
+	 */
+	public static function Framework_DateTimePicker_pickHour(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_incrementHour
+	 * 
+	 * @return string "Increment Hour"
+	 * @return string "Время увеличения"
+	 */
+	public static function Framework_DateTimePicker_incrementHour(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_decrementHour
+	 * 
+	 * @return string "Decrement Hour"
+	 * @return string "Уменьшить час"
+	 */
+	public static function Framework_DateTimePicker_decrementHour(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_pickMinute
+	 * 
+	 * @return string "Pick Minute"
+	 * @return string "Выбрать минуту"
+	 */
+	public static function Framework_DateTimePicker_pickMinute(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_incrementMinute
+	 * 
+	 * @return string "Increment Minute"
+	 * @return string "Минута приращения"
+	 */
+	public static function Framework_DateTimePicker_incrementMinute(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_decrementMinute
+	 * 
+	 * @return string "Decrement Minute"
+	 * @return string "Уменьшить минуту"
+	 */
+	public static function Framework_DateTimePicker_decrementMinute(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_pickSecond
+	 * 
+	 * @return string "Pick Second"
+	 * @return string "Выбрать второй"
+	 */
+	public static function Framework_DateTimePicker_pickSecond(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_incrementSecond
+	 * 
+	 * @return string "Increment Second"
+	 * @return string "Увеличение секунды"
+	 */
+	public static function Framework_DateTimePicker_incrementSecond(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_decrementSecond
+	 * 
+	 * @return string "Decrement Second"
+	 * @return string "Уменьшение секунды"
+	 */
+	public static function Framework_DateTimePicker_decrementSecond(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_toggleMeridiem
+	 * 
+	 * @return string "Toggle Meridiem"
+	 * @return string "Переключить период"
+	 */
+	public static function Framework_DateTimePicker_toggleMeridiem(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_selectTime
+	 * 
+	 * @return string "Select Time"
+	 * @return string "Выбрать время"
+	 */
+	public static function Framework_DateTimePicker_selectTime(...$argv): string { return ''; }
+
+	/**
+	 * Framework_DateTimePicker_selectDate
+	 * 
+	 * @return string "Select Date"
+	 * @return string "Выбрать дату"
+	 */
+	public static function Framework_DateTimePicker_selectDate(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Help
 	 * 
 	 * @return string "Help"
@@ -1807,253 +2191,5 @@ class T {
 	 * @return string "Сб"
 	 */
 	public static function Framework_Weeks_Sa(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_AUTHORIZATION
-	 * 
-	 * @return string "Авторизация"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_AUTHORIZATION(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_CREATE_MANAGER
-	 * 
-	 * @return string "Создание менеджера"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_CREATE_MANAGER(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_EDIT_MANAGER
-	 * 
-	 * @return string "Редактирование менеджера"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_EDIT_MANAGER(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_REMOVE_MANAGER
-	 * 
-	 * @return string "Удаление менеджера"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_REMOVE_MANAGER(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_MANAGER_GROUP_ADD
-	 * 
-	 * @return string "Добавление группы для менеджера"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_MANAGER_GROUP_ADD(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_MANAGER_GROUP_DELETE
-	 * 
-	 * @return string "Удаление группы для менеджера"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_MANAGER_GROUP_DELETE(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_MANAGER_SET_PRIVILEGE
-	 * 
-	 * @return string "Установка прав"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_MANAGER_SET_PRIVILEGE(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_CREATE_GROUP
-	 * 
-	 * @return string "Создание группы менеджеров"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_CREATE_GROUP(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_EDIT_GROUP
-	 * 
-	 * @return string "Редактирование группы менеджеров"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_EDIT_GROUP(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_REMOVE_GROUP
-	 * 
-	 * @return string "Удаление группы менеджеров"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_REMOVE_GROUP(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_CREATE_ORGANIZATION
-	 * 
-	 * @return string "Создание организации менеджеров"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_CREATE_ORGANIZATION(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_EDIT_ORGANIZATION
-	 * 
-	 * @return string "Редактирование организации менеджеров"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_EDIT_ORGANIZATION(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_CODE_REMOVE_ORGANIZATION
-	 * 
-	 * @return string "Удаление организации менеджеров"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_CODE_REMOVE_ORGANIZATION(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_OBJECT_MANAGER
-	 * 
-	 * @return string "Менеджер"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_OBJECT_MANAGER(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_OBJECT_GROUP
-	 * 
-	 * @return string "Группа менеджеров"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_OBJECT_GROUP(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_OBJECT_ORGANIZATION
-	 * 
-	 * @return string "Организация"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_OBJECT_ORGANIZATION(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_PRIORITY_LOW
-	 * 
-	 * @return string "низкий"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_PRIORITY_LOW(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_PRIORITY_NORMAL
-	 * 
-	 * @return string "нормальный"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_PRIORITY_NORMAL(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_PRIORITY_MEDIUM
-	 * 
-	 * @return string "повышенный"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_PRIORITY_MEDIUM(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_PRIORITY_HIGH
-	 * 
-	 * @return string "высокий"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_PRIORITY_HIGH(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Log_PRIORITY_HIGHEST
-	 * 
-	 * @return string "наивысший"
-	 * @return string ""
-	 */
-	public static function Framework_User_Log_PRIORITY_HIGHEST(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Groups_GROUP_DEFAULT
-	 * 
-	 * @return string "Группа по умолчанию"
-	 * @return string ""
-	 */
-	public static function Framework_User_Groups_GROUP_DEFAULT(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Groups_Code
-	 * 
-	 * @return string "Код"
-	 * @return string ""
-	 */
-	public static function Framework_User_Groups_Code(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Groups_Title
-	 * 
-	 * @return string "Название"
-	 * @return string ""
-	 */
-	public static function Framework_User_Groups_Title(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Groups_CreatorId
-	 * 
-	 * @return string "Создатель"
-	 * @return string ""
-	 */
-	public static function Framework_User_Groups_CreatorId(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Groups_CreateTime
-	 * 
-	 * @return string "Дата создания"
-	 * @return string ""
-	 */
-	public static function Framework_User_Groups_CreateTime(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Groups_UpdateTime
-	 * 
-	 * @return string "Дата редактирования"
-	 * @return string ""
-	 */
-	public static function Framework_User_Groups_UpdateTime(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Organization_Title
-	 * 
-	 * @return string "Название"
-	 * @return string ""
-	 */
-	public static function Framework_User_Organization_Title(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Organization_CreatorId
-	 * 
-	 * @return string "Создатель"
-	 * @return string ""
-	 */
-	public static function Framework_User_Organization_CreatorId(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Organization_CreateTime
-	 * 
-	 * @return string "Дата создания"
-	 * @return string ""
-	 */
-	public static function Framework_User_Organization_CreateTime(...$argv): string { return ''; }
-
-	/**
-	 * Framework_User_Organization_UpdateTime
-	 * 
-	 * @return string "Дата редактирования"
-	 * @return string ""
-	 */
-	public static function Framework_User_Organization_UpdateTime(...$argv): string { return ''; }
 
 }

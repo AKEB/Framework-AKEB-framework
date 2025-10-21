@@ -28,7 +28,7 @@ class Test extends \Routing_Parent implements \Routing_Interface {
 
 	private function print_header() {
 		?>
-		<div class="float-start"><h1><i class="bi bi-code-square"></i> <?=\T::TestPage();?></h1></div>
+		<div class="float-start"><h2><i class="bi bi-code-square"></i> <?=\T::TestPage();?></h2></div>
 		<div class="clearfix"></div>
 		<?php
 	}

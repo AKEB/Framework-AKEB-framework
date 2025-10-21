@@ -50,7 +50,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 
 	private function print_header() {
 		?>
-		<div class="float-start"><h1><i class="bi bi-person"></i> <?=\T::Framework_Menu_Users();?></h1></div>
+		<div class="float-start"><h2><i class="bi bi-person"></i> <?=\T::Framework_Menu_Users();?></h2></div>
 		<?php if ($this->can_create_user) {
 			?>
 			<div class="float-end">
@@ -309,7 +309,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 		?>
 		<div class="modal" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel">
 			<div class="modal-dialog">
-				<div class="modal-content bg-dark">
+				<div class="modal-content">
 				<div class="modal-header border-secondary">
 					<h5 class="modal-title" id="deleteUserModalLabel"><?=\T::Framework_Users_Delete_Title();?></h5>
 					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>

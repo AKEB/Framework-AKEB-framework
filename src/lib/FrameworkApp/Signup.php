@@ -100,7 +100,7 @@ class Signup extends \Routing_Parent implements \Routing_Interface {
 		<div class="container py-5 h-100">
 			<div class="row d-flex justify-content-center align-items-center h-100">
 				<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-					<div class="card bg-dark text-white loginCard">
+					<div class="card loginCard">
 						<div class="card-body p-5 pt-1 text-center">
 							<div class="mb-md-3 mt-md-4 pb-5">
 								<img src="/images/apple-icon-120x120.png" alt="Icon" width="120" height="120" class="rounded-circle">
@@ -145,7 +145,7 @@ class Signup extends \Routing_Parent implements \Routing_Interface {
 											'class2' => 'col-12',
 										]);
 										?>
-										<button class="btn btn-outline-light btn-lg px-5 mt-3" type="submit"><?= \T::Framework_Login_SignUp() ?></button>
+										<button class="btn btn-outline-secondary btn-lg px-5 mt-3" type="submit"><?= \T::Framework_Login_SignUp() ?></button>
 									</form>
 									<script nonce="<?=\CSP::nonceRandom();?>">
 										$(document).ready(function(){
@@ -168,7 +168,7 @@ class Signup extends \Routing_Parent implements \Routing_Interface {
 									</script>
 								<?php } ?>
 								<div class="mt-4">
-									<p class="mb-0"><a href="/login/" class="text-white-50 fw-bold"><?= \T::Framework_Forgot_BackToLogin() ?></a></p>
+									<p class="mb-0"><a href="/login/" class="text-secondary-50 fw-bold"><?= \T::Framework_Forgot_BackToLogin() ?></a></p>
 								</div>
 							</div>
 						</div>
