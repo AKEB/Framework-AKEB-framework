@@ -111,16 +111,20 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 		$objectClass = \Permissions::get_subject_classes()[$data['permissionsType']] ?? '';
 		if (!$objectClass) return;
 
-		$subject_hash = $objectClass::subject_hash();
-		if (!isset($subject_hash) || !$subject_hash || !is_array($subject_hash)) return;
 		$params['subject_id'] = intval($data['subject-select'] ?? 0);
-		if (!$params['subject_id']) {
-			return;
+		if ($params['subject_id']) {
+			$subject_hash = $objectClass::subject_hash();
+			if (!isset($subject_hash) || !$subject_hash || !is_array($subject_hash)) return;
+
+			if (!$params['subject_id']) {
+				return;
+			}
+
+			if (!isset($subject_hash[$params['subject_id']])) {
+				return;
+			}
 		}
-		var_dump($params);
-		if (!isset($subject_hash[$params['subject_id']])) {
-			return;
-		}
+
 		$subjects = array_keys($objectClass::permissions_hash());
 		if (!$subjects) {
 			return;
@@ -363,6 +367,19 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 		$subject_types_hash = \Permissions::subject_types_hash();
 		foreach(\Permissions::get_subject_classes() as $subjectType=>$subjectClass) {
 			$subject_permissions_hash = $subjectClass::permissions_hash();
+
+			foreach($subject_permissions_hash as $subject=>$subjectTitle) {
+				$permission = $permissions_hash[$subject]??[];
+				$permission = $permission[0]??[];
+				if ($permission) {
+					$this->permissions[$subject.'_0'] = [
+						'subject' => $subject,
+						'subject_id' => 0,
+						'title' => sprintf('%s: %s', $subject_types_hash[$subjectType]??$subjectType, $subjectTitle),
+						'permission' => $permission,
+					];
+				}
+			}
 
 			foreach($subjectClass::permissions_subject_hash() as $subject_id=>$permissionTitle) {
 				foreach($subject_permissions_hash as $subject=>$subjectTitle) {
@@ -638,7 +655,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 								'with-undefined' => true,
 								'data-container' => '#createPermissionModal',
 							]);
-							echo $this->template?->html_select('subject-select', [], '', \T::Framework_Menu_Subject(), true,[
+							echo $this->template?->html_select('subject-select', [], '', \T::Framework_Menu_Subject(), false,[
 								'with-undefined' => true,
 								'global-id' => 'subject-select-div',
 								'data-container' => '#createPermissionModal',
