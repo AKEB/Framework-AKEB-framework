@@ -212,19 +212,21 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 	private function check_permissions() {
 		\Sessions::requestPermission(\Permissions::ADMIN, 0, READ);
 
-		$this->can_read_global = \Sessions::checkPermission(\Permissions::MANAGE_USERS, 0, READ);
-		$this->can_read = \Sessions::checkPermission(\Permissions::MANAGE_USERS, -1, READ);
-		$this->can_create_user = \Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE);
-
 		if ($this->user_id) {
 			$this->user = \Users::get(['id' => $this->user_id]);
 			if (!$this->user) {
 				common_redirect('/admin/users/');
 			}
-		}
-
-		if (!$this->can_read_global && !$this->can_read && !$this->can_create_user) {
-			e403();
+			$this->can_read = \Sessions::checkPermission(\Permissions::MANAGE_USERS, $this->user_id, READ);
+			if (!$this->can_read) {
+				e403();
+			}
+		} else {
+			$this->can_read_global = \Sessions::checkPermission(\Permissions::MANAGE_USERS, -1, READ);
+			$this->can_create_user = \Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE);
+			if (!$this->can_read_global && !$this->can_create_user) {
+				e403();
+			}
 		}
 	}
 
