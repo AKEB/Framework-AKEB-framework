@@ -9,6 +9,31 @@ class Routing_Parent implements \Routing_Interface {
 		\Sessions::session_init();
 	}
 
+	protected function get_request_body(): array {
+		$f = fopen('php://input','r');
+		if ($f) {
+			$requestBody = '';
+			do {
+				$d = fread($f,1024);
+				$requestBody .= $d;
+			} while ($d);
+			fclose($f);
+		}
+		if (!$requestBody) $requestBody = '';
+		if ($requestBody) {
+			$requestBodyArray = @json_decode($requestBody, true);
+			if ($requestBodyArray && is_array($requestBodyArray)) {
+				return $requestBodyArray;
+			} else {
+				parse_str($requestBody, $requestBodyArray);
+				if ($requestBodyArray && is_array($requestBodyArray)) {
+					return $requestBodyArray;
+				}
+			}
+		}
+		return [];
+	}
+
 	protected function processRequest() {
 		$this->error = '';
 		// Обработка GET параметров
