@@ -398,10 +398,10 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 						$log['original_user'] = '';
 						$log['user'] = '';
 						if ($log['original_user_id']) {
-							$log['original_user'] = $this->users[$log['original_user_id']];
+							$log['original_user'] = $this->users[$log['original_user_id']]??[];
 						}
 						if ($log['user_id']) {
-							$log['user'] = $this->users[$log['user_id']];
+							$log['user'] = $this->users[$log['user_id']]??[];
 						}
 						if ($log['original_user_id'] != $log['user_id']) {
 							$log['original_user'] = sprintf('%s <span class="badge text-bg-info">%s</span>', $log['original_user'], $log['user']);
