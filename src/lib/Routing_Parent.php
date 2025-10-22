@@ -19,16 +19,14 @@ class Routing_Parent implements \Routing_Interface {
 			} while ($d);
 			fclose($f);
 		}
-		if (!$requestBody) $requestBody = '';
-		if ($requestBody) {
-			$requestBodyArray = @json_decode($requestBody, true);
+		if (!$requestBody) return [];
+		$requestBodyArray = @json_decode($requestBody, true);
+		if ($requestBodyArray && is_array($requestBodyArray)) {
+			return $requestBodyArray;
+		} else {
+			parse_str($requestBody, $requestBodyArray);
 			if ($requestBodyArray && is_array($requestBodyArray)) {
 				return $requestBodyArray;
-			} else {
-				parse_str($requestBody, $requestBodyArray);
-				if ($requestBodyArray && is_array($requestBodyArray)) {
-					return $requestBodyArray;
-				}
 			}
 		}
 		return [];
@@ -37,9 +35,12 @@ class Routing_Parent implements \Routing_Interface {
 	protected function processRequest() {
 		$this->error = '';
 		// Обработка GET параметров
-		$this->handleGetData($_GET);
+		if ($_GET) $this->handleGetData($_GET);
 		// Обработка POST параметров
-		$this->handlePostData($_POST);
+		if ($_POST) $this->handlePostData($_POST);
+		// Обработка POST Body данных
+		$data = $this->get_request_body();
+		if ($data) $this->handleBodyData($data);
 	}
 
 	protected function handleGetData(array $data) {
@@ -49,6 +50,11 @@ class Routing_Parent implements \Routing_Interface {
 
 	protected function handlePostData(array $data) {
 		// Обработка POST данных
+		if (!isset($data)) return;
+	}
+
+	protected function handleBodyData(array $data) {
+		// Обработка POST Body данных
 		if (!isset($data)) return;
 	}
 
