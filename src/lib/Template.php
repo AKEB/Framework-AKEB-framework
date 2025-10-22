@@ -523,6 +523,8 @@ class Template {
 		if (!isset($params['readonly'])) $params['readonly'] = false;
 		if (!isset($params['add_after'])) $params['add_after'] = '';
 		if (!isset($params['add_before'])) $params['add_before'] = '';
+		if (!isset($params['rows'])) $params['rows'] = '';
+		if (!isset($params['cols'])) $params['cols'] = '';
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -548,23 +550,44 @@ class Template {
 		if ($params['add_before']) {
 			$html .= $params['add_before'];
 		}
-		$html .= '<input
-			type="'.$params['type'].'"
-			class="'.($params['readonly'] ? 'form-control-plaintext':'form-control').'"
-			id="'.$params['id'].'"
-			name="'.$name.'"
-			placeholder="'.$params['placeholder'].'"
-			value="'.$value.'"'.
-			($required ? ' required' : '').'
-			autocomplete="off"'.
-			($params['maxlength']? ' maxlength="'.$params['maxlength'].'"': '').
-			($params['minlength']? ' minlength="'.$params['minlength'].'"': '').
-			($params['max']? ' max="'.$params['max'].'"': '').
-			($params['min']? ' min="'.$params['min'].'"': '').
-			($params['step']? ' step="'.$params['step'].'"': '').
-			($params['type'] == 'number' ? ' pattern="\d*"':'').
-			($params['readonly'] ? ' readonly' : '').'
-		>';
+		if ($params['type'] == 'textarea') {
+			$html .= '<textarea
+				class="'.($params['readonly'] ? 'form-control-plaintext':'form-control').'"
+				id="'.$params['id'].'"
+				name="'.$name.'"
+				placeholder="'.$params['placeholder'].'"'.
+				($required ? ' required' : '').'
+				autocomplete="off"'.
+				($params['rows']? ' rows="'.$params['rows'].'"': '').
+				($params['cols']? ' cols="'.$params['cols'].'"': '').
+				($params['maxlength']? ' maxlength="'.$params['maxlength'].'"': '').
+				($params['minlength']? ' minlength="'.$params['minlength'].'"': '').
+				($params['max']? ' max="'.$params['max'].'"': '').
+				($params['min']? ' min="'.$params['min'].'"': '').
+				($params['step']? ' step="'.$params['step'].'"': '').
+				($params['readonly'] ? ' readonly' : '').'
+			>';
+			$html .= $value;
+			$html .= '</textarea>';
+		} else {
+			$html .= '<input
+				type="'.$params['type'].'"
+				class="'.($params['readonly'] ? 'form-control-plaintext':'form-control').'"
+				id="'.$params['id'].'"
+				name="'.$name.'"
+				placeholder="'.$params['placeholder'].'"
+				value="'.$value.'"'.
+				($required ? ' required' : '').'
+				autocomplete="off"'.
+				($params['maxlength']? ' maxlength="'.$params['maxlength'].'"': '').
+				($params['minlength']? ' minlength="'.$params['minlength'].'"': '').
+				($params['max']? ' max="'.$params['max'].'"': '').
+				($params['min']? ' min="'.$params['min'].'"': '').
+				($params['step']? ' step="'.$params['step'].'"': '').
+				($params['type'] == 'number' ? ' pattern="\d*"':'').
+				($params['readonly'] ? ' readonly' : '').'
+			>';
+		}
 		if ($params['add_after']) {
 			$html .= $params['add_after'];
 		}

@@ -118,7 +118,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				}
 				$params['id'] = $old_user['id'];
 			} else {
-				if (!\Sessions::checkPermission(\Permissions::MANAGE_USERS, 0, WRITE)) {
+				if (!\Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE)) {
 					$this->error = \T::Framework_Errors_PermissionDenied();
 					break;
 				}
