@@ -83,7 +83,7 @@ class Template {
 		return static::$js_files;
 	}
 
-	public static function addHeadMeta(object $head_meta) {
+	public static function addHeadMeta(array $head_meta) {
 		static::$head_metas[] = $head_meta;
 	}
 	public static function setHeadMetas(array $head_metas) {
@@ -93,7 +93,7 @@ class Template {
 		return static::$head_metas;
 	}
 
-	public static function addHeadLink(object $head_link) {
+	public static function addHeadLink(array $head_link) {
 		static::$head_links[] = $head_link;
 	}
 	public static function setHeadLinks(array $head_links) {
