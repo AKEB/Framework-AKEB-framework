@@ -488,7 +488,7 @@ class WSS {
 		}
 		$.ajax({
 			type: "POST",
-			url : "/wss/?t="+Math.round((new Date()).getTime()),
+			url : "/wss/?action="+action+"&t="+Math.round((new Date()).getTime()),
 			cache: false,
 			dataType: "json",
 			data : sendParams,
