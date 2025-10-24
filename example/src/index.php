@@ -24,6 +24,9 @@ require_once("./autoload.php");
 \Template::setProjectName("Example");
 \Template::setTheme('auto');
 
+\Template::addHeadMeta(['content' => "#6a11cb",'name' => 'msapplication-TileColor']);
+\Template::addHeadMeta(['name' => 'theme-color','content' => "#6a11cb"]);
+
 // Add another css files
 \Template::addCSSFile('/css/main.css');
 

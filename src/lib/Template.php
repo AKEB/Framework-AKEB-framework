@@ -159,8 +159,6 @@ class Template {
 			['name' => 'viewport','content' => 'width=device-width, initial-scale=1'],
 			['http-equiv' => 'X-UA-Compatible','content' => 'IE=edge'],
 			['name' => 'apple-mobile-web-app-title','content' => static::getProjectName()],
-			['content' => "#6a11cb",'name' => 'msapplication-TileColor'],
-			['name' => 'theme-color','content' => "#6a11cb"],
 			['name' => 'msapplication-TileImage','content' => "/images/ms-icon-144x144.png"]
 		], static::getHeadMetas());
 
