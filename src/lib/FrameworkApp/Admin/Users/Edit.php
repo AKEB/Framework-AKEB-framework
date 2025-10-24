@@ -98,7 +98,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			}
 			$old_user = [];
 			if (isset($params['id']) && $params['id']) {
-				if (!\Sessions::checkPermission(\Permissions::MANAGE_USERS, $params['id'], WRITE)) {
+				if (!\Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, $params['id'], WRITE)) {
 					$this->error = \T::Framework_Errors_PermissionDenied();
 					break;
 				}
@@ -118,7 +118,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				}
 				$params['id'] = $old_user['id'];
 			} else {
-				if (!\Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE)) {
+				if (!\Sessions::checkPermission(\Users::PERMISSION_CREATE_USER, 0, WRITE)) {
 					$this->error = \T::Framework_Errors_PermissionDenied();
 					break;
 				}
@@ -217,13 +217,13 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			if (!$this->user) {
 				common_redirect('/admin/users/');
 			}
-			$this->can_read = \Sessions::checkPermission(\Permissions::MANAGE_USERS, $this->user_id, READ);
+			$this->can_read = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, $this->user_id, READ);
 			if (!$this->can_read) {
 				e403();
 			}
 		} else {
-			$this->can_read_global = \Sessions::checkPermission(\Permissions::MANAGE_USERS, -1, READ);
-			$this->can_create_user = \Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE);
+			$this->can_read_global = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, -1, READ);
+			$this->can_create_user = \Sessions::checkPermission(\Users::PERMISSION_CREATE_USER, 0, WRITE);
 			if (!$this->can_read_global && !$this->can_create_user) {
 				e403();
 			}

@@ -23,7 +23,7 @@ class Impersonate extends \Routing_Parent implements \Routing_Interface {
 	private function check_permissions() {
 		\Sessions::requestPermission(\Permissions::ADMIN, 0, READ);
 
-		$this->can_impersonate = \Sessions::checkPermission(\Permissions::IMPERSONATE_USER, $this->user_id, READ);
+		$this->can_impersonate = \Sessions::checkPermission(\Users::PERMISSION_IMPERSONATE_USER, $this->user_id, READ);
 
 		if (!$this->can_impersonate || !$this->user_id) {
 			e403();

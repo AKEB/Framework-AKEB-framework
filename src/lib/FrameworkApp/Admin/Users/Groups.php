@@ -47,7 +47,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			$this->error = \T::Framework_Errors_PermissionDenied();
 			return;
 		}
-		if (!\Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $groupId, READ)) {
+		if (!\Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $groupId, READ)) {
 			$this->error = \T::Framework_Errors_PermissionDenied();
 			return;
 		}
@@ -128,9 +128,9 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 		$this->user = \Users::get(['id' => $this->user_id]);
 		if ($this->user) {
-			$this->can_read = \Sessions::checkPermission(\Permissions::MANAGE_USER_GROUPS, $this->user_id, READ);
-			$this->can_write = \Sessions::checkPermission(\Permissions::MANAGE_USER_GROUPS, $this->user_id, WRITE);
-			$this->can_delete = \Sessions::checkPermission(\Permissions::MANAGE_USER_GROUPS, $this->user_id, DELETE);
+			$this->can_read = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_GROUPS, $this->user_id, READ);
+			$this->can_write = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_GROUPS, $this->user_id, WRITE);
+			$this->can_delete = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_GROUPS, $this->user_id, DELETE);
 		}
 		$this->url = '/admin/users/'.intval($this->user_id).'/groups/';
 
@@ -152,7 +152,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		$this->groups_hash = [];
 		foreach($data as $item) {
 			if (!isset($item['id']) && !$item['id']) continue;
-			$can_read_group = \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $item['id'], READ);
+			$can_read_group = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $item['id'], READ);
 			if (!$can_read_group) continue;
 			$this->groups[$item['id']] = $item;
 			$this->groups_hash[$item['id']] = $item['title']?? \T::Framework_Menu_Group().' ['.$item['id'].']';

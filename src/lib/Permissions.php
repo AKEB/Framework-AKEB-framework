@@ -1,19 +1,10 @@
 <?php
 
-class Permissions extends \DB\MySQLObjectTranslate {
-	static public $table = 'permissions';
-
+class Permissions {
 	const ADMIN = 'admin';
-	const MANAGE_USERS = 'manage_users';
-	const CREATE_USER = 'create_user';
-	const MANAGE_USER_PERMISSIONS = 'manage_user_permissions';
-	const MANAGE_USER_GROUPS = 'manage_user_groups';
-	const MANAGE_GROUPS = 'manage_groups';
-	const CREATE_GROUP = 'create_group';
-	const MANAGE_GROUP_PERMISSIONS = 'manage_group_permissions';
-	const IMPERSONATE_USER = 'impersonate_user';
 	const LOGS = 'logs';
 
+	private static array $permissions = [];
 	private static array $permission_subject_types = [];
 
 	static public function set_subject_type(string $subject_type, string $subject_class, string $title): bool {
@@ -54,10 +45,12 @@ class Permissions extends \DB\MySQLObjectTranslate {
 		return [];
 	}
 
+	static public function add_permission(string $permission, string $title): void {
+		static::$permissions[$permission] = $title;
+	}
+
 	static public function permissions_hash(): array {
-		$data = static::data();
-		if (!$data) return [];
-		return get_hash($data, 'permission', 'title');
+		return static::$permissions;
 	}
 
 }

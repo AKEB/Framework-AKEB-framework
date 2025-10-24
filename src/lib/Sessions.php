@@ -138,7 +138,7 @@ class Sessions extends \DB\MySQLObject{
 		if (!isset($impersonateUserId) || !$impersonateUserId) {
 			return false;
 		}
-		if (!static::$current_user || !static::checkPermission(\Permissions::IMPERSONATE_USER, $impersonateUserId, READ)) {
+		if (!static::$current_user || !static::checkPermission(\Users::PERMISSION_IMPERSONATE_USER, $impersonateUserId, READ)) {
 			return false;
 		}
 		if (!static::$sessionId) {
@@ -521,7 +521,7 @@ class Sessions extends \DB\MySQLObject{
 				if ($session['session_json_data'] && is_string($session['session_json_data'])) {
 					$jsonData = json_decode($session['session_json_data'], true);
 					if (is_array($jsonData) && isset($jsonData['impersonateUserId']) && $jsonData['impersonateUserId']) {
-						if (static::checkPermission(\Permissions::IMPERSONATE_USER, $jsonData['impersonateUserId'], READ, $user)) {
+						if (static::checkPermission(\Users::PERMISSION_IMPERSONATE_USER, $jsonData['impersonateUserId'], READ, $user)) {
 							$impersonateUser = Users::get(['id' => $jsonData['impersonateUserId']]);
 							if (isset($impersonateUser) && is_array($impersonateUser) && $impersonateUser && $impersonateUser['status'] == \Users::STATUS_ACTIVE) {
 								$user = $impersonateUser;

@@ -43,7 +43,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		}
 		if ($groupId) {
 			// Update
-			if (!\Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $groupId, WRITE)) {
+			if (!\Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $groupId, WRITE)) {
 				$this->error = \T::Framework_Errors_PermissionDenied();
 				return;
 			}
@@ -111,7 +111,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			$this->error = \T::Framework_Groups_Delete_GroupNotFound();
 			return;
 		}
-		if (!\Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $group_id, DELETE)) {
+		if (!\Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $group_id, DELETE)) {
 			$this->error = \T::Framework_Groups_Delete_PermissionDenied();
 			return;
 		}
@@ -162,9 +162,9 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 	private function check_permissions() {
 		\Sessions::requestPermission(\Permissions::ADMIN, 0, READ);
 
-		$this->can_read_global = \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, -1, READ);
-		$this->can_delete = \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, -1, DELETE);
-		$this->can_create_group = \Sessions::checkPermission(\Permissions::CREATE_GROUP, 0, WRITE);
+		$this->can_read_global = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, -1, READ);
+		$this->can_delete = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, -1, DELETE);
+		$this->can_create_group = \Sessions::checkPermission(\Groups::PERMISSION_CREATE_GROUP, 0, WRITE);
 
 		if (!$this->can_read_global && !$this->can_create_group) {
 			e403();
@@ -175,7 +175,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		$manageGroups = [];
 		$sql = '';
 		if (!$this->can_read_global) {
-			$manageGroups = \Sessions::getAllSubjectPermissions(\Permissions::MANAGE_GROUPS);
+			$manageGroups = \Sessions::getAllSubjectPermissions(\Groups::PERMISSION_MANAGE_GROUPS);
 			if ($manageGroups) {
 				$sql .= sql_pholder(' AND id IN (?@)', array_keys($manageGroups));
 			} else {
@@ -230,9 +230,9 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 							'create_time' => isset($group['create_time']) && $group['create_time'] > 0 ? date("Y-m-d H:i:s", $group['create_time']) : '',
 						];
 
-						$can_read_group = \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $params['id'], READ);
-						$can_write_group = \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $params['id'], WRITE);
-						$can_delete_group = \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, $params['id'], DELETE);
+						$can_read_group = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $params['id'], READ);
+						$can_write_group = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $params['id'], WRITE);
+						$can_delete_group = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $params['id'], DELETE);
 
 						if (in_array($params['id'], [\Groups::ADMIN_GROUP_ID, \Groups::DEFAULT_GROUP_ID])) {
 							$can_read_group = true;
@@ -241,8 +241,8 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 						}
 						if (!$can_read_group) continue;
 
-						$can_read_permissions = \Sessions::checkPermission(\Permissions::MANAGE_GROUP_PERMISSIONS, $params['id'], READ);
-						$can_write_permissions = \Sessions::checkPermission(\Permissions::MANAGE_GROUP_PERMISSIONS, $params['id'], WRITE);
+						$can_read_permissions = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS, $params['id'], READ);
+						$can_write_permissions = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS, $params['id'], WRITE);
 
 						?>
 						<tr>

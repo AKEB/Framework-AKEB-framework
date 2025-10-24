@@ -56,6 +56,11 @@ new \T([
 ]);
 new \T();
 
+\Permissions::add_permission(\Permissions::ADMIN, \T::Framework_Permissions_Admin());
+\Permissions::add_permission(\Permissions::LOGS, \T::Framework_Permissions_LogsReport());
+\Permissions::add_permission(\Users::PERMISSION_CREATE_USER, \T::Framework_Permissions_CreateUser());
+\Permissions::add_permission(\Groups::PERMISSION_CREATE_GROUP, \T::Framework_Permissions_CreateGroup());
+
 \Permissions::set_subject_type('user', '\\Users', \T::Framework_Permissions_SubjectTypes_User());
 \Permissions::set_subject_type('group', '\\Groups', \T::Framework_Permissions_SubjectTypes_Group());
 
@@ -104,3 +109,19 @@ if (\Config::getInstance()->mysql_dont_use_slave) {
 $db_slave->database_master = false;
 $dbs_slaves[\Config::getInstance()->mysql_db_name] = $db_slave;
 $dbs_masters[\Config::getInstance()->mysql_slave_db_name] = $db;
+
+\Template::addMenuAdminItem(new \MenuItem('bi bi-person', \T::Framework_Menu_Users(), '/admin/users/', null,
+	[
+		new \MenuPermissionItem(\Users::PERMISSION_MANAGE_USERS, -1, READ),
+		new \MenuPermissionItem(\Users::PERMISSION_CREATE_USER, 0, WRITE),
+	]
+));
+\Template::addMenuAdminItem(new \MenuItem('bi bi-people', \T::Framework_Menu_Groups(), '/admin/groups/', null,
+	[
+		new \MenuPermissionItem(\Groups::PERMISSION_MANAGE_GROUPS, -1, READ),
+		new \MenuPermissionItem(\Groups::PERMISSION_CREATE_GROUP, 0, WRITE),
+	]
+));
+\Template::addMenuAdminItem(new \MenuItem('bi bi-journal-text', \T::Framework_Menu_Logs(), '/admin/logs/', null,
+	new \MenuPermissionItem(\Permissions::LOGS, 0, READ)
+));

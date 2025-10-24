@@ -9,12 +9,12 @@ class Framework_Migration_0030 {
 
 		$result = [];
 		$db->db_GetQueryArray("SELECT `id` FROM `permissions` WHERE `permission` IN (
-			'".\Permissions::MANAGE_USERS."',
-			'".\Permissions::MANAGE_USER_PERMISSIONS."',
-			'".\Permissions::MANAGE_USER_GROUPS."',
-			'".\Permissions::IMPERSONATE_USER."',
-			'".\Permissions::MANAGE_GROUPS."',
-			'".\Permissions::MANAGE_GROUP_PERMISSIONS."'
+			'".\Users::PERMISSION_MANAGE_USERS."',
+			'".\Users::PERMISSION_MANAGE_USER_PERMISSIONS."',
+			'".\Users::PERMISSION_MANAGE_USER_GROUPS."',
+			'".\Users::PERMISSION_IMPERSONATE_USER."',
+			'".\Groups::PERMISSION_MANAGE_GROUPS."',
+			'".\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS."'
 		);", $result);
 		$permissions_ids = [];
 		foreach($result as $item) {
@@ -23,12 +23,12 @@ class Framework_Migration_0030 {
 
 		$db->execSQL("DELETE FROM `translates` WHERE `table` = 'permissions' AND `field_id` IN (".implode(',', $permissions_ids).");");
 		$db->execSQL("DELETE FROM `permissions` WHERE `permission` IN (
-			'".\Permissions::MANAGE_USERS."',
-			'".\Permissions::MANAGE_USER_PERMISSIONS."',
-			'".\Permissions::MANAGE_USER_GROUPS."',
-			'".\Permissions::IMPERSONATE_USER."',
-			'".\Permissions::MANAGE_GROUPS."',
-			'".\Permissions::MANAGE_GROUP_PERMISSIONS."'
+			'".\Users::PERMISSION_MANAGE_USERS."',
+			'".\Users::PERMISSION_MANAGE_USER_PERMISSIONS."',
+			'".\Users::PERMISSION_MANAGE_USER_GROUPS."',
+			'".\Users::PERMISSION_IMPERSONATE_USER."',
+			'".\Groups::PERMISSION_MANAGE_GROUPS."',
+			'".\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS."'
 		);");
 	}
 
@@ -38,12 +38,12 @@ class Framework_Migration_0030 {
 			INSERT INTO `permissions`
 				(`id`, `permission`)
 			VALUES
-				(2, '".\Permissions::MANAGE_USERS."'),
-				(4, '".\Permissions::MANAGE_USER_PERMISSIONS."'),
-				(5, '".\Permissions::MANAGE_USER_GROUPS."'),
-				(6, '".\Permissions::MANAGE_GROUPS."'),
-				(8, '".\Permissions::MANAGE_GROUP_PERMISSIONS."'),
-				(9, '".\Permissions::IMPERSONATE_USER."');
+				(2, '".\Users::PERMISSION_MANAGE_USERS."'),
+				(4, '".\Users::PERMISSION_MANAGE_USER_PERMISSIONS."'),
+				(5, '".\Users::PERMISSION_MANAGE_USER_GROUPS."'),
+				(6, '".\Groups::PERMISSION_MANAGE_GROUPS."'),
+				(8, '".\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS."'),
+				(9, '".\Users::PERMISSION_IMPERSONATE_USER."');
 		");
 
 		$db->execSQL("

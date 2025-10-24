@@ -31,19 +31,15 @@ require_once("./autoload.php");
 \Template::addJSFile('/js/locale_'.\T::getCurrentLanguage().'.js');
 \Template::addJSFile('/js/main.js');
 
-// Add another Menu items
-\Template::setMenuItems([
-	[
-		'title' => \T::Menu_Home(),
-		'link'=>'/',
-	],
-	[
-		'title' => \T::Menu_Test(),
-		'link' => '/test/',
-		'icon' => "bi bi-code-square"
-		// 'permission' => \Sessions::checkPermission(\Permissions::ADMIN, 0, READ),
-	],
-]);
+\Template::addMenuItem(new \MenuItem('', \T::Menu_Home(), '/', null, null));
+\Template::addMenuItem(new \MenuItem('bi bi-code-square', \T::Menu_Test(), '/test/', null, null));
+
+// \Template::addMenuItem(new \MenuItem('bi bi-person', \T::Framework_Menu_Users(), '/users/', null,
+// 	[
+// 		new \MenuPermissionItem(\Users::PERMISSION_MANAGE_USERS, -1, READ),
+// 		new \MenuPermissionItem(\Users::PERMISSION_CREATE_USER, 0, WRITE),
+// 	]
+// ));
 
 // Add another Websocket item
 \Websocket::addAction('test', '\\Test');

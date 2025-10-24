@@ -34,14 +34,14 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 
 	private function check_permissions() {
 		\Sessions::requestPermission(\Permissions::ADMIN, 0, READ);
-		$this->can_read_global = \Sessions::checkPermission(\Permissions::MANAGE_USERS, 0, READ);
+		$this->can_read_global = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, 0, READ);
 
-		$this->can_read = \Sessions::checkPermission(\Permissions::MANAGE_USERS, -1, READ);
-		$this->can_delete = \Sessions::checkPermission(\Permissions::MANAGE_USERS, -1, DELETE);
+		$this->can_read = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, -1, READ);
+		$this->can_delete = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, -1, DELETE);
 
-		$this->can_create_user = \Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE);
+		$this->can_create_user = \Sessions::checkPermission(\Users::PERMISSION_CREATE_USER, 0, WRITE);
 
-		$this->can_impersonate = \Sessions::checkPermission(\Permissions::IMPERSONATE_USER, -1, READ);
+		$this->can_impersonate = \Sessions::checkPermission(\Users::PERMISSION_IMPERSONATE_USER, -1, READ);
 
 		if (!$this->can_read_global && !$this->can_read && !$this->can_create_user) {
 			e403();
@@ -79,7 +79,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 			$this->error = \T::Framework_Users_Delete_SelfDenied();
 			return;
 		}
-		if (!\Sessions::checkPermission(\Permissions::MANAGE_USERS, $userId, DELETE)) {
+		if (!\Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, $userId, DELETE)) {
 			$this->error = \T::Framework_Errors_PermissionDenied();
 			return;
 		}
@@ -133,7 +133,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 		$manageUsers = [];
 		$sql = '';
 		if (!$this->can_read_global) {
-			$manageUsers = \Sessions::getAllSubjectPermissions(\Permissions::MANAGE_USERS);
+			$manageUsers = \Sessions::getAllSubjectPermissions(\Users::PERMISSION_MANAGE_USERS);
 
 			if ($manageUsers) {
 				$sql .= sql_pholder(' AND id IN (?@)', array_keys($manageUsers));
@@ -173,21 +173,21 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 							'login_time' => isset($user['login_time']) && $user['login_time'] > 0 ? date("Y-m-d H:i:s", $user['login_time']) : '',
 						];
 
-						$can_read_user = \Sessions::checkPermission(\Permissions::MANAGE_USERS, $params['id'], READ);
+						$can_read_user = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, $params['id'], READ);
 						if (!$can_read_user) continue;
-						$can_write_user = \Sessions::checkPermission(\Permissions::MANAGE_USERS, $params['id'], WRITE);
-						$can_delete_user = \Sessions::checkPermission(\Permissions::MANAGE_USERS, $params['id'], DELETE);
+						$can_write_user = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, $params['id'], WRITE);
+						$can_delete_user = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, $params['id'], DELETE);
 
-						$can_impersonate_user = \Sessions::checkPermission(\Permissions::IMPERSONATE_USER, $params['id'], READ);
+						$can_impersonate_user = \Sessions::checkPermission(\Users::PERMISSION_IMPERSONATE_USER, $params['id'], READ);
 
 						if ($params['id'] == \Sessions::currentUser()['id']) {
 							$can_delete_user = false;
 						}
 
-						$can_read_permissions = \Sessions::checkPermission(\Permissions::MANAGE_USER_PERMISSIONS, $params['id'], READ);
-						$can_write_permissions = \Sessions::checkPermission(\Permissions::MANAGE_USER_PERMISSIONS, $params['id'], WRITE);
-						$can_read_groups = \Sessions::checkPermission(\Permissions::MANAGE_USER_GROUPS, $params['id'], READ);
-						$can_write_groups = \Sessions::checkPermission(\Permissions::MANAGE_USER_GROUPS, $params['id'], WRITE);
+						$can_read_permissions = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_PERMISSIONS, $params['id'], READ);
+						$can_write_permissions = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_PERMISSIONS, $params['id'], WRITE);
+						$can_read_groups = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_GROUPS, $params['id'], READ);
+						$can_write_groups = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_GROUPS, $params['id'], WRITE);
 
 						?>
 						<tr>

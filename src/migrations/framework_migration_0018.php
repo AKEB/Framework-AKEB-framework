@@ -20,14 +20,14 @@ class Framework_Migration_0018 {
 				(`id`, `permission`)
 			VALUES
 				(1, '".\Permissions::ADMIN."'),
-				(2, '".\Permissions::MANAGE_USERS."'),
-				(3, '".\Permissions::CREATE_USER."'),
-				(4, '".\Permissions::MANAGE_USER_PERMISSIONS."'),
-				(5, '".\Permissions::MANAGE_USER_GROUPS."'),
-				(6, '".\Permissions::MANAGE_GROUPS."'),
-				(7, '".\Permissions::CREATE_GROUP."'),
-				(8, '".\Permissions::MANAGE_GROUP_PERMISSIONS."'),
-				(9, '".\Permissions::IMPERSONATE_USER."')
+				(2, '".\Users::PERMISSION_MANAGE_USERS."'),
+				(3, '".\Users::PERMISSION_CREATE_USER."'),
+				(4, '".\Users::PERMISSION_MANAGE_USER_PERMISSIONS."'),
+				(5, '".\Users::PERMISSION_MANAGE_USER_GROUPS."'),
+				(6, '".\Groups::PERMISSION_MANAGE_GROUPS."'),
+				(7, '".\Groups::PERMISSION_CREATE_GROUP."'),
+				(8, '".\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS."'),
+				(9, '".\Users::PERMISSION_IMPERSONATE_USER."')
 		");
 
 		$db->execSQL("

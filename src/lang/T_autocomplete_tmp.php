@@ -1097,6 +1097,14 @@ class T {
 	public static function Framework_Permissions_ImpersonateUser(...$argv): string { return ''; }
 
 	/**
+	 * Framework_Permissions_LogsReport
+	 * 
+	 * @return string "Logs report"
+	 * @return string "Просмотр логов"
+	 */
+	public static function Framework_Permissions_LogsReport(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Permissions_Group
 	 * 
 	 * @return string "Group"

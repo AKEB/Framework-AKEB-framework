@@ -160,6 +160,7 @@ Framework:
     CreateGroup: "Создание группы"
     ManageGroupPermissions: "Управление правами группы"
     ImpersonateUser: "Вход под пользователем"
+    LogsReport: "Просмотр логов"
     Group: "Группа"
     SubjectTypes:
       Group: "Группа"

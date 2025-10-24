@@ -161,6 +161,7 @@ Framework:
     CreateGroup: "Create Group"
     ManageGroupPermissions: "Manage Group Permissions"
     ImpersonateUser: "Impersonate Users"
+    LogsReport: "Logs report"
     Group: "Group"
     SubjectTypes:
       Group: "Group"

@@ -5,7 +5,8 @@ class Template {
 	static public string $head_additional = '';
 	static private string $project_name = 'AKEB Framework';
 	static private string $theme = 'dark';
-	static private array $menu_items = [];
+	static private \MenuItems $menu_items;
+	static private \MenuItems $menu_admin_items;
 
 	static private array $css_files = [];
 	static private array $js_files = [];
@@ -40,14 +41,26 @@ class Template {
 		return static::$theme;
 	}
 
-	/**
-	 * setMenuItems
-	 *
-	 * @param  array $menu_items
-	 * @return void
-	 */
-	public static function setMenuItems(array $menu_items) {
+	public static function setMenuItems(\MenuItems $menu_items) {
 		static::$menu_items = $menu_items;
+	}
+
+	public static function addMenuItem(\MenuItem $menu_item) {
+		if (!isset(static::$menu_items)) {
+			static::$menu_items = new \MenuItems();
+		}
+		static::$menu_items->add($menu_item);
+	}
+
+	public static function setMenuAdminItems(\MenuItems $menu_admin_items) {
+		static::$menu_admin_items = $menu_admin_items;
+	}
+
+	public static function addMenuAdminItem(\MenuItem $menu_admin_item) {
+		if (!isset(static::$menu_admin_items)) {
+			static::$menu_admin_items = new \MenuItems();
+		}
+		static::$menu_admin_items->add($menu_admin_item);
 	}
 
 	public static function addCSSFile(string $css_file) {
@@ -235,58 +248,88 @@ class Template {
 	public function header() {
 		$current_path = $_SERVER['DOCUMENT_URI'];
 		$current_path = str_replace('index.php', '', $current_path);
-		static::$menu_items[] = [
-			'icon' => "bi bi-lock",
-			'title' => \T::Framework_Menu_Admin(),
-			'link'=>'/admin/',
-			'permission' => \Sessions::checkPermission(\Permissions::ADMIN, 0, READ),
-			'items' => [
-				[
-					'icon' => "bi bi-person",
-					'title' => \T::Framework_Menu_Users(),
-					'link'=>'/admin/users/',
-					'permission' => \Sessions::checkPermission(\Permissions::MANAGE_USERS, -1, READ)
-									|| \Sessions::checkPermission(\Permissions::CREATE_USER, 0, WRITE)
-				],
-				[
-					'icon' => "bi bi-people",
-					'title' => \T::Framework_Menu_Groups(),
-					'link'=>'/admin/groups/',
-					'permission' => \Sessions::checkPermission(\Permissions::MANAGE_GROUPS, -1, READ)
-									|| \Sessions::checkPermission(\Permissions::CREATE_GROUP, 0, WRITE)
-				],
-				[
-					'icon' => "bi bi-journal-text",
-					'title' => \T::Framework_Menu_Logs(),
-					'link'=>'/admin/logs/',
-					'permission' => \Sessions::checkPermission(\Permissions::LOGS, 0, READ),
-				],
-			]
-		];
-		$menu_items = static::$menu_items;
-		foreach ($menu_items as $k=>$item) {
-			if (isset($item['permission']) && !$item['permission']) {
-				unset($menu_items[$k]);
+		if (!isset(static::$menu_items)) {
+			static::$menu_items = new \MenuItems();
+		}
+		if (!isset(static::$menu_admin_items)) {
+			static::$menu_admin_items = new \MenuItems();
+		}
+		$admin_menu = new \MenuItem('bi bi-lock', \T::Framework_Menu_Admin(), '/admin/', static::$menu_admin_items,
+			new \MenuPermissionItems(new \MenuPermissionItem(\Permissions::ADMIN, 0, READ))
+		);
+		static::$menu_items->add($admin_menu);
+
+		$menu_items = [];
+		foreach (static::$menu_items as $k => $item) {
+			if (!($item instanceof \MenuItem)) {
 				continue;
 			}
-			$menu_items[$k]['class'] = '';
-			if (isset($item['items'])) {
-				foreach ($item['items'] as $k2=>$item2) {
-					if (isset($item2['permission']) && !$item2['permission']) {
-						unset($menu_items[$k]['items'][$k2]);
-						continue;
-					}
-					$menu_items[$k]['items'][$k2]['class'] = '';
-					if ($item2['link'] == $current_path) {
-						$menu_items[$k]['items'][$k2]['class'] = 'active';
-						$menu_items[$k]['class'] = 'active';
+			if ($item->hasPermissions()) {
+				$access = false;
+				foreach ($item->getPermissions() as $permission) {
+					if (!($permission instanceof \MenuPermissionItem)) continue;
+					if (\Sessions::checkPermission(
+						$permission->getPermission(),
+						$permission->getSubjectId(),
+						$permission->getAccessType()
+					)) {
+						$access = true;
+						break;
 					}
 				}
-			} else {
-				if ($item['link'] == $current_path) {
-					$menu_items[$k]['class'] = 'active';
+				if (!$access) {
+					continue;
 				}
 			}
+			$active = false;
+			$children = [];
+			if ($item->hasChildren()) {
+				foreach ($item->getChildren() as $k2 => $item2) {
+					if (!($item2 instanceof \MenuItem)) {
+						continue;
+					}
+					if ($item2->hasPermissions()) {
+						$access = false;
+						foreach ($item2->getPermissions() as $permission) {
+							if (!($permission instanceof \MenuPermissionItem)) continue;
+							if (\Sessions::checkPermission(
+								$permission->getPermission(),
+								$permission->getSubjectId(),
+								$permission->getAccessType()
+							)) {
+								$access = true;
+								break;
+							}
+						}
+						if (!$access) {
+
+							continue;
+						}
+					}
+					$active2 = false;
+					if ($item2->getLink() == $current_path) {
+						$active2 = true;
+					}
+					$children[] = [
+						'icon' => $item2->getIcon(),
+						'title' => $item2->getTitle(),
+						'link'=> $item2->getLink(),
+						'class' => $active2 ? 'active' : '',
+					];
+				}
+				if (!$children) continue;
+			} else {
+				if ($item->getLink() == $current_path) {
+					$active = true;
+				}
+			}
+			$menu_items[] = [
+				'icon' => $item->getIcon(),
+				'title' => $item->getTitle(),
+				'link'=> $item->getLink(),
+				'class' => $active ? 'active' : '',
+				'children' => $children ? $children : null,
+			];
 		}
 		$currentUser = \Sessions::currentUser();
 		if (!$currentUser || !$currentUser['id']) {
@@ -304,13 +347,13 @@ class Template {
 					<ul class="nav nav-underline col-12 col-md-auto me-md-auto mb-2 justify-content-center mb-md-0">
 						<?php
 						foreach ($menu_items as $item) {
-							if (isset($item['items'])) {
+							if (isset($item['children'])) {
 								?>
 								<li class="nav-item dropdown">
 									<a class="nav-link <?=$item['class'];?> dropdown-toggle" data-bs-toggle="dropdown" href="<?=$item['link'];?>" role="button" aria-expanded="false"><?=isset($item['icon']) && $item['icon'] ? '<i class="'.$item['icon'].'"></i> ':'';?><?=$item['title'];?></a>
 									<ul class="dropdown-menu">
 										<?php
-										foreach($item['items'] as $item2) {
+										foreach($item['children'] as $item2) {
 											?>
 											<li><a class="dropdown-item <?=$item2['class'];?>" href="<?=$item2['link'];?>"><?=isset($item2['icon']) && $item2['icon'] ? '<i class="'.$item2['icon'].'"></i> ':'';?><?=$item2['title'];?></a></li>
 											<?php
@@ -326,7 +369,6 @@ class Template {
 								</li>
 								<?php
 							}
-
 						}
 						?>
 					</ul>

@@ -9,6 +9,13 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 	const STATUS_INACTIVE             =  2;
 	const STATUS_EMAIL_VERIFICATION   =  3;
 
+	const PERMISSION_MANAGE_USERS = 'manage_users';
+	const PERMISSION_MANAGE_USER_PERMISSIONS = 'manage_user_permissions';
+	const PERMISSION_MANAGE_USER_GROUPS = 'manage_user_groups';
+	const PERMISSION_IMPERSONATE_USER = 'impersonate_user';
+	const PERMISSION_CREATE_USER = 'create_user';
+
+
 	/** Требовать сменить пароль */
 	const FLAGS_NEED_CHANGE_PASSWORD = 1 << 0; // 1
 	// const FLAGS_SECOND               = 1 << 1; // 2
@@ -69,7 +76,7 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 	static public function subject_hash(): array {
 		$data_hash = [];
 		foreach(static::permissions_subject_hash() as $subject_id=>$permissionTitle) {
-			if (!\Sessions::checkPermission(\Permissions::MANAGE_USER_PERMISSIONS, $subject_id, ACCESS_WRITE)) {
+			if (!\Sessions::checkPermission(static::PERMISSION_MANAGE_USER_PERMISSIONS, $subject_id, ACCESS_WRITE)) {
 				continue;
 			}
 			$data_hash[$subject_id] = $permissionTitle;
@@ -88,10 +95,10 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 
 	static public function permissions_hash(): array {
 		return [
-			\Permissions::MANAGE_USERS => \T::Framework_Permissions_ManageUser(),
-			\Permissions::MANAGE_USER_PERMISSIONS => \T::Framework_Permissions_ManageUserPermissions(),
-			\Permissions::MANAGE_USER_GROUPS => \T::Framework_Permissions_ManageUserGroups(),
-			\Permissions::IMPERSONATE_USER => \T::Framework_Permissions_ImpersonateUser(),
+			static::PERMISSION_MANAGE_USERS => \T::Framework_Permissions_ManageUser(),
+			static::PERMISSION_MANAGE_USER_PERMISSIONS => \T::Framework_Permissions_ManageUserPermissions(),
+			static::PERMISSION_MANAGE_USER_GROUPS => \T::Framework_Permissions_ManageUserGroups(),
+			static::PERMISSION_IMPERSONATE_USER => \T::Framework_Permissions_ImpersonateUser(),
 		];
 	}
 

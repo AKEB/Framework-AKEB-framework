@@ -287,16 +287,16 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 			$this->group_id = $this->subject_id;
 			$this->group = \Groups::get(['id' => $this->group_id]);
 			if ($this->group && !in_array($this->group_id, [\Groups::ADMIN_GROUP_ID])) {
-				$this->can_read = \Sessions::checkPermission(\Permissions::MANAGE_GROUP_PERMISSIONS, $this->group_id, READ);
-				$this->can_write = \Sessions::checkPermission(\Permissions::MANAGE_GROUP_PERMISSIONS, $this->group_id, WRITE);
+				$this->can_read = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS, $this->group_id, READ);
+				$this->can_write = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS, $this->group_id, WRITE);
 			}
 			$this->url .= 'group/'.intval($this->group_id).'/';
 		} elseif ($this->subject == 'user') {
 			$this->user_id = $this->subject_id;
 			$this->user = \Users::get(['id' => $this->user_id]);
 			if ($this->user) {
-				$this->can_read = \Sessions::checkPermission(\Permissions::MANAGE_USER_PERMISSIONS, $this->user_id, READ);
-				$this->can_write = \Sessions::checkPermission(\Permissions::MANAGE_USER_PERMISSIONS, $this->user_id, WRITE);
+				$this->can_read = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_PERMISSIONS, $this->user_id, READ);
+				$this->can_write = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_PERMISSIONS, $this->user_id, WRITE);
 			}
 			$this->url .= 'user/'.intval($this->user_id).'/';
 		}
@@ -620,7 +620,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 	private function groups_hash() {
 		$groups_hash = [];
 		foreach(\Groups::permissions_subject_hash() as $subject_id=>$permissionTitle) {
-			if (!\Sessions::checkPermission(\Permissions::MANAGE_GROUP_PERMISSIONS, $subject_id, ACCESS_WRITE)) {
+			if (!\Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUP_PERMISSIONS, $subject_id, ACCESS_WRITE)) {
 				continue;
 			}
 			$groups_hash[$subject_id] = $permissionTitle;
@@ -631,7 +631,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 	private function users_hash() {
 		$users_hash = [];
 		foreach(\Users::permissions_subject_hash() as $subject_id=>$permissionTitle) {
-			if (!\Sessions::checkPermission(\Permissions::MANAGE_USER_PERMISSIONS, $subject_id, ACCESS_WRITE)) {
+			if (!\Sessions::checkPermission(\Users::PERMISSION_MANAGE_USER_PERMISSIONS, $subject_id, ACCESS_WRITE)) {
 				continue;
 			}
 			$users_hash[$subject_id] = $permissionTitle;

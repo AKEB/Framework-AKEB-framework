@@ -9,10 +9,16 @@ class Groups extends \DB\MySQLObject implements \PermissionSubject_Interface {
 
 	const DEFAULT_GROUP_ID = 2;
 
+
+	const PERMISSION_MANAGE_GROUPS = 'manage_groups';
+	const PERMISSION_MANAGE_GROUP_PERMISSIONS = 'manage_group_permissions';
+	const PERMISSION_CREATE_GROUP = 'create_group';
+
+
 	static public function subject_hash(): array {
 		$data_hash = [];
 		foreach(static::permissions_subject_hash() as $subject_id=>$permissionTitle) {
-			if (!\Sessions::checkPermission(\Permissions::MANAGE_GROUP_PERMISSIONS, $subject_id, ACCESS_WRITE)) {
+			if (!\Sessions::checkPermission(static::PERMISSION_MANAGE_GROUP_PERMISSIONS, $subject_id, ACCESS_WRITE)) {
 				continue;
 			}
 			$data_hash[$subject_id] = $permissionTitle;
@@ -30,8 +36,8 @@ class Groups extends \DB\MySQLObject implements \PermissionSubject_Interface {
 	}
 	static public function permissions_hash(): array {
 		return [
-			\Permissions::MANAGE_GROUPS => \T::Framework_Permissions_ManageGroup(),
-			\Permissions::MANAGE_GROUP_PERMISSIONS => \T::Framework_Permissions_ManageGroupPermissions(),
+			static::PERMISSION_MANAGE_GROUPS => \T::Framework_Permissions_ManageGroup(),
+			static::PERMISSION_MANAGE_GROUP_PERMISSIONS => \T::Framework_Permissions_ManageGroupPermissions(),
 		];
 	}
 
