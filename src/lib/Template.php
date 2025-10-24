@@ -486,13 +486,14 @@ class Template {
 		if (!isset($params['class2'])) $params['class2'] = 'col-xs-12 col-sm-12 col-md-9';
 		if (!isset($params['valid-feedback'])) $params['valid-feedback'] = '';
 		if (!isset($params['invalid-feedback'])) $params['invalid-feedback'] = '';
+		if (!isset($params['global-class'])) $params['global-class'] = '';
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
 			// if (!$params['valid-feedback']) $params['valid-feedback'] = \T::Framework_Common_FormLooksGood();
 		}
 		$html = '';
-		$html .= '<div class="mb-3 row">';
+		$html .= '<div class="mb-3 row '.($params['global-class']).'">';
 		$html .= '	<label for="'.$params['id'].'" class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="'.$params['class2'].'">';
 		$html .= '<div class="mt-2 form-check form-switch">';
@@ -517,6 +518,7 @@ class Template {
 		if (!isset($params['class2'])) $params['class2'] = 'col-xs-12 col-sm-12 col-md-9';
 		if (!isset($params['valid-feedback'])) $params['valid-feedback'] = '';
 		if (!isset($params['invalid-feedback'])) $params['invalid-feedback'] = '';
+		if (!isset($params['global-class'])) $params['global-class'] = '';
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -524,7 +526,7 @@ class Template {
 		}
 		$html = '';
 
-		$html .= '<div class="mb-3 row">';
+		$html .= '<div class="mb-3 row '.($params['global-class']).'">';
 		$html .= '	<label class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="mt-2 '.$params['class2'].'">';
 		foreach($flags_hash as $k=>$v) {
@@ -565,6 +567,7 @@ class Template {
 		if (!isset($params['add_before'])) $params['add_before'] = '';
 		if (!isset($params['rows'])) $params['rows'] = '';
 		if (!isset($params['cols'])) $params['cols'] = '';
+		if (!isset($params['global-class'])) $params['global-class'] = '';
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -572,7 +575,7 @@ class Template {
 		}
 
 		$html = '';
-		$html .= '<div class="mb-3 row">';
+		$html .= '<div class="mb-3 row '.($params['global-class']).'">';
 		$html .= '	<label for="'.$params['id'].'" class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="'.$params['class2'].'">';
 		if ($params['type'] == 'password') {
@@ -687,6 +690,7 @@ class Template {
 		if (!isset($params['global-id'])) $params['global-id'] = '';
 		if (!isset($params['data-container'])) $params['data-container'] = '';
 		if (!isset($params['vertical'])) $params['vertical'] = false;
+		if (!isset($params['global-class'])) $params['global-class'] = '';
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -695,7 +699,9 @@ class Template {
 
 		$html = '';
 		if (!$params['vertical']) {
-			$html .= '<div class="mb-3 row" '.($params['global-id'] ? 'id="'.$params['global-id'].'"':'').'>';
+			$html .= '<div class="mb-3 row '.$params['global-class'].'" '.($params['global-id'] ? 'id="'.$params['global-id'].'"':'').'>';
+		} else {
+			$html .= '<div class="'.$params['global-class'].'">';
 		}
 		$html .= '	<label for="'.$params['id'].'" class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="'.$params['class2'].'">';
@@ -730,9 +736,9 @@ class Template {
 			$html .= '		<div class="invalid-feedback">'.$params['invalid-feedback'].'</div>';
 		}
 		$html .= '	</div>';
-		if (!$params['vertical']) {
+		// if (!$params['vertical']) {
 			$html .= '</div>';
-		}
+		// }
 		return $html;
 	}
 
