@@ -487,6 +487,7 @@ class Template {
 		if (!isset($params['valid-feedback'])) $params['valid-feedback'] = '';
 		if (!isset($params['invalid-feedback'])) $params['invalid-feedback'] = '';
 		if (!isset($params['global-class'])) $params['global-class'] = '';
+		if (!isset($params['readonly'])) $params['readonly'] = false;
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -497,7 +498,7 @@ class Template {
 		$html .= '	<label for="'.$params['id'].'" class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="'.$params['class2'].'">';
 		$html .= '<div class="mt-2 form-check form-switch">';
-		$html .= '	<input class="form-check-input" name="'.$name.'" value="'.$value.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$params['id'].'" switch '.($value ? 'checked' : '').'>';
+		$html .= '	<input class="form-check-input" '.($params['readonly'] ? 'disabled readonly' : '').' name="'.$name.'" value="'.$value.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$params['id'].'" switch '.($value ? 'checked' : '').'>';
 		if ($params['valid-feedback']) {
 				$html .= '		<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
 			}
@@ -519,6 +520,7 @@ class Template {
 		if (!isset($params['valid-feedback'])) $params['valid-feedback'] = '';
 		if (!isset($params['invalid-feedback'])) $params['invalid-feedback'] = '';
 		if (!isset($params['global-class'])) $params['global-class'] = '';
+		if (!isset($params['readonly'])) $params['readonly'] = false;
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -539,7 +541,7 @@ class Template {
 			}
 			$id = str_replace('[]','['.$k.']', $name);
 			$html .= '<div class="form-check form-switch">';
-			$html .= '	<input class="form-check-input" '.($enable ? '' : 'disabled').' name="'.$name.'" value="'.$k.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$id.'" switch '.((is_array($values_hash) && array_key_exists($k, $values_hash) && $values_hash[$k]) || (!is_array($values_hash) && $values_hash & $k) ? 'checked' : '').'>';
+			$html .= '	<input class="form-check-input" '.($params['readonly'] ? 'disabled readonly' : '').' '.($enable ? '' : 'disabled').' name="'.$name.'" value="'.$k.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$id.'" switch '.((is_array($values_hash) && array_key_exists($k, $values_hash) && $values_hash[$k]) || (!is_array($values_hash) && $values_hash & $k) ? 'checked' : '').'>';
 			$html .= '	<label class="form-check-label" for="'.$id.'">'.$title.'</label>';
 			if ($params['valid-feedback']) {
 				$html .= '<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
@@ -698,6 +700,7 @@ class Template {
 		if (!isset($params['data-container'])) $params['data-container'] = '';
 		if (!isset($params['vertical'])) $params['vertical'] = false;
 		if (!isset($params['global-class'])) $params['global-class'] = '';
+		if (!isset($params['readonly'])) $params['readonly'] = false;
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -717,6 +720,7 @@ class Template {
 			($params['data-container'] ? 'data-container="'.$params['data-container'].'" ':'').
 			'aria-label="" id="'.$params['id'].'" name="'.$name.'" data-size="20" '.
 			($required ? 'required ' : '').
+			($params['readonly'] ? 'readonly disabled ' : '').
 			($params['multiple'] ? 'multiple data-selected-text-format="count" data-actions-box="true" ' : '').
 		'>';
 		if ($params['with-undefined']) {
