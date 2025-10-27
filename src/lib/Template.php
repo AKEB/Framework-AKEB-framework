@@ -539,7 +539,7 @@ class Template {
 			}
 			$id = str_replace('[]','['.$k.']', $name);
 			$html .= '<div class="form-check form-switch">';
-			$html .= '	<input class="form-check-input" '.($enable ? '' : 'disable').' name="'.$name.'" value="'.$k.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$id.'" switch '.((is_array($values_hash) && array_key_exists($k, $values_hash) && $values_hash[$k]) || (!is_array($values_hash) && $values_hash & $k) ? 'checked' : '').'>';
+			$html .= '	<input class="form-check-input" '.($enable ? '' : 'disabled').' name="'.$name.'" value="'.$k.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$id.'" switch '.((is_array($values_hash) && array_key_exists($k, $values_hash) && $values_hash[$k]) || (!is_array($values_hash) && $values_hash & $k) ? 'checked' : '').'>';
 			$html .= '	<label class="form-check-label" for="'.$id.'">'.$title.'</label>';
 			if ($params['valid-feedback']) {
 				$html .= '<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
