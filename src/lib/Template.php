@@ -512,7 +512,7 @@ class Template {
 
 	}
 
-	public function html_flags(string $name, array $flags_hash, int $value, string $title, bool $required=false, $params=[]): string {
+	public function html_params(string $name, array $data_hash, array|int $values_hash, string $title, bool $required=false, $params=[]): string {
 		if (!isset($params['id'])) $params['id'] = $name;
 		if (!isset($params['class1'])) $params['class1'] = 'col-xs-12 col-sm-12 col-md-3';
 		if (!isset($params['class2'])) $params['class2'] = 'col-xs-12 col-sm-12 col-md-9';
@@ -529,16 +529,16 @@ class Template {
 		$html .= '<div class="mb-3 row '.($params['global-class']).'">';
 		$html .= '	<label class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="mt-2 '.$params['class2'].'">';
-		foreach($flags_hash as $k=>$v) {
+		foreach($data_hash as $k=>$v) {
 			$id = str_replace('[]','['.$k.']', $name);
 			$html .= '<div class="form-check form-switch">';
-			$html .= '	<input class="form-check-input" name="'.$name.'" value="'.$k.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$id.'" switch '.($value & $k ? 'checked' : '').'>';
+			$html .= '	<input class="form-check-input" name="'.$name.'" value="'.$k.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$id.'" switch '.((is_array($values_hash) && array_key_exists($k, $values_hash) && $values_hash[$k]) || (!is_array($values_hash) && $values_hash & $k) ? 'checked' : '').'>';
 			$html .= '	<label class="form-check-label" for="'.$id.'">'.$v.'</label>';
 			if ($params['valid-feedback']) {
-				$html .= '		<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
+				$html .= '<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
 			}
 			if ($params['invalid-feedback']) {
-				$html .= '		<div class="invalid-feedback">'.$params['invalid-feedback'].'</div>';
+				$html .= '<div class="invalid-feedback">'.$params['invalid-feedback'].'</div>';
 			}
 			$html .= '</div>';
 		}

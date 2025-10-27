@@ -302,7 +302,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 
 					echo $this->template->html_switch("status", intval($this->user['status']??0), \T::Framework_Settings_Active());
 
-					echo $this->template->html_flags("flags[]", \Users::flags_hash(), $this->user['flags']??0, \T::Framework_Settings_Params());
+					echo $this->template->html_params("flags[]", \Users::flags_hash(), intval($this->user['flags']??0), \T::Framework_Settings_Params());
 					?>
 					<div class="d-flex flex-row-reverse">
 						<button type="submit" class="btn btn-primary" name="<?=$this->user['id'] ? 'editUser' : 'createUser';?>" value="true"><?=($this->user['id'] ? \T::Framework_Settings_UserProfile_Change() : \T::Framework_Settings_UserProfile_Create());?></button>
