@@ -530,10 +530,17 @@ class Template {
 		$html .= '	<label class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="mt-2 '.$params['class2'].'">';
 		foreach($data_hash as $k=>$v) {
+			if (is_array($v) && isset($v['title'])) {
+				$title = $v['title'];
+				$enable = $v['enable'];
+			} else {
+				$title = $v;
+				$enable = true;
+			}
 			$id = str_replace('[]','['.$k.']', $name);
 			$html .= '<div class="form-check form-switch">';
-			$html .= '	<input class="form-check-input" name="'.$name.'" value="'.$k.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$id.'" switch '.((is_array($values_hash) && array_key_exists($k, $values_hash) && $values_hash[$k]) || (!is_array($values_hash) && $values_hash & $k) ? 'checked' : '').'>';
-			$html .= '	<label class="form-check-label" for="'.$id.'">'.$v.'</label>';
+			$html .= '	<input class="form-check-input" '.($enable ? '' : 'disable').' name="'.$name.'" value="'.$k.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$id.'" switch '.((is_array($values_hash) && array_key_exists($k, $values_hash) && $values_hash[$k]) || (!is_array($values_hash) && $values_hash & $k) ? 'checked' : '').'>';
+			$html .= '	<label class="form-check-label" for="'.$id.'">'.$title.'</label>';
 			if ($params['valid-feedback']) {
 				$html .= '<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
 			}
