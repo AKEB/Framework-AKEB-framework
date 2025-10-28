@@ -498,7 +498,7 @@ class Template {
 		$html .= '	<label for="'.$params['id'].'" class="'.$params['class1'].' col-form-label">'.$title.($required ? ' <sup>*</sup>' : '').'</label>';
 		$html .= '	<div class="'.$params['class2'].'">';
 		$html .= '<div class="mt-2 form-check form-switch">';
-		$html .= '	<input class="form-check-input" '.($params['readonly'] ? 'disabled readonly' : '').' name="'.$name.'" value="'.$value.'" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$params['id'].'" switch '.($value ? 'checked' : '').'>';
+		$html .= '	<input class="form-check-input" '.($params['readonly'] ? 'disabled readonly' : '').' name="'.$name.'" value="true" type="checkbox" role="switch" '.($required ? 'required' : '').' id="'.$params['id'].'" switch '.($value ? 'checked' : '').'>';
 		if ($params['valid-feedback']) {
 				$html .= '		<div class="valid-feedback">'.$params['valid-feedback'].'</div>';
 			}
