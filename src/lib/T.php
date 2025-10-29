@@ -146,4 +146,26 @@ class T {
 		}
 		return intval($count);
 	}
+
+	// склоняет слово в зависимости от количества
+	// amount - кол-во
+	// one - элемент
+	// two_four - элемента
+	// five_and_more - элементов
+	public static function declension($amount, $one, $two_four, $five_and_more =false) {
+	if (!$five_and_more) {
+		$five_and_more = $one;
+	}
+
+	$mod10 = $amount % 10;
+	$mod100 = $amount % 100;
+
+	if ((($mod100 >= 10) && ($mod100 <= 20)) || ($mod10 > 4) || ($mod10 == 0)) {
+		return $five_and_more;
+	} else if ($mod10 > 1) {
+		return $two_four;
+	}
+
+	return $one;
+}
 }
