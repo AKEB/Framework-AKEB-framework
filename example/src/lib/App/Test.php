@@ -8,7 +8,7 @@ class Test extends \Routing_Parent implements \Routing_Interface {
 		$this->check_auth();
 		$this->check_permissions();
 
-		$this->template = new \Template();
+		$this->template = new \Template('Test Page');
 		$this->print_header();
 
 		$this->testPermissions();

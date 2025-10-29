@@ -118,7 +118,7 @@ class Routing {
 
 	public function e404() {
 		header('HTTP/1.1 404 Page Not Found');
-		$template = new \Template(false);
+		$template = new \Template('404', false);
 		echo '<div class="row d-flex justify-content-center align-middle text-center mt-5"><h2>404<br/>Page Not Found!</h2></div>';
 		exit;
 	}

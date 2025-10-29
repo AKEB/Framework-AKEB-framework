@@ -15,7 +15,7 @@ class Signup extends \Routing_Parent implements \Routing_Interface {
 
 		$this->processRequest();
 
-		$this->template = new \Template(false);
+		$this->template = new \Template('SignUp', false);
 		$this->print_form();
 	}
 

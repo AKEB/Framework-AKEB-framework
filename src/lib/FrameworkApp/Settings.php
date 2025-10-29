@@ -22,7 +22,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 
 		$this->processRequest();
 
-		$this->template = new \Template();
+		$this->template = new \Template('Settings');
 		$this->print_header();
 		echo '<div class="row d-flex justify-content-center">';
 

@@ -53,7 +53,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 
 		$this->access_change();
 
-		$this->template = new \Template();
+		$this->template = new \Template('Permissions');
 		$this->print_header();
 		$this->print_table();
 		$this->print_modal();

@@ -25,7 +25,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 
 		$this->get_data();
 
-		$this->template = new \Template();
+		$this->template = new \Template('Groups');
 		$this->print_header();
 		$this->print_table();
 		$this->print_modal();

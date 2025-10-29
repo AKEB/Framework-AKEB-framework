@@ -15,7 +15,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 		}
 		$this->processRequest();
 
-		$this->template = new \Template(false);
+		$this->template = new \Template('Forgot password', false);
 		$this->print_form();
 	}
 

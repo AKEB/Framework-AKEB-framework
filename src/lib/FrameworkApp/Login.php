@@ -17,7 +17,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 	public function Run() {
 		$this->processRequest();
 
-		$this->template = new \Template(false);
+		$this->template = new \Template('SignIn', false);
 		$this->print_form();
 	}
 

@@ -104,7 +104,7 @@ class Template {
 	}
 
 
-	public function __construct(bool $withHeader=true) {
+	public function __construct(string $title='', bool $withHeader=true) {
 		$lang = \T::getCurrentLanguage();
 
 		$css_files = [];
@@ -184,7 +184,7 @@ class Template {
 		<!doctype html>
 		<html lang="<?=$lang;?>" data-bs-theme="<?=static::getTheme();?>" class="h-100">
 			<head>
-				<title><?=static::getProjectName();?></title>
+				<title><?=static::getProjectName().($title ? ' - '.$title : '');?></title>
 				<?php
 				foreach($head_metas as $head_meta) {
 					echo "<meta ";

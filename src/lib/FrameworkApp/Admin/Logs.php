@@ -42,7 +42,7 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 
 		$this->get_data();
 
-		$this->template = new \Template();
+		$this->template = new \Template('Logs');
 		$this->print_header();
 		$this->print_filters();
 		$this->print_table();

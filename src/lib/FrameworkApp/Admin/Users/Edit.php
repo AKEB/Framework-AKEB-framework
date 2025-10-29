@@ -15,7 +15,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 
 		$this->processRequest();
 		$this->get_data();
-		$this->template = new \Template();
+		$this->template = new \Template('Edit User');
 		$this->print_header();
 
 		$this->print_forms();
