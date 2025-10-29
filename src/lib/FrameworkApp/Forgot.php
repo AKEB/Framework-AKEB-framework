@@ -122,7 +122,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 		<div class="container py-5 h-100">
 			<div class="row d-flex justify-content-center align-items-center h-100">
 				<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-					<div class="card loginCard">
+					<div class="card card-paddings loginCard">
 						<div class="card-body p-5 pt-1 text-center">
 							<div class="mb-md-3 mt-md-4 pb-5">
 								<img src="/images/apple-icon-120x120.png" alt="Icon" width="120" height="120" class="rounded-circle">

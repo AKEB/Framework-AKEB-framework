@@ -263,7 +263,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 	private function print_forms() {
 		?>
 		<div class="row d-flex justify-content-center">
-			<div class="card bg-transparent col-xl-10 p-4 mt-2 mb-3">
+			<div class="card card-paddings bg-transparent col-xl-10 p-4 mt-2 mb-3">
 				<div class="card-header bg-transparent"><h3>
 					<?php
 					if ($this->user['id']) {

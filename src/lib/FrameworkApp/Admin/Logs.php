@@ -159,7 +159,7 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 	private function print_filters() {
 		?>
 		<div class="collapse" id="filtersContainer">
-			<div class="card card-body">
+			<div class="card card-paddings card-body">
 				<div class="row">
 					<div class="col-md-6 col-lg-5 col-xl-4">
 						<label for="dateInput" class="col-form-label"><?=\T::Framework_Logs_Filter_Date();?></label>

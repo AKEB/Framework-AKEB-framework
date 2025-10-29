@@ -19,7 +19,7 @@
 
 /* XS */
 @media (min-width: 0px) {
-	.card {
+	.card-paddings {
 		padding: 1rem !important;
 		--bs-card-spacer-y: 0.2rem;
 		--bs-card-spacer-x: 0.2rem;
@@ -27,7 +27,7 @@
 }
 /* SM */
 @media (min-width: 576px) {
-	.card {
+	.card-paddings {
 		padding: 1rem !important;
 		--bs-card-spacer-y: 0.2rem;
 		--bs-card-spacer-x: 0.2rem;
@@ -35,7 +35,7 @@
 }
 /* MD */
 @media (min-width: 768px) {
-	.card {
+	.card-paddings {
 		padding: 1rem !important;
 		--bs-card-spacer-y: 0.4rem;
 		--bs-card-spacer-x: 0.4rem;
@@ -43,7 +43,7 @@
 }
 /* LG */
 @media (min-width: 992px) {
-	.card {
+	.card-paddings {
 		padding: 1rem !important;
 		--bs-card-spacer-y: 0.5rem;
 		--bs-card-spacer-x: 0.5rem;
@@ -51,7 +51,7 @@
 }
 /* XL */
 @media (min-width: 1200px) {
-	.card {
+	.card-paddings {
 		padding: 1.5rem !important;
 		--bs-card-spacer-y: 1rem;
 		--bs-card-spacer-x: 1rem;
@@ -59,7 +59,7 @@
 }
 /* XXL */
 @media (min-width: 1400px) {
-	.card {
+	.card-paddings {
 		padding: 1.5rem !important;
 		--bs-card-spacer-y: 1rem;
 		--bs-card-spacer-x: 1rem;
@@ -133,7 +133,7 @@ i.disabled {
 	z-index:1089;
 }
 
-.card {
+.card-paddings {
 	border-radius: 1rem;
 }
 

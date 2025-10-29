@@ -346,7 +346,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		<div class="container py-5 h-100">
 			<div class="row d-flex justify-content-center align-items-center h-100">
 				<div class="col-12 col-md-8 col-lg-6 col-xl-5">
-					<div class="card loginCard">
+					<div class="card card-paddings loginCard">
 						<div class="card-body p-5 pt-1 text-center">
 							<form action="/login/" method="post">
 								<input type="hidden" name="action" value="signin"/>

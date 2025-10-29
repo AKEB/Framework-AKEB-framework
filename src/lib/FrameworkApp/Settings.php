@@ -243,7 +243,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 
 	private function userProfileCard() {
 		?>
-		<div class="card bg-transparent col-xl-8 p-4 mt-2 mb-3">
+		<div class="card card-paddings bg-transparent col-xl-8 p-4 mt-2 mb-3">
 			<div class="card-header bg-transparent"><h3><?=\T::Framework_Settings_UserProfile_Title();?></h3></div>
 			<form class="card-body" method="post">
 				<?php if ($this->successText) { ?>
@@ -313,7 +313,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 
 	private function userPasswordCard() {
 		?>
-		<div class="card bg-transparent col-xl-8 p-4 mt-2 mb-3">
+		<div class="card card-paddings bg-transparent col-xl-8 p-4 mt-2 mb-3">
 			<div class="card-header bg-transparent <?=$this->need_change_password ? 'text-warning' : '';?>"><h3><?=\T::Framework_Settings_ChangePassword();?></h3></div>
 			<form class="change-password-form card-body needs-validation" method="post" novalidate>
 				<?php if ($this->passwordSuccessText) { ?>
@@ -373,7 +373,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		}
 
 		?>
-		<div class="card bg-transparent col-xl-8 p-4 mt-2 mb-3">
+		<div class="card card-paddings bg-transparent col-xl-8 p-4 mt-2 mb-3">
 			<div class="card-body bg-transparent">
 				<div class="d-flex justify-content-between flex-wrap">
 					<h3><?=\T::Framework_Settings_TwoFactor_Title();?></h3>
