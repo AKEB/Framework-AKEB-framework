@@ -395,7 +395,7 @@ class Template {
 							<i id="notificationButton" class="bi bi-bell h4"></i>
 						</button>
 						<div class="dropdown me-2 languageToggle">
-							<button class="btn btn-dark py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (dark)">
+							<button class="btn py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (dark)">
 								<i class="bi bi-globe"></i>
 								<span class="visually-hidden" id="bd-theme-text">Toggle language</span>
 							</button>
