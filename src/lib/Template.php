@@ -223,27 +223,30 @@ class Template {
 					<div class="toast-container position-fixed top-0 end-0 p-3" id="toast-container">
 					</div>
 				</div>
-				<div class="dropdown position-fixed top-0 end-0 mt-3 me-3 bd-mode-toggle languageToggle">
-					<button class="btn btn-dark py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (dark)">
-						<i class="bi bi-globe"></i>
-						<span class="visually-hidden" id="bd-theme-text">Toggle language</span>
-					</button>
-					<ul class="dropdown-menu shadow languageToggle">
-						<li><a class="dropdown-item <?=$lang == 'en' ? 'text-bg-secondary' : '';?>" href="<?=common_change_query('lang','en');?>">English</a></li>
-						<li><a class="dropdown-item <?=$lang == 'ru' ? 'text-bg-secondary' : '';?>" href="<?=common_change_query('lang','ru');?>">Русский</a></li>
-					</ul>
-				</div>
 				<?php
-					if ($withHeader) {
-						$this->header();
-					}
+				if ($withHeader) {
+					$this->header();
+				} else {
 					?>
-					<main>
-						<div class="container-xxl">
-		<?php
+					<div class="dropdown position-fixed top-0 end-0 mt-3 me-3 bd-mode-toggle languageToggle">
+						<button class="btn btn-dark py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (dark)">
+							<i class="bi bi-globe"></i>
+							<span class="visually-hidden" id="bd-theme-text">Toggle language</span>
+						</button>
+						<ul class="dropdown-menu shadow languageToggle">
+							<li><a class="dropdown-item <?=$lang == 'en' ? 'text-bg-secondary' : '';?>" href="<?=common_change_query('lang','en');?>">English</a></li>
+							<li><a class="dropdown-item <?=$lang == 'ru' ? 'text-bg-secondary' : '';?>" href="<?=common_change_query('lang','ru');?>">Русский</a></li>
+						</ul>
+					</div>
+					<?php
+				}
+				?>
+				<main><div class="container-xxl">
+				<?php
 	}
 
 	public function header() {
+		$lang = \T::getCurrentLanguage();
 		$current_path = $_SERVER['DOCUMENT_URI'];
 		$current_path = str_replace('index.php', '', $current_path);
 		if (!isset(static::$menu_items)) {
@@ -337,78 +340,91 @@ class Template {
 		$userAvatar = "https://gravatar.com/avatar/".hash('sha256', strtolower(trim($currentUser['email'])));
 		?>
 		<header class="p-3 mb-3 ">
-			<div class="container-xxl pb-3 border-bottom">
-				<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start">
-					<a href="/" class="d-flex align-items-center mb-2 mb-md-0 link-body-emphasis text-decoration-none">
+			<nav class="navbar navbar-expand-lg">
+				<div class="container-xxl d-flex justify-content-between pb-3 border-bottom">
+					<a href="/" class="navbar-brand">
 						<img src="/images/android-icon-48x48.png" alt="<?=static::getProjectName();?>" width="48" height="48" class="rounded-circle">
 					</a>
-					<ul class="nav nav-underline col-12 col-md-auto me-md-auto mb-2 justify-content-center mb-md-0">
-						<?php
-						foreach ($menu_items as $item) {
-							if (isset($item['children'])) {
-								?>
-								<li class="nav-item dropdown">
-									<a class="nav-link <?=$item['class'];?> dropdown-toggle" data-bs-toggle="dropdown" href="<?=$item['link'];?>" role="button" aria-expanded="false"><?=isset($item['icon']) && $item['icon'] ? '<i class="'.$item['icon'].'"></i> ':'';?><?=$item['title'];?></a>
-									<ul class="dropdown-menu">
-										<?php
-										foreach($item['children'] as $item2) {
-											?>
-											<li><a class="dropdown-item <?=$item2['class'];?>" href="<?=$item2['link'];?>"><?=isset($item2['icon']) && $item2['icon'] ? '<i class="'.$item2['icon'].'"></i> ':'';?><?=$item2['title'];?></a></li>
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+					<div class="collapse navbar-collapse flex-grow-1" id="navbarToggler">
+						<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+							<?php
+							foreach ($menu_items as $item) {
+								if (isset($item['children'])) {
+									?>
+									<li class="nav-item dropdown">
+										<a class="nav-link <?=$item['class'];?> dropdown-toggle" data-bs-toggle="dropdown" href="<?=$item['link'];?>" role="button" aria-expanded="false"><?=isset($item['icon']) && $item['icon'] ? '<i class="'.$item['icon'].'"></i> ':'';?><?=$item['title'];?></a>
+										<ul class="dropdown-menu">
 											<?php
-										}
-										?>
-									</ul>
-								</li>
-								<?php
-							} else {
-								?>
-								<li class="nav-item">
-									<a href="<?=$item['link'];?>" class="nav-link px-2 <?=$item['class'];?>"><?=isset($item['icon']) && $item['icon'] ? '<i class="'.$item['icon'].'"></i> ':'';?><?=$item['title'];?></a>
-								</li>
-								<?php
+											foreach($item['children'] as $item2) {
+												?>
+												<li><a class="dropdown-item <?=$item2['class'];?>" href="<?=$item2['link'];?>"><?=isset($item2['icon']) && $item2['icon'] ? '<i class="'.$item2['icon'].'"></i> ':'';?><?=$item2['title'];?></a></li>
+												<?php
+											}
+											?>
+										</ul>
+									</li>
+									<?php
+								} else {
+									?>
+									<li class="nav-item">
+										<a href="<?=$item['link'];?>" class="nav-link px-2 <?=$item['class'];?>"><?=isset($item['icon']) && $item['icon'] ? '<i class="'.$item['icon'].'"></i> ':'';?><?=$item['title'];?></a>
+									</li>
+									<?php
+								}
 							}
+							?>
+						</ul>
+						<?php
+						if (\Config::getInstance()->app_debug) {
+							?>
+							<div class="d-inline me-4 fs-6 text-warning-emphasis">
+								<span class="d-inline d-sm-none">XS</span>
+								<span class="d-none d-sm-inline d-md-none">SM</span>
+								<span class="d-none d-md-inline d-lg-none">MD</span>
+								<span class="d-none d-lg-inline d-xl-none">LG</span>
+								<span class="d-none d-xl-inline d-xxl-none">XL</span>
+								<span class="d-none d-xxl-inline">XXL</span>
+							</div>
+							<?php
 						}
 						?>
-					</ul>
-					<?php
-					if (\Config::getInstance()->app_debug) {
-						?>
-						<div>
-						<div class="d-inline me-4 fs-6 text-warning-emphasis">
-							<span class="d-inline d-sm-none">XS</span>
-							<span class="d-none d-sm-inline d-md-none">SM</span>
-							<span class="d-none d-md-inline d-lg-none">MD</span>
-							<span class="d-none d-lg-inline d-xl-none">LG</span>
-							<span class="d-none d-xl-inline d-xxl-none">XL</span>
-							<span class="d-none d-xxl-inline">XXL</span>
+						<button class="d-inline btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#notificationCanvas" aria-controls="notificationCanvas">
+							<i id="notificationButton" class="bi bi-bell h4"></i>
+						</button>
+						<div class="dropdown me-2 languageToggle">
+							<button class="btn btn-dark py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (dark)">
+								<i class="bi bi-globe"></i>
+								<span class="visually-hidden" id="bd-theme-text">Toggle language</span>
+							</button>
+							<ul class="dropdown-menu shadow languageToggle">
+								<li><a class="dropdown-item <?=$lang == 'en' ? 'text-bg-secondary' : '';?>" href="<?=common_change_query('lang','en');?>">English</a></li>
+								<li><a class="dropdown-item <?=$lang == 'ru' ? 'text-bg-secondary' : '';?>" href="<?=common_change_query('lang','ru');?>">Русский</a></li>
+							</ul>
 						</div>
+						<div class="dropdown text-md-end me-4">
+							<a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+								<img src="<?=$userAvatar;?>" alt="avatar" width="32" height="32" class="rounded-circle"> <?=$currentUser['name'];?>
+							</a>
+							<ul class="dropdown-menu text-small">
+								<li><a class="dropdown-item" href="/settings/"><i class="bi bi-gear"></i> <?=\T::Framework_Profile_Settings();?></a></li>
+								<li><hr class="dropdown-divider"></li>
+								<li><a class="dropdown-item" href="/logout/"><i class="bi bi-box-arrow-right"></i> <?=\T::Framework_SignOut();?></a></li>
+							</ul>
 						</div>
-						<?php
-					}
-					?>
-					<button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#notificationCanvas" aria-controls="notificationCanvas">
-						<i id="notificationButton" class="bi bi-bell h4"></i>
-					</button>
-					<div class="dropdown text-md-end me-4">
-						<a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-							<img src="<?=$userAvatar;?>" alt="avatar" width="32" height="32" class="rounded-circle"> <?=$currentUser['name'];?>
-						</a>
-						<ul class="dropdown-menu text-small">
-							<li><a class="dropdown-item" href="/settings/"><i class="bi bi-gear"></i> <?=\T::Framework_Profile_Settings();?></a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" href="/logout/"><i class="bi bi-box-arrow-right"></i> <?=\T::Framework_SignOut();?></a></li>
-						</ul>
 					</div>
 				</div>
-				<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationCanvas" aria-labelledby="notificationCanvasLabel">
-					<div class="offcanvas-header">
-						<h5 class="offcanvas-title" id="notificationCanvasLabel">
-							<i class="bi bi-arrow-left-circle text-info pointer" data-bs-dismiss="offcanvas" aria-label="Close"></i>
-							<?=\T::Framework_Notifications_Title();?>
-						</h5>
-					</div>
-					<div class="offcanvas-body" id="notificationBody"></div>
+			</nav>
+			<div class="offcanvas offcanvas-end" tabindex="-1" id="notificationCanvas" aria-labelledby="notificationCanvasLabel">
+				<div class="offcanvas-header">
+					<h5 class="offcanvas-title" id="notificationCanvasLabel">
+						<i class="bi bi-arrow-left-circle text-info pointer" data-bs-dismiss="offcanvas" aria-label="Close"></i>
+						<?=\T::Framework_Notifications_Title();?>
+					</h5>
 				</div>
+				<div class="offcanvas-body" id="notificationBody"></div>
 			</div>
 		</header>
 		<?php
