@@ -9,9 +9,6 @@
 	overflow-y: scroll;
 	overflow-x: scroll;
 }
-.gradient-custom {
-
-}
 
 .btn-outline-secondary {
 	--bs-btn-color: var(--bs-body-color);
@@ -66,8 +63,6 @@
 	}
 }
 
-
-
 .ml-auto {
 	margin-left: auto;
 }
@@ -97,6 +92,7 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
 .spinning {
     animation: spin 2s linear infinite;
     display: inline-block;
@@ -129,26 +125,17 @@ i.disabled {
 	color: var(--bs-body-color);
 }
 
-.languageToggle {
-	z-index:1089;
-}
-
 .card-paddings {
 	border-radius: 1rem;
 }
 
-
 .wrong .bi-check-lg {
     display: none;
 }
+
 .good .bi-x-lg {
     display: none;
 }
-/* .valid-feedback,
-.invalid-feedback {
-  margin-left: calc(2em + 0.25rem + 1.5rem);
-} */
-
 
 .otp-field {
 	flex-direction: row;

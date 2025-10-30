@@ -793,9 +793,8 @@ class Template {
 	public function __destruct() {
 		global $error, $success;
 		?>
-						</div>
-					</main>
-					<footer class="footer mt-auto py-3">
+					</div></main>
+					<footer class="footer mt-auto pt-3 pb-5 pb-sm-3">
 						<div class="container-xxl border-top d-flex flex-wrap justify-content-between align-items-center">
 							<span class="mt-3 mb-3 text-body-secondary justify-content-start">© 2025 Vadim Babadzhanyan</span>
 							<span class="mt-3 mb-3 text-body-secondary justify-content-end"><?=\T::Framework_Version();?>: <?=constant('SERVER_VERSION');?></span>
