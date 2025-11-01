@@ -116,4 +116,8 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 		}
 		return parent::save($param, $table_fields, $ref_name, $add);
 	}
+
+	static public function getUserPermissions(array $user): array {
+		return [];
+	}
 }

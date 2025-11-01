@@ -335,6 +335,40 @@ class Sessions extends \DB\MySQLObject{
 				];
 			}
 		}
+
+		foreach(\Permissions::get_subject_classes() as $subjectClass) {
+			$permissions = $subjectClass::getUserPermissions($user);
+			if ($permissions && is_array($permissions)) {
+				foreach ($permissions as $subjectType => $permissions_hash) {
+					if ($permissions_hash && is_array($permissions_hash)) {
+						if (!isset($user['permissions'][$subjectType])) {
+							$user['permissions'][$subjectType] = [];
+						}
+						foreach($permissions_hash as $permissionSubjectId => $permission) {
+							if (!isset($user['permissions'][$subjectType][$permissionSubjectId])) {
+								$user['permissions'][$subjectType][$permissionSubjectId] = [
+									READ => 0,
+									WRITE => 0,
+									DELETE => 0,
+									ACCESS_READ => 0,
+									ACCESS_WRITE => 0,
+									ACCESS_CHANGE => 0,
+								];
+							}
+							$user['permissions'][$permissionSubject][$permissionSubjectId] = [
+								READ => $permission[READ] == 0 ? 2 : 1,
+								WRITE => $permission[WRITE] == 0 ? 2 : 1,
+								DELETE => $permission[DELETE] == 0 ? 2 : 1,
+								ACCESS_READ => $permission[ACCESS_READ] == 0 ? 2 : 1,
+								ACCESS_WRITE => $permission[ACCESS_WRITE] == 0 ? 2 : 1,
+								ACCESS_CHANGE => $permission[ACCESS_CHANGE] == 0 ? 2 : 1,
+							];
+						}
+					}
+				}
+			}
+		}
+
 		$for_cache = [
 			'permissions' => $user['permissions'],
 			'groups' => $user['groups'],
@@ -369,19 +403,19 @@ class Sessions extends \DB\MySQLObject{
 			return false;
 		}
 
-		if ($subject_id == -1) {
-			foreach($currentUser['permissions'][$subject] as $permissionSubjectId => $permission) {
-				if (!is_array($permission)) continue;
-				if (isset($permission[$accessType]) && $permission[$accessType] == 1) {
-					return true;
-				}
-			}
-		} elseif ($subject_id == 0) {
+		if ($subject_id == 0) {
 			if (!isset($currentUser['permissions'][$subject][0]) || !is_array($currentUser['permissions'][$subject][0])) {
 				return false;
 			}
 			if ($currentUser['permissions'][$subject][0][$accessType] == 1) {
 				return true;
+			}
+		} elseif ($subject_id == -1) {
+			foreach($currentUser['permissions'][$subject] as $permissionSubjectId => $permission) {
+				if (!is_array($permission)) continue;
+				if (isset($permission[$accessType]) && $permission[$accessType] == 1) {
+					return true;
+				}
 			}
 		} else {
 			if (isset($currentUser['permissions'][$subject][0]) && is_array($currentUser['permissions'][$subject][0])) {

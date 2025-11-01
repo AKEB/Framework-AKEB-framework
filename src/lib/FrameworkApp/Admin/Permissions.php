@@ -526,6 +526,8 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 						$params[ACCESS_WRITE.'_icon'] = $this->access()[$params[ACCESS_WRITE]];
 						$params[ACCESS_CHANGE.'_icon'] = $this->access()[$params[ACCESS_CHANGE]];
 
+
+
 						$can_read_permission = \Sessions::checkPermission($subject, $subject_id, ACCESS_READ);
 						$can_write_permission = \Sessions::checkPermission($subject, $subject_id, ACCESS_WRITE);
 						$can_change_permission = \Sessions::checkPermission($subject, $subject_id, ACCESS_CHANGE);

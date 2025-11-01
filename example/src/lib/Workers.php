@@ -30,4 +30,20 @@ class Workers implements \PermissionSubject_Interface {
 		];
 	}
 
+	static public function getUserPermissions(array $user): array {
+		$permissions = [];
+		foreach(static::permissions_subject_hash() as $subject_id=>$subject_title) {
+			foreach(static::permissions_hash() as $subject => $permission_title) {
+				$permissions[$subject][$subject_id] = [
+					READ => \Sessions::checkPermission($subject, $subject_id, READ, $user) ? 1 : 0,
+					WRITE => \Sessions::checkPermission($subject, $subject_id, WRITE, $user) ? 1 : 0,
+					DELETE => \Sessions::checkPermission($subject, $subject_id, DELETE, $user) ? 1 : 0,
+					ACCESS_READ => \Sessions::checkPermission($subject, $subject_id, ACCESS_READ, $user) ? 1 : 0,
+					ACCESS_WRITE => \Sessions::checkPermission($subject, $subject_id, ACCESS_WRITE, $user) ? 1 : 0,
+					ACCESS_CHANGE => \Sessions::checkPermission($subject, $subject_id, ACCESS_CHANGE, $user) ? 1 : 0,
+				];
+			}
+		}
+		return $permissions;
+	}
 }
