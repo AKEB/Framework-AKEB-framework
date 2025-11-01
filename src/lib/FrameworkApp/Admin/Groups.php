@@ -235,7 +235,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 						$can_delete_group = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $params['id'], DELETE);
 
 						if (in_array($params['id'], [\Groups::ADMIN_GROUP_ID, \Groups::DEFAULT_GROUP_ID])) {
-							$can_read_group = true;
+							// $can_read_group = true;
 							$can_write_group = false;
 							$can_delete_group = false;
 						}
