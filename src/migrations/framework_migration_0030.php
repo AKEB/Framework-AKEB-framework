@@ -20,8 +20,9 @@ class Framework_Migration_0030 {
 		foreach($result as $item) {
 			$permissions_ids[] = intval($item['id']);
 		}
-
-		$db->execSQL("DELETE FROM `translates` WHERE `table` = 'permissions' AND `field_id` IN (".implode(',', $permissions_ids).");");
+		if ($permissions_ids) {
+			$db->execSQL("DELETE FROM `translates` WHERE `table` = 'permissions' AND `field_id` IN (".implode(',', $permissions_ids).");");
+		}
 		$db->execSQL("DELETE FROM `permissions` WHERE `permission` IN (
 			'".\Users::PERMISSION_MANAGE_USERS."',
 			'".\Users::PERMISSION_MANAGE_USER_PERMISSIONS."',

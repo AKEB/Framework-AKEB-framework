@@ -4,6 +4,17 @@ cd /app/
 
 if [ "$DEVELOPMENT" = "True" ] ; then
 	echo "Development mode"
+	if [ -d "/app_framework" ]; then
+		echo "Using local framework repository."
+		rm -rf /app/composer.lock
+		composer config repositories.framework path /app_framework
+		cd /app && composer install
+	else
+		echo "Local /app_framework directory not found. Relying on composer.json for remote repository."
+		rm -rf /app/composer.lock
+		composer config --unset repositories.framework
+		cd /app && composer install --prefer-dist --no-interaction --no-dev --no-scripts
+	fi
 else
 	echo "Production mode"
 fi

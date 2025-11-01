@@ -3,12 +3,10 @@ services:
   mysql:
     container_name: example-mysql
     image: mysql:latest
-    restart: unless-stopped
+    restart: always
     environment:
+      TZ: ${TZ:-UTC}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      # MYSQL_DATABASE: ${MYSQL_DB_NAME}
-      # MYSQL_USER: ${MYSQL_USERNAME}
-      # MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ./mysql_data:/var/lib/mysql
     healthcheck:
@@ -20,7 +18,10 @@ services:
   
   memcached:
     container_name: "example-memcached"
-    image: memcached
+    image: memcached:latest
+    restart: always
+    environment:
+      TZ: ${TZ:-UTC}
     command:
       - --conn-limit=1024
       - --memory-limit=32
@@ -29,8 +30,8 @@ services:
   server:
     container_name: "example-server"
     image: "akeb/example:local"
-    restart: unless-stopped
     build: .
+    restart: always
     env_file:
       - ./.env
     volumes:

@@ -118,6 +118,8 @@ done
 
 CMD="docker compose -f docker-compose.yml"
 
+CMD="${CMD} -f ../docker-compose.yml"
+
 if [ "$development" = "true" ]; then
 	CMD="${CMD} -f ../docker-compose.dev.yml"
 fi

@@ -21,7 +21,7 @@ build() {
 
 start() {
 	echo "Starting..."
-	rm -rf src/vendor/ src/composer.lock
+	# rm -rf src/vendor/ src/composer.lock
 	if [ "$build" = "true" ]; then
 		run_cmd "up -d --build" 2>/dev/null
 	else
@@ -34,7 +34,7 @@ serve() {
 	# Регистрируем обработчики
 	trap stop SIGINT SIGTERM
 	
-	rm -rf src/vendor/ src/composer.lock
+	# rm -rf src/vendor/ src/composer.lock
 	if [ "$build" = "true" ]; then
 		run_cmd "up --build" 2>/dev/null
 	else
@@ -79,7 +79,7 @@ mysql_cmd() {
 }
 
 help_cmd() {
-	echo "Usage: $0 [--build|-b] {start|stop|restart|build|status|serve|composer_update|composer_install|bash|mysql}"; 
+	echo "Usage: $0 [--dev|-development|-d] [--build|-b] {start|stop|restart|build|status|serve|composer_update|composer_install|bash|mysql}"; 
 	echo "Example: $0 start";
 	echo "Example: $0 --build start";
 	echo "Example: $0 stop";
@@ -117,6 +117,10 @@ do
 done
 
 CMD="docker compose -f docker-compose.yml"
+
+if [ "$development" = "true" ]; then
+	CMD="${CMD} -f docker-compose.dev.yml"
+fi
 
 case $action in
 	start) start;;
