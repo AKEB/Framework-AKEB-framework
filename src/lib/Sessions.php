@@ -355,14 +355,17 @@ class Sessions extends \DB\MySQLObject{
 									ACCESS_CHANGE => 0,
 								];
 							}
-							$user['permissions'][$permissionSubject][$permissionSubjectId] = [
-								READ => $permission[READ] == 0 ? 2 : 1,
-								WRITE => $permission[WRITE] == 0 ? 2 : 1,
-								DELETE => $permission[DELETE] == 0 ? 2 : 1,
-								ACCESS_READ => $permission[ACCESS_READ] == 0 ? 2 : 1,
-								ACCESS_WRITE => $permission[ACCESS_WRITE] == 0 ? 2 : 1,
-								ACCESS_CHANGE => $permission[ACCESS_CHANGE] == 0 ? 2 : 1,
+							$user['permissions'][$subjectType][$permissionSubjectId] = [
+								READ => $permission[READ] == 1 ? 1 : $user['permissions'][$subjectType][$permissionSubjectId][READ],
+								WRITE => $permission[WRITE] == 1 ? 1 : $user['permissions'][$subjectType][$permissionSubjectId][WRITE],
+								DELETE => $permission[DELETE] == 1 ? 1 : $user['permissions'][$subjectType][$permissionSubjectId][DELETE],
+								ACCESS_READ => $permission[ACCESS_READ] == 1 ? 1 : $user['permissions'][$subjectType][$permissionSubjectId][ACCESS_READ],
+								ACCESS_WRITE => $permission[ACCESS_WRITE] == 1 ? 1 : $user['permissions'][$subjectType][$permissionSubjectId][ACCESS_WRITE],
+								ACCESS_CHANGE => $permission[ACCESS_CHANGE] == 1 ? 1 : $user['permissions'][$subjectType][$permissionSubjectId][ACCESS_CHANGE],
 							];
+							if (array_sum($user['permissions'][$subjectType][$permissionSubjectId]) == 0) {
+								unset($user['permissions'][$subjectType][$permissionSubjectId]);
+							}
 						}
 					}
 				}
