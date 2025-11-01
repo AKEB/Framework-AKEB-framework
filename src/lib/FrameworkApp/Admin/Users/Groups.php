@@ -306,7 +306,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 				});
 
 				$('.deleteGroupAction').on('click', function() {
-					console.log($(this).data());
+					// console.log($(this).data());
 					showDeleteGroupModal($(this).data('group-id'), $(this).data('group-title'));
 				});
 			});

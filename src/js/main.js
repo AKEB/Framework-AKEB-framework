@@ -268,7 +268,6 @@ function otp_input(input_id, otp_div_id) {
 	const main_input = document.querySelector("#"+input_id);
 	const inputs = document.querySelectorAll("#"+otp_div_id+" > input");
 	inputs[0].addEventListener("paste", function (event) {
-		console.log('paste event');
 		event.preventDefault();
 		const pastedValue = (event.clipboardData || window.clipboardData).getData(
 			"text"
@@ -470,7 +469,7 @@ function formatDate(date) {
 
 class WSS {
 	constructor(session_uid) {
-		console.log("WSS::constructor");
+		// console.log("WSS::constructor");
 		this.message = [];
 		this.session_uid=session_uid;
 		getNotifications(this);
@@ -493,26 +492,26 @@ class WSS {
 			dataType: "json",
 			data : sendParams,
 			beforeSend: function() {
-				console.log("WSS::send", sendParams);
+				// console.log("WSS::send", sendParams);
 			},
 			success : function(response) {
 				if (!response) {
-					console.log("WSS::error");
+					// console.log("WSS::error");
 					showErrorToast("Error Websocket response", false, 2000);
 				} else if (response.error) {
-					console.log("WSS::error", response);
+					// console.log("WSS::error", response);
 					if (response.status && response.status == 401) {
 						window.location.href='/login/';
 					} else {
 						showErrorToast(response.error);
 					}
 				} else {
-					console.log("WSS::success", response);
+					// console.log("WSS::success", response);
 					func(response);
 				}
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
-				console.log("WSS::error", textStatus, errorThrown);
+				// console.log("WSS::error", textStatus, errorThrown);
 				showErrorToast("Error Websocket request", false, 2000);
 			}
 		});

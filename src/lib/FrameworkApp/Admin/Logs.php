@@ -323,7 +323,7 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 							params.push('object_id=' + _object_id);
 						}
 						const new_url = '/admin/logs/' + start_date + '/' + end_date +'/' + (params.length > 0 ? '?' + params.join('&') : '');
-						console.log(new_url);
+						// console.log(new_url);
 						window.location.href = new_url;
 						return false;
 					});

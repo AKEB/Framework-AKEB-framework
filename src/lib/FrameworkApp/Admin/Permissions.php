@@ -745,7 +745,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 						})
 						.then(response => response.json())
 						.then(data => {
-							console.log(data);
+							// console.log(data);
 							if (data.status > 0) {
 								checkbox.setAttribute('data-code', data.data_code);
 								checkbox.className = data.class;

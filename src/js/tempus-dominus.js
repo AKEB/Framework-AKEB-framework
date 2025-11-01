@@ -4188,7 +4188,7 @@
               tabTargets.push(...calendarHeaderItems);
           };
           const tabTargets = [];
-          console.log(this.optionsStore.currentView);
+        //   console.log(this.optionsStore.currentView);
           switch (this.optionsStore.currentView) {
               case 'clock':
                   {
