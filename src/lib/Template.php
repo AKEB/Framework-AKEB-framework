@@ -593,6 +593,8 @@ class Template {
 		if (!isset($params['rows'])) $params['rows'] = '';
 		if (!isset($params['cols'])) $params['cols'] = '';
 		if (!isset($params['global-class'])) $params['global-class'] = '';
+		if (!isset($params['accept'])) $params['accept'] = '';
+
 
 		if ($required) {
 			if (!$params['invalid-feedback']) $params['invalid-feedback'] = \T::Framework_Common_FormRequired();
@@ -652,6 +654,7 @@ class Template {
 				($params['max']? ' max="'.$params['max'].'"': '').
 				($params['min']? ' min="'.$params['min'].'"': '').
 				($params['step']? ' step="'.$params['step'].'"': '').
+				($params['accept']? ' accept="'.$params['accept'].'"': '').
 				($params['type'] == 'number' ? ' pattern="\d*"':'').
 				($params['readonly'] ? ' readonly' : '').'
 			>';
