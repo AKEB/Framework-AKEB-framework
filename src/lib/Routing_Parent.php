@@ -3,6 +3,9 @@
 class Routing_Parent implements \Routing_Interface {
 	protected string $error;
 	protected string $success;
+
+	protected string $requestBody = '';
+
 	protected \Template $template;
 
 	public function check_auth() {
@@ -10,6 +13,7 @@ class Routing_Parent implements \Routing_Interface {
 	}
 
 	protected function get_request_body(): array {
+		$this->requestBody = '';
 		$f = fopen('php://input','r');
 		if ($f) {
 			$requestBody = '';
@@ -18,13 +22,14 @@ class Routing_Parent implements \Routing_Interface {
 				$requestBody .= $d;
 			} while ($d);
 			fclose($f);
+			$this->requestBody = $requestBody;
 		}
-		if (!$requestBody) return [];
-		$requestBodyArray = @json_decode($requestBody, true);
+		if (!$this->requestBody) return [];
+		$requestBodyArray = @json_decode($this->requestBody, true);
 		if ($requestBodyArray && is_array($requestBodyArray)) {
 			return $requestBodyArray;
 		} else {
-			parse_str($requestBody, $requestBodyArray);
+			parse_str($this->requestBody, $requestBodyArray);
 			if ($requestBodyArray && is_array($requestBodyArray)) {
 				return $requestBodyArray;
 			}
