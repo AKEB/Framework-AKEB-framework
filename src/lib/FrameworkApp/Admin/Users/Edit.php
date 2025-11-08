@@ -178,7 +178,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				\Logs::add_tag($log_id, \Groups::LOGS_OBJECT, \Groups::DEFAULT_GROUP_ID);
 				\Logs::add_tag($log_id, \Users::LOGS_OBJECT, $user_id);
 
-				if (!\Sessions::in_group(\GROUPS::ADMIN_GROUP_ID, intval(\Sessions::currentUser()['id']))) {
+				if (!\Sessions::in_group(\Groups::ADMIN_GROUP_ID, intval(\Sessions::currentUser()['id']))) {
 					$permissions = \Users::permissions_hash();
 					foreach($permissions as $permission => $_) {
 						$ObjectPermissions = [

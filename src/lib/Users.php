@@ -103,8 +103,17 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 	}
 
 	static public function clear_session_cache($user_id): void {
-		$sessions = \Sessions::data(['user_id' => $user_id]);
+		$sql = sql_pholder(" AND (`user_id` = ? OR `session_json_data` LIKE '%impersonateUserId%')", intval($user_id));
+		$sessions = \Sessions::data(false, $sql);
 		foreach($sessions as $session) {
+			if ($session['user_id'] != $user_id) {
+				if (!$session['session_json_data']) continue;
+				$session['session_json_data'] = @json_decode($session['session_json_data'], true);
+				if (!$session['session_json_data']) continue;
+				if (!is_array($session['session_json_data'])) continue;
+				if (!isset($session['session_json_data']['impersonateUserId'])) continue;
+				if ($session['session_json_data']['impersonateUserId'] != $user_id) continue;
+			}
 			$cache = new \Cache('session_init_'.md5($session['id']));
 			$cache->remove();
 		}
