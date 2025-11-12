@@ -360,6 +360,8 @@ class Common {
 		if (!$data_fields) $data_fields = array_keys(reset($data));
 		if (!$data || !$data_fields) return false;
 		$db_obj = &static::find_dbobj($db_obj, $table_name);
+		$params['_delayed'] ??= false;
+		$params['_mode'] ??= static::CSMODE_INSERT;
 
 		//готовим данные для подстановки в запрос
 		$rows = [];
@@ -389,7 +391,7 @@ class Common {
 			foreach($update_fields as $field) {
 				if (!is_array($field)) {
 					$update_pieces[] = $field.'=values('.$field.')';
-				} else {
+				} elseif (isset($field['field']) && isset($field['value'])) {
 					$update_pieces[] = $field['field'].'='.$field['value'];
 				}
 			}
