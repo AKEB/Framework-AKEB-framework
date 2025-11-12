@@ -491,9 +491,9 @@ class WSS {
 			cache: false,
 			dataType: "json",
 			data : sendParams,
-			beforeSend: function() {
-				console.log("WSS::send", sendParams);
-			},
+			// beforeSend: function() {
+			// 	console.log("WSS::send", sendParams);
+			// },
 			success : function(response) {
 				if (!response) {
 					console.log("WSS::error");
@@ -506,7 +506,7 @@ class WSS {
 						showErrorToast(response.error);
 					}
 				} else {
-					console.log("WSS::success", response);
+					// console.log("WSS::success", response);
 					func(response);
 				}
 			},
