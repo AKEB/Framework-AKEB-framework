@@ -5,7 +5,7 @@ class Notifications extends \DB\MySQLObject{
 	const LOGS_OBJECT = 'Notifications';
 
 
-	public static function sendNotification(string $title, string $body, ?int $user_id=null, bool $withoutToast=false): void {
+	public static function sendNotification(string $title, string $body, bool $success=true, ?int $user_id=null, bool $withoutToast=false): void {
 		if (!isset($user_id) || !$user_id) {
 			$user_id = \Sessions::currentUser()['id'];
 		}
@@ -15,6 +15,7 @@ class Notifications extends \DB\MySQLObject{
 		$params = [
 			'title' => $title,
 			'body' => $body,
+			'success' => $success ? 1 : 0,
 			'user_id' => $user_id,
 			'create_time' => time(),
 			'send_time' => $withoutToast ? time() : 0,

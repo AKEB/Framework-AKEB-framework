@@ -9,7 +9,7 @@ class Notifications extends \Websocket_Parent implements \WebsocketWithAuth_Inte
 			if ($this->action == 'notifications') {
 				$messages = [];
 				$count = 0;
-				$data = \Notifications::data(['user_id' => $user['id']], sql_pholder(' ORDER BY create_time DESC LIMIT 10'));
+				$data = \Notifications::data(['user_id' => $user['id']], sql_pholder(' ORDER BY create_time ASC LIMIT 20'));
 				if ($data) {
 					foreach($data as $item) {
 						$item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);

@@ -439,7 +439,11 @@ function showNotifications(response) {
 			';
 			notificationBody.append(html);
 			if (!message.read_time && !message.send_time) {
-				showSuccessToast(message.body, false, 5000);
+				if (message.success == 1) {
+					showSuccessToast(message.body, false, 5000);
+				} else {
+					showErrorToast(message.body, false, 5000);
+				}
 			}
 		});
 		// showSuccessToast(response.message, false, 5000);
