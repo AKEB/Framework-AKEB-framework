@@ -492,26 +492,26 @@ class WSS {
 			dataType: "json",
 			data : sendParams,
 			beforeSend: function() {
-				// console.log("WSS::send", sendParams);
+				console.log("WSS::send", sendParams);
 			},
 			success : function(response) {
 				if (!response) {
-					// console.log("WSS::error");
+					console.log("WSS::error");
 					showErrorToast("Error Websocket response", false, 2000);
 				} else if (response.error) {
-					// console.log("WSS::error", response);
+					console.log("WSS::error", response);
 					if (response.status && response.status == 401) {
 						window.location.href='/login/';
 					} else {
 						showErrorToast(response.error);
 					}
 				} else {
-					// console.log("WSS::success", response);
+					console.log("WSS::success", response);
 					func(response);
 				}
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
-				// console.log("WSS::error", textStatus, errorThrown);
+				console.log("WSS::error", textStatus, errorThrown);
 				showErrorToast("Error Websocket request", false, 2000);
 			}
 		});
