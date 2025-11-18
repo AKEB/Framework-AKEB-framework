@@ -45,7 +45,9 @@ class T {
 			if (!isset(static::$__i18n[strtolower($__lang)]) || !static::$__i18n[strtolower($__lang)]) static::$__i18n[strtolower($__lang)] = [];
 			static::$__i18n[strtolower($__lang)] = array_replace_recursive(static::$__i18n[strtolower($__lang)], $this->__compile($config));
 		}
-		if (!static::$__currentLanguage) static::$__currentLanguage = $this->__getUserLangs()[0];
+		if (!static::$__currentLanguage) {
+			static::$__currentLanguage = $this->__getUserLangs()[0] ?? static::$__fallbackLang;
+		}
 	}
 
 	protected function __load($filename) {
@@ -84,7 +86,7 @@ class T {
 	}
 
 	public function __getUserLangs() {
-		$userLangs = array();
+		$userLangs = [];
 
 		if (isset($_GET['lang']) && is_string($_GET['lang'])) {
 			$userLangs[] = $_GET['lang'];
@@ -102,12 +104,12 @@ class T {
 
 		$userLangs[] = static::$__fallbackLang;
 		$userLangs = array_unique($userLangs);
-		$userLangs2 = array();
+		$userLangs2 = [];
 		foreach ($userLangs as $key => $value) {
 			if (!in_array(strtolower($value), static::$__languages)) continue;
 			// only allow a-z, A-Z and 0-9 and _ and -
 			if (preg_match('/^[a-zA-Z0-9_-]*$/', $value) === 1)
-				$userLangs2[$key] = $value;
+				$userLangs2[] = $value;
 		}
 		return $userLangs2;
 	}
