@@ -14,6 +14,27 @@ class Logs extends \DB\MySQLObject{
 
 	static private array $objects = [];
 
+	const PARAM_HASH_DATE_TIME = 'dateTime';
+	const PARAM_HASH_DATE = 'date';
+	const PARAM_HASH_TIME = 'time';
+	const PARAM_HASH_SECRET = 'secret';
+
+	static private array $params_hash_for_print = [];
+
+	static public function add_params_hash_for_print(string $key, string $hash) {
+
+		if (!isset(static::$params_hash_for_print) || !static::$params_hash_for_print) {
+			static::$params_hash_for_print = [
+				'_time' => static::PARAM_HASH_DATE_TIME,
+				'Time' => static::PARAM_HASH_DATE_TIME,
+				'password' => static::PARAM_HASH_SECRET,
+				'2fa' => static::PARAM_HASH_SECRET,
+				'secret' => static::PARAM_HASH_SECRET,
+			];
+		}
+
+		static::$params_hash_for_print[$key] = $hash;
+	}
 
 	static public function action_hash() {
 		$data = \LogActions::data();
@@ -124,11 +145,29 @@ class Logs extends \DB\MySQLObject{
 
 	static private function _print_k_v($k, $v) {
 		if (!isset($v)) return '';
-		if (strpos($k, '_time') !== false || strpos($k, 'Time') !== false) {
-			return $v ? date("Y-m-d H:i:s", $v) : $v;
+
+		if (!isset(static::$params_hash_for_print) || !static::$params_hash_for_print) {
+			static::$params_hash_for_print = [
+				'_time' => static::PARAM_HASH_DATE_TIME,
+				'Time' => static::PARAM_HASH_DATE_TIME,
+				'password' => static::PARAM_HASH_SECRET,
+				'2fa' => static::PARAM_HASH_SECRET,
+				'secret' => static::PARAM_HASH_SECRET,
+			];
 		}
-		if (strpos($k, 'password') !== false || strpos($k, '2fa') !== false || strpos($k, 'secret') !== false) {
-			return \Config::getInstance()->_hide_password($v);
+
+		foreach (static::$params_hash_for_print as $key => $value) {
+			if (strpos($k, $key) !== false) {
+				if ($value == static::PARAM_HASH_DATE_TIME) {
+					return $v > 0 ? date("Y-m-d H:i:s", $v) : $v;
+				} elseif ($value == static::PARAM_HASH_DATE) {
+					return $v > 0 ? date("Y-m-d", $v) : $v;
+				} elseif ($value == static::PARAM_HASH_TIME) {
+					return $v > 0 ? date("H:i:s", $v) : $v;
+				} elseif ($value == static::PARAM_HASH_SECRET) {
+					return \Config::getInstance()->_hide_password($v);
+				}
+			}
 		}
 		return $v ? $v : "''";
 	}
