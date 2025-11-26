@@ -220,8 +220,9 @@ class Database {
 		} catch (\mysqli_sql_exception) {
 			$is_error = true;
 		}
-		if (microtime(true) - $start_time >= 2.0) {
-			error_log(sprintf('[%s] Slow SQL query: %s', date('Y-m-d H:i:s'), $sql));
+		$end_time = microtime(true);
+		if ($end_time - $start_time >= 2.0) {
+			error_log(sprintf('[%s] Slow SQL query: %s %f sec', date('Y-m-d H:i:s'), $sql, round($end_time - $start_time, 4)));
 		}
 		if (!$result || $is_error) {
 			$is_error = true;
