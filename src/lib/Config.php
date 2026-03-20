@@ -168,6 +168,12 @@ class Config {
 			'memcached_port' => $this->getenv('MEMCACHED_PORT', ConfigEnvType::INT, 11211),
 			// Telegram
 			'telegram_bot_token' => $this->getenv('TELEGRAM_BOT_TOKEN', ConfigEnvType::STRING, ''),
+			'telegram_proxy_socks5' => $this->getenv('TELEGRAM_PROXY_SOCKS5', ConfigEnvType::BOOL, true),
+			'telegram_proxy_host' => $this->getenv('TELEGRAM_PROXY_HOST', ConfigEnvType::STRING, ''),
+			'telegram_proxy_port' => $this->getenv('TELEGRAM_PROXY_PORT', ConfigEnvType::INT, 8080),
+			'telegram_proxy_username' => $this->getenv('TELEGRAM_PROXY_USERNAME', ConfigEnvType::STRING, ''),
+			'telegram_proxy_password' => $this->getenv('TELEGRAM_PROXY_PASSWORD', ConfigEnvType::STRING, ''),
+
 			// Other
 			'per_page_counts' => [5, 10, 20, 50, 100, 500, 1000],
 

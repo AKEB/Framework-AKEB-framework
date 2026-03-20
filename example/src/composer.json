@@ -25,9 +25,5 @@
 		"files": []
 	},
 	"repositories": {
-		"framework": {
-			"type": "path",
-			"url": "/app_framework"
-		}
 	}
 }
