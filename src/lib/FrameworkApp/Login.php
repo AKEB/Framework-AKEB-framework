@@ -156,7 +156,8 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			\Logs::add_tag($log_id, \Users::LOGS_OBJECT, $userId);
 
 			return $this->loginUserWithId($userId);
-		} catch (\Throwable) {
+		} catch (\Throwable $e) {
+			error_log($e->getMessage());
 			$this->errorText = \T::Framework_Login_AuthenticateError();
 			return false;
 		}
@@ -174,7 +175,8 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		$oidc->addScope(explode(' ', \Config::getInstance()->openidconnect_scope));
 		try{
 			$oidc->authenticate();
-		} catch (\Throwable) {
+		} catch (\Throwable $e) {
+			error_log($e->getMessage());
 			$this->errorText = \T::Framework_Login_AuthenticateError();
 			return false;
 		}
@@ -227,13 +229,16 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 				'update_time' => time(),
 				'_mode' => \DB\Common::CSMODE_REPLACE,
 			]);
-			$UserGroups = \UserGroups::get(['id' => $UserGroupsId]);
-			$log_id = \Logs::create_log(\UserGroups::LOGS_OBJECT, $UserGroupsId, $UserGroups);
+			if (!$UserGroupsId) return false;
+			$userGroups = \UserGroups::get(['id' => $UserGroupsId]);
+			if (!$userGroups) return false;
+			$log_id = \Logs::create_log(\UserGroups::LOGS_OBJECT, $UserGroupsId, $userGroups);
 			\Logs::add_tag($log_id, \Groups::LOGS_OBJECT, \Groups::DEFAULT_GROUP_ID);
 			\Logs::add_tag($log_id, \Users::LOGS_OBJECT, $userId);
 
 			return $this->loginUserWithId($userId);
-		} catch (\Throwable) {
+		} catch (\Throwable $e) {
+			error_log($e->getMessage());
 			$this->errorText = \T::Framework_Login_AuthenticateError();
 			return false;
 		}
@@ -253,7 +258,8 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		$oauth->userinfo_endpoint = \Config::getInstance()->oauth_userinfo_endpoint;
 		try{
 			$oauth->authenticate();
-		} catch (\Throwable) {
+		} catch (\Throwable $e) {
+			error_log($e->getMessage());
 			$this->errorText = \T::Framework_Login_AuthenticateError();
 			return false;
 		}
