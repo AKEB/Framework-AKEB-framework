@@ -103,7 +103,9 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		try{
 			$oidc->authenticate();
 			$data = $oidc->requestUserInfo();
-			if (!isset($data) || !$data) return false;
+			if (!isset($data) || !$data) {
+				throw new \Exception('Failed to getUserInfo');
+			}
 			$data = [
 				'sub' => $data->sub,
 				'email_verified' => $data->email_verified,
@@ -119,13 +121,19 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			$name = explode(' ', $data['name']);
 			$data['name'] = $name[0]??'';
 			$data['surname'] = $name[1]??'';
-			if (!$data['email'] || !$data['email_verified']) return false;
+			if (!$data['email'] || !$data['email_verified']) {
+				throw new \Exception('Invalid email or email not verified');
+			}
 			$check_user = \Users::get(['email' => $data['email']]);
 			if ($check_user) {
-				if ($check_user['status'] == \Users::STATUS_INACTIVE) return false;
+				if ($check_user['status'] == \Users::STATUS_INACTIVE) {
+					throw new \Exception('User is inactive');
+				}
 				return $this->loginUserWithId($check_user['id']);
 			}
-			if (!\Config::getInstance()->openidconnect_register) return false;
+			if (!\Config::getInstance()->openidconnect_register) {
+				throw new \Exception('OpenID Connect register is disabled');
+			}
 			$userId = \Users::save([
 				'name' => $data['name'],
 				'surname' => $data['surname'],
@@ -141,7 +149,9 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 				'flags' => 0,
 				'cookie' => '{}',
 			]);
-			if (!$userId) return false;
+			if (!$userId) {
+				throw new \Exception('Failed to save user');
+			}
 
 			$UserGroupsId = \UserGroups::save([
 				'user_id' => $userId,
@@ -150,8 +160,8 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 				'update_time' => time(),
 				'_mode' => \DB\Common::CSMODE_REPLACE,
 			]);
-			$UserGroups = \UserGroups::get(['id' => $UserGroupsId]);
-			$log_id = \Logs::create_log(\UserGroups::LOGS_OBJECT, $UserGroupsId, $UserGroups);
+			$userGroups = \UserGroups::get(['id' => $UserGroupsId]);
+			$log_id = \Logs::create_log(\UserGroups::LOGS_OBJECT, $UserGroupsId, $userGroups);
 			\Logs::add_tag($log_id, \Groups::LOGS_OBJECT, \Groups::DEFAULT_GROUP_ID);
 			\Logs::add_tag($log_id, \Users::LOGS_OBJECT, $userId);
 
