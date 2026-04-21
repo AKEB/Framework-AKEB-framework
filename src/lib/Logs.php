@@ -146,6 +146,11 @@ class Logs extends \DB\MySQLObject{
 	static private function _print_k_v($k, $v) {
 		if (!isset($v)) return '';
 
+		if (is_array($v) || is_object($v)) {
+			$encoded = json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			return $encoded !== false ? $encoded : '[]';
+		}
+
 		if (!isset(static::$params_hash_for_print) || !static::$params_hash_for_print) {
 			static::$params_hash_for_print = [
 				'_time' => static::PARAM_HASH_DATE_TIME,
@@ -159,17 +164,18 @@ class Logs extends \DB\MySQLObject{
 		foreach (static::$params_hash_for_print as $key => $value) {
 			if (strpos($k, $key) !== false) {
 				if ($value == static::PARAM_HASH_DATE_TIME) {
-					return $v > 0 ? date("Y-m-d H:i:s", $v) : $v;
+					return is_numeric($v) && $v > 0 ? date("Y-m-d H:i:s", (int)$v) : (string)$v;
 				} elseif ($value == static::PARAM_HASH_DATE) {
-					return $v > 0 ? date("Y-m-d", $v) : $v;
+					return is_numeric($v) && $v > 0 ? date("Y-m-d", (int)$v) : (string)$v;
 				} elseif ($value == static::PARAM_HASH_TIME) {
-					return $v > 0 ? date("H:i:s", $v) : $v;
+					return is_numeric($v) && $v > 0 ? date("H:i:s", (int)$v) : (string)$v;
 				} elseif ($value == static::PARAM_HASH_SECRET) {
-					return \Config::getInstance()->_hide_password($v);
+					return \Config::getInstance()->_hide_password((string)$v);
 				}
 			}
 		}
-		return $v ? $v : "''";
+		if (is_bool($v)) return $v ? 'true' : 'false';
+		return $v !== '' ? (string)$v : "''";
 	}
 
 	static public function format_json_data(array $json_data=[], int $space=0): string {
