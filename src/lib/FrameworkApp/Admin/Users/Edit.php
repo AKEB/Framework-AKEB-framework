@@ -73,9 +73,8 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 				}
 				$params['email'] = $data['email'];
 			}
-			if (isset($data['telegram_id']) && $data['telegram_id'] && $data['telegram_id'] != '') {
-				$data['telegram_id'] = trim($data['telegram_id']);
-				$params['telegram_id'] = strval($data['telegram_id']);
+			if (isset($data['telegram_id'])) {
+				$params['telegram_id'] = trim(strval($data['telegram_id']));
 			}
 			if (\Config::getInstance()->app_signin_active) {
 				if ((isset($data['newPassword']) && $data['newPassword']) || (isset($data['confirmNewPassword']) && $data['confirmNewPassword'])) {
@@ -96,6 +95,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			if (isset($data['flags']) && $data['flags']) {
 				$params['flags'] = common_assemble_flags($data['flags']);
 			}
+			$params['status'] = $this->normalize_user_status($data['status'] ?? null, \Users::STATUS_INACTIVE);
 			$old_user = [];
 			if (isset($params['id']) && $params['id']) {
 				if (!\Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, $params['id'], WRITE)) {
@@ -204,7 +204,11 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			}
 			common_redirect('/admin/users/');
 		} while(false);
+		$readonly_fields = ['register_time', 'update_time', 'login_time'];
 		foreach($data as $key => $value) {
+			if (in_array($key, $readonly_fields, true)) {
+				continue;
+			}
 			$this->user[$key] = $value;
 		}
 	}
@@ -230,26 +234,42 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 		}
 	}
 
+	private function normalize_user_status(mixed $status, int $default = \Users::STATUS_ACTIVE): int {
+		if ($status === 'true' || $status === true) {
+			return \Users::STATUS_ACTIVE;
+		}
+		$status = intval($status);
+		if ($status === \Users::STATUS_ACTIVE || $status === \Users::STATUS_INACTIVE) {
+			return $status;
+		}
+		return $default;
+	}
+
+	private function format_user_datetime(mixed $value): string {
+		if (!isset($value) || $value === '' || $value === 0 || $value === '0') {
+			return '';
+		}
+		if (is_numeric($value)) {
+			return date('Y-m-d H:i:s', (int) $value);
+		}
+		if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $value)) {
+			return $value;
+		}
+		$timestamp = strtotime((string) $value);
+		return $timestamp !== false ? date('Y-m-d H:i:s', $timestamp) : '';
+	}
+
 	private function get_data() {
 		if (!isset($this->user['id'])) $this->user['id'] = '';
 
 		$this->user['flags'] = common_assemble_flags($this->user['flags'] ?? 0);
 
-		if (!$this->user['id']) {
-			$this->user['status'] = 1;
-		} else {
-			$this->user['register_time'] = (
-				isset($this->user['register_time']) && $this->user['register_time'] > 0 ?
-				date('Y-m-d H:i:s', $this->user['register_time']) : ''
-			);
-			$this->user['update_time'] = (
-				isset($this->user['update_time']) && $this->user['update_time'] > 0 ?
-				date('Y-m-d H:i:s', $this->user['update_time']) : ''
-			);
-			$this->user['login_time'] = (
-				isset($this->user['login_time']) && $this->user['login_time'] > 0 ?
-				date('Y-m-d H:i:s', $this->user['login_time']) : ''
-			);
+		$this->user['status'] = $this->normalize_user_status($this->user['status'] ?? null);
+
+		if ($this->user['id']) {
+			$this->user['register_time'] = $this->format_user_datetime($this->user['register_time'] ?? null);
+			$this->user['update_time'] = $this->format_user_datetime($this->user['update_time'] ?? null);
+			$this->user['login_time'] = $this->format_user_datetime($this->user['login_time'] ?? null);
 		}
 	}
 
@@ -300,7 +320,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 						echo $this->template->html_input("login_time", $this->user['login_time']??'', \T::Framework_Settings_LoginTime(), false, ['readonly' => true]);
 					}
 
-					echo $this->template->html_switch("status", intval($this->user['status']??0), \T::Framework_Settings_Active());
+					echo $this->template->html_switch("status", $this->user['status'] === \Users::STATUS_ACTIVE ? 1 : 0, \T::Framework_Settings_Active());
 
 					echo $this->template->html_params("flags[]", \Users::flags_hash(), intval($this->user['flags']??0), \T::Framework_Settings_Params());
 					?>
