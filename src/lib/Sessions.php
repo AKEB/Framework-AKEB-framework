@@ -79,7 +79,7 @@ class Sessions extends \DB\MySQLObject{
 		$cache->remove();
 	}
 
-	static private function cookie_options(int $expires): array {
+	static public function cookie_options(int $expires): array {
 		$secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
 			|| (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
 			|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower(strval($_SERVER['HTTP_X_FORWARDED_PROTO'])) === 'https');
@@ -90,6 +90,11 @@ class Sessions extends \DB\MySQLObject{
 			'httponly' => true,
 			'samesite' => 'Lax',
 		];
+	}
+
+	/** Expire a cookie with the same Secure/SameSite flags used for session cookies. */
+	static public function expire_cookie(string $name): void {
+		setcookie($name, '', static::cookie_options(time() - 3600));
 	}
 
 	static private function set_session_cookie(string $value, int $expires): void {

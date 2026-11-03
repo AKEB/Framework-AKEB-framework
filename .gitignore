@@ -11,4 +11,5 @@ composer.lock.*
 /.phpunit.cache/
 *.bak
 example/.env
-.env
+.env---
+default_cache_*

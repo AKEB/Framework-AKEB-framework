@@ -21,6 +21,25 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		$this->print_form();
 	}
 
+	/**
+	 * OAuth/OIDC provider callbacks must not require browser CSRF —
+	 * they authenticate via `state` bound to the session instead.
+	 */
+	protected function shouldValidateCsrf(): bool {
+		return !$this->isExternalAuthCallback();
+	}
+
+	/** @return array<string,mixed> */
+	private function requestData(): array {
+		return array_merge($_GET ?? [], $_POST ?? []);
+	}
+
+	private function isExternalAuthCallback(): bool {
+		$data = $this->requestData();
+		$hasCodeState = isset($data['code']) && isset($data['state']);
+		return $hasCodeState && (isset($data['oauth']) || isset($data['oidc']));
+	}
+
 	protected function handleGetData(array $data) {
 		// Обработка GET данных
 		if (!isset($data)) return;
@@ -64,10 +83,17 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 	}
 
 	protected function handlePostData(array $data) {
-		// Обработка POST данных
-		if (!isset($data)) return;
-		if (!$data) return;
-		if (!is_array($data)) return;
+		if (!isset($data) || !$data || !is_array($data)) return;
+
+		// Provider may return the authorization code via POST (form_post)
+		if (isset($data['oidc']) && isset($data['code']) && isset($data['state'])) {
+			$this->openIdCode($data);
+			return;
+		}
+		if (isset($data['oauth']) && isset($data['code']) && isset($data['state'])) {
+			$this->oAuthCode($data);
+			return;
+		}
 
 		if (isset($data['action']) && $data['action'] == 'signin') {
 			if (isset($data['resendEmail'])) {
@@ -190,6 +216,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		$oidc->addScope(explode(' ', \Config::getInstance()->openidconnect_scope));
 		try{
 			$oidc->authenticate();
+			exit;
 		} catch (\Throwable $e) {
 			error_log($e->getMessage());
 			$this->errorText = \T::Framework_Login_AuthenticateError();
@@ -277,6 +304,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		$oauth->userinfo_endpoint = \Config::getInstance()->oauth_userinfo_endpoint;
 		try{
 			$oauth->authenticate();
+			exit;
 		} catch (\Throwable $e) {
 			error_log($e->getMessage());
 			$this->errorText = \T::Framework_Login_AuthenticateError();
@@ -319,7 +347,8 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		]);
 		if (isset($_COOKIE['target']) && $_COOKIE['target']) {
 			$target = urldecode(strval($_COOKIE['target']));
-			setcookie('target', '', time() + 1, '/');
+			// Must match Secure/SameSite used when the cookie was set, or the browser keeps it
+			\Sessions::expire_cookie('target');
 			$_COOKIE['target'] = '';
 			if (common_is_local_path($target)) {
 				common_redirect($target);
@@ -329,7 +358,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 	}
 
 	private function loginPendingCache(): \Cache {
-		return new \Cache('login_2fa_'.md5(\Sessions::get_session_id()), 'default', true);
+		return new \Cache('login_2fa_'.md5(\Sessions::get_session_id()), 'default');
 	}
 
 	private function signIn(string $email, string $password, string $totp='', string $loginPending='') {

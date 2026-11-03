@@ -13,7 +13,8 @@ class Csrf {
 		if ($sessionId === '') {
 			return '';
 		}
-		$cache = new \Cache('csrf_'.md5($sessionId), 'default', true);
+		// Prefer memcached when configured so CSRF works across multiple PHP nodes
+		$cache = new \Cache('csrf_'.md5($sessionId), 'default');
 		if ($cache->isValid()) {
 			$existing = $cache->get();
 			if (is_string($existing) && strlen($existing) >= 32) {

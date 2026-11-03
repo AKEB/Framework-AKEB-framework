@@ -28,6 +28,36 @@ class SecurityFixesTest extends PHPUnit\Framework\TestCase {
 		$this->assertFalse(Csrf::validate('not-the-token'));
 	}
 
+	function test_login_skips_csrf_for_oauth_callback() {
+		$login = new class extends \FrameworkApp\Login {
+			public function exposedShouldValidateCsrf(): bool {
+				return $this->shouldValidateCsrf();
+			}
+		};
+		$_GET = [];
+		$_POST = [];
+		$this->assertTrue($login->exposedShouldValidateCsrf());
+
+		$_GET = ['oauth' => 'true', 'code' => 'abc', 'state' => 'xyz'];
+		$this->assertFalse($login->exposedShouldValidateCsrf());
+
+		$_GET = [];
+		$_POST = ['oidc' => 'true', 'code' => 'abc', 'state' => 'xyz'];
+		$this->assertFalse($login->exposedShouldValidateCsrf());
+
+		$_GET = [];
+		$_POST = [];
+	}
+
+	function test_sessions_cookie_options_and_expire() {
+		$opts = \Sessions::cookie_options(time() + 60);
+		$this->assertSame('/', $opts['path']);
+		$this->assertTrue($opts['httponly']);
+		$this->assertSame('Lax', $opts['samesite']);
+		$this->assertArrayHasKey('secure', $opts);
+		$this->assertArrayHasKey('expires', $opts);
+	}
+
 	function test_password_legacy_and_modern() {
 		$salt = strval(\Config::getInstance()->password_salt);
 		$legacy = md5('Admin@123' . $salt);

@@ -37,11 +37,16 @@ class Routing_Parent implements \Routing_Interface {
 		return [];
 	}
 
+	/** Whether processRequest should require a valid CSRF token on POST. */
+	protected function shouldValidateCsrf(): bool {
+		return true;
+	}
+
 	protected function processRequest() {
 		$this->error = '';
 		$method = strtoupper(strval($_SERVER['REQUEST_METHOD'] ?? 'GET'));
-		// CSRF for all POST mutations handled via processRequest
-		if ($method === 'POST' && !\Csrf::validate()) {
+		// CSRF for POST mutations handled via processRequest (skip for external auth callbacks etc.)
+		if ($method === 'POST' && $this->shouldValidateCsrf() && !\Csrf::validate()) {
 			e403();
 		}
 		// Обработка GET параметров

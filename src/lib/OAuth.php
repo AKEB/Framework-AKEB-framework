@@ -38,7 +38,8 @@ class OAuth {
 
 	private function stateCache(): \Cache {
 		$sessionId = \Sessions::get_session_id();
-		return new \Cache('oauth_state_'.md5($sessionId), 'default', true);
+		// Prefer memcached when configured so state survives multi-node round-trips
+		return new \Cache('oauth_state_'.md5($sessionId), 'default');
 	}
 
 	private function createState(): string {
@@ -69,6 +70,7 @@ class OAuth {
 			'state' => $this->createState(),
 			'redirect_uri' => $this->redirect_uri,
 		]));
+		exit;
 	}
 
 	private function requestTokens($code) {
