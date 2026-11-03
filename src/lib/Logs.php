@@ -21,16 +21,27 @@ class Logs extends \DB\MySQLObject{
 
 	static private array $params_hash_for_print = [];
 
+	static private function default_params_hash_for_print(): array {
+		return [
+			'_time' => static::PARAM_HASH_DATE_TIME,
+			'Time' => static::PARAM_HASH_DATE_TIME,
+			'password' => static::PARAM_HASH_SECRET,
+			'2fa' => static::PARAM_HASH_SECRET,
+			'secret' => static::PARAM_HASH_SECRET,
+			'reset_token' => static::PARAM_HASH_SECRET,
+			'email_verification_token' => static::PARAM_HASH_SECRET,
+			'token' => static::PARAM_HASH_SECRET,
+			'cookie' => static::PARAM_HASH_SECRET,
+			'access_token' => static::PARAM_HASH_SECRET,
+			'refresh_token' => static::PARAM_HASH_SECRET,
+			'id_token' => static::PARAM_HASH_SECRET,
+		];
+	}
+
 	static public function add_params_hash_for_print(string $key, string $hash) {
 
 		if (!isset(static::$params_hash_for_print) || !static::$params_hash_for_print) {
-			static::$params_hash_for_print = [
-				'_time' => static::PARAM_HASH_DATE_TIME,
-				'Time' => static::PARAM_HASH_DATE_TIME,
-				'password' => static::PARAM_HASH_SECRET,
-				'2fa' => static::PARAM_HASH_SECRET,
-				'secret' => static::PARAM_HASH_SECRET,
-			];
+			static::$params_hash_for_print = static::default_params_hash_for_print();
 		}
 
 		static::$params_hash_for_print[$key] = $hash;
@@ -152,13 +163,7 @@ class Logs extends \DB\MySQLObject{
 		}
 
 		if (!isset(static::$params_hash_for_print) || !static::$params_hash_for_print) {
-			static::$params_hash_for_print = [
-				'_time' => static::PARAM_HASH_DATE_TIME,
-				'Time' => static::PARAM_HASH_DATE_TIME,
-				'password' => static::PARAM_HASH_SECRET,
-				'2fa' => static::PARAM_HASH_SECRET,
-				'secret' => static::PARAM_HASH_SECRET,
-			];
+			static::$params_hash_for_print = static::default_params_hash_for_print();
 		}
 
 		foreach (static::$params_hash_for_print as $key => $value) {
@@ -196,14 +201,14 @@ class Logs extends \DB\MySQLObject{
 			} else {
 				if (is_array($v) && count($v) == 2 && isset($v['old']) && isset($v['new'])) {
 					if ($v['old'] != $v['new']) {
-						$return .= '<span class="text-secondary">'.static::_print_k_v($k, $v['old']).'</span>';
+						$return .= '<span class="text-secondary">'.htmlspecialchars(static::_print_k_v($k, $v['old']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</span>';
 						$return .= ' => ';
 					}
-					$return .= '<span class="text-info">'.static::_print_k_v($k, $v['new']).'</span>';
+					$return .= '<span class="text-info">'.htmlspecialchars(static::_print_k_v($k, $v['new']), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</span>';
 				} elseif (is_array($v)) {
-					$return .= '<span class="text-info">'.json_encode($v).'</span>';
+					$return .= '<span class="text-info">'.htmlspecialchars(json_encode($v), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</span>';
 				} else {
-					$return .= '<span class="text-info">'.static::_print_k_v($k, $v).'</span>';
+					$return .= '<span class="text-info">'.htmlspecialchars(static::_print_k_v($k, $v), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8').'</span>';
 				}
 				$return .= "\n";
 			}

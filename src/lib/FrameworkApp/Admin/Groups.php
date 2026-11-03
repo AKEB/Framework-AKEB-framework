@@ -18,8 +18,10 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		$this->check_permissions();
 
 		if ($action == 'save') {
+			\Csrf::requirePost();
 			$this->save($_POST);
 		} else if ($action == 'delete') {
+			\Csrf::requirePost();
 			$this->delete($group_id);
 		}
 
@@ -335,6 +337,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			<div class="modal-dialog modal-fullscreen-md-down" role="document">
 				<div class="modal-content">
 					<form action="/admin/groups/save/" class="needs-validation" method="post" novalidate>
+						<?= \Csrf::field(); ?>
 						<div class="modal-header border-secondary">
 							<h5 class="modal-title" id="createGroupModalLabel"><?=\T::Framework_Groups_ModalTitle();?></h5>
 							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Framework_Common_Close();?>" title="<?=\T::Framework_Common_Close();?>"></button>
@@ -394,7 +397,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 				modalBody.textContent = '<?=\T::Framework_Groups_Delete_Confirmation();?>'.replace('{group}', groupTitle);
 
 				confirmBtn.onclick = function() {
-					window.location.href = '/admin/groups/delete/' + groupId + '/';
+					<?=\Csrf::jsPostToUrl("'/admin/groups/delete/' + groupId + '/'");?>
 				};
 
 				modal.show();

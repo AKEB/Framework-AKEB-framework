@@ -620,12 +620,15 @@ class Template {
 		if ($params['add_before']) {
 			$html .= $params['add_before'];
 		}
+		$escapeHtml = empty($params['raw']);
+		$safeValue = $escapeHtml ? htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : (string)$value;
+		$safePlaceholder = $escapeHtml ? htmlspecialchars((string)$params['placeholder'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : (string)$params['placeholder'];
 		if ($params['type'] == 'textarea') {
 			$html .= '<textarea
 				class="'.($params['readonly'] ? 'form-control-plaintext':'form-control').'"
 				id="'.$params['id'].'"
 				name="'.$name.'"
-				placeholder="'.$params['placeholder'].'"'.
+				placeholder="'.$safePlaceholder.'"'.
 				($required ? ' required' : '').'
 				autocomplete="off"'.
 				($params['rows']? ' rows="'.$params['rows'].'"': '').
@@ -637,7 +640,7 @@ class Template {
 				($params['step']? ' step="'.$params['step'].'"': '').
 				($params['readonly'] ? ' readonly' : '').'
 			>';
-			$html .= $value;
+			$html .= $safeValue;
 			$html .= '</textarea>';
 		} else {
 			$html .= '<input
@@ -645,8 +648,8 @@ class Template {
 				class="'.($params['readonly'] ? 'form-control-plaintext':'form-control').'"
 				id="'.$params['id'].'"
 				name="'.$name.'"
-				placeholder="'.$params['placeholder'].'"
-				value="'.$value.'"'.
+				placeholder="'.$safePlaceholder.'"
+				value="'.$safeValue.'"'.
 				($required ? ' required' : '').'
 				autocomplete="off"'.
 				($params['maxlength']? ' maxlength="'.$params['maxlength'].'"': '').
@@ -742,8 +745,11 @@ class Template {
 			($params['readonly'] ? 'readonly disabled ' : '').
 			($params['multiple'] ? 'multiple data-selected-text-format="count" data-actions-box="true" ' : '').
 		'>';
+		$escapeHtml = empty($params['raw']);
 		if ($params['with-undefined']) {
-			$html .= '		<option value="'.$params['undefined-value'].'">'.$params['undefined-title'].'</option>';
+			$uv = $escapeHtml ? htmlspecialchars((string)$params['undefined-value'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : (string)$params['undefined-value'];
+			$ut = $escapeHtml ? htmlspecialchars((string)$params['undefined-title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : (string)$params['undefined-title'];
+			$html .= '		<option value="'.$uv.'">'.$ut.'</option>';
 		}
 		foreach($data_hash as $k=>$v) {
 			$selected = false;
@@ -756,7 +762,9 @@ class Template {
 					$selected = true;
 				}
 			}
-			$html .= '		<option value="'.$k.'" '.($selected ? 'selected' : '').'>'.$v.'</option>';
+			$optValue = $escapeHtml ? htmlspecialchars((string)$k, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : (string)$k;
+			$optLabel = $escapeHtml ? htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') : (string)$v;
+			$html .= '		<option value="'.$optValue.'" '.($selected ? 'selected' : '').'>'.$optLabel.'</option>';
 		}
 		$html .= '	</select>';
 		if ($params['valid-feedback']) {
@@ -806,8 +814,8 @@ class Template {
 				</div>
 				<script nonce="<?=\CSP::nonceRandom();?>">
 					$(document).ready(function(){
-						showErrorToast('<?=addslashes(str_replace("\n","<br/>",$error));?>');
-						showSuccessToast('<?=addslashes(str_replace("\n","<br/>",$success));?>');
+						showErrorToast(<?=json_encode(strval($error), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);?>);
+						showSuccessToast(<?=json_encode(strval($success), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE);?>);
 						// showAllToasts();
 					});
 				</script>

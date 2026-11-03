@@ -24,7 +24,7 @@ class Framework_Migration_0002 {
 				`surname` char(64) NOT NULL,
 				`email` char(128) NOT NULL,
 				`language` char(2) NOT NULL DEFAULT 'en',
-				`password` char(32) NOT NULL DEFAULT '',
+				`password` varchar(255) NOT NULL DEFAULT '',
 				`status` tinyint NOT NULL DEFAULT '1',
 				`role` char(32) NOT NULL DEFAULT 'user',
 				`creatorUserId` int NOT NULL DEFAULT 0,

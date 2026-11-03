@@ -24,8 +24,10 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 		$this->get_admin_user_ids();
 
 		if ($action == 'delete') {
+			\Csrf::requirePost();
 			$this->processDeleteAction($group_id ?? 0);
 		} elseif ($action == 'save') {
+			\Csrf::requirePost();
 			$this->processSaveAction($_POST['groups-select'] ?? 0);
 		}
 
@@ -47,7 +49,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			$this->error = \T::Framework_Errors_PermissionDenied();
 			return;
 		}
-		if (!\Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $groupId, READ)) {
+		if (!\Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $groupId, WRITE)) {
 			$this->error = \T::Framework_Errors_PermissionDenied();
 			return;
 		}
@@ -64,6 +66,10 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			$this->error = \T::Framework_Groups_Delete_DefaultGroupDenied();
 			return;
 		} elseif ($groupId == \Groups::ADMIN_GROUP_ID) {
+			if (!\Sessions::in_group(\Groups::ADMIN_GROUP_ID)) {
+				$this->error = \T::Framework_Errors_PermissionDenied();
+				return;
+			}
 			if (count($this->admin_active_user_ids) < 2) {
 				$this->error = \T::Framework_Groups_Delete_AdminGroupDenied();
 				return;
@@ -95,9 +101,17 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			$this->error = \T::Framework_Groups_Create_GroupNotFound();
 			return;
 		}
+		if (!\Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $groupId, WRITE)) {
+			$this->error = \T::Framework_Errors_PermissionDenied();
+			return;
+		}
 		$group = \Groups::get(['id' => $groupId]);
 		if (!$group) {
 			$this->error = \T::Framework_Groups_Delete_GroupNotFound();
+			return;
+		}
+		if ($groupId == \Groups::ADMIN_GROUP_ID && !\Sessions::in_group(\Groups::ADMIN_GROUP_ID)) {
+			$this->error = \T::Framework_Errors_PermissionDenied();
 			return;
 		}
 		$old = \UserGroups::get(['user_id' => $this->user_id, 'group_id' => $groupId]);
@@ -272,6 +286,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 			<div class="modal-dialog modal-fullscreen-md-down" role="document">
 				<div class="modal-content">
 					<form action="<?=$this->url;?>save/" class="needs-validation" method="post" novalidate>
+						<?= \Csrf::field(); ?>
 						<div class="modal-header border-secondary">
 							<h5 class="modal-title" id="createGroupModalLabel"><?=\T::Framework_Groups_ModalTitle();?></h5>
 							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Framework_Common_Close();?>" title="<?=\T::Framework_Common_Close();?>"></button>
@@ -319,7 +334,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 				modalBody.textContent = '<?=\T::Framework_Groups_Delete_Confirmation();?>'.replace('{group}', groupTitle);
 
 				confirmBtn.onclick = function() {
-					window.location.href = '<?=$this->url;?>delete/' + groupId + '/';
+					<?=\Csrf::jsPostToUrl("'".$this->url."delete/' + groupId + '/'");?>
 				};
 
 				modal.show();

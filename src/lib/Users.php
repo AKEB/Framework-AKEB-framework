@@ -36,12 +36,31 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 
 	static public function password_hash(string $password): string {
 		if (!$password) return '';
-		return md5($password . \Config::getInstance()->password_salt);
+		return \password_hash($password, PASSWORD_DEFAULT);
+	}
+
+	static public function is_modern_password_hash(string $password_hash): bool {
+		return str_starts_with($password_hash, '$2y$')
+			|| str_starts_with($password_hash, '$2a$')
+			|| str_starts_with($password_hash, '$2b$')
+			|| str_starts_with($password_hash, '$argon2');
 	}
 
 	static public function password_verify(string $password, string $password_hash): bool {
 		if (!$password || !$password_hash) return false;
-		return $password_hash == static::password_hash($password);
+		if (static::is_modern_password_hash($password_hash)) {
+			return \password_verify($password, $password_hash);
+		}
+		// Legacy: md5(password . shared_salt)
+		$legacy = md5($password . \Config::getInstance()->password_salt);
+		return hash_equals($legacy, $password_hash);
+	}
+
+	static public function password_needs_rehash(string $password_hash): bool {
+		if (!static::is_modern_password_hash($password_hash)) {
+			return true;
+		}
+		return \password_needs_rehash($password_hash, PASSWORD_DEFAULT);
 	}
 
 	static public function generate_verification_token(): string {
@@ -70,7 +89,30 @@ class Users extends \DB\MySQLObject implements \PermissionSubject_Interface {
 		]);
 		if (!$user['password']) return false;
 		if (!static::password_verify($password, $user['password'])) return false;
+		if (static::password_needs_rehash($user['password'])) {
+			static::save([
+				'id' => $user['id'],
+				'password' => static::password_hash($password),
+				'update_time' => time(),
+				'_mode' => \DB\Common::CSMODE_UPDATE,
+			]);
+		}
 		return $user['id'];
+	}
+
+	/** Drop all sessions for the user (optionally keep current). */
+	static public function revoke_other_sessions(int $userId, string $keepSessionId = ''): void {
+		$sql = sql_pholder(' AND `user_id` = ?', $userId);
+		$sessions = \Sessions::data(false, $sql);
+		foreach ($sessions as $session) {
+			if ($keepSessionId !== '' && ($session['id'] ?? '') === $keepSessionId) {
+				continue;
+			}
+			$cache = new \Cache('session_init_'.md5($session['id']));
+			$cache->remove();
+			\Sessions::delete(['id' => $session['id']]);
+		}
+		static::clear_session_cache($userId);
 	}
 
 	static public function subject_hash(): array {

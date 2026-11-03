@@ -107,6 +107,14 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 					$this->error = \T::Framework_Settings_UserNotFound();
 					break;
 				}
+				// Non-admins cannot change Admin-group accounts (email/password/status/flags)
+				if (
+					\Sessions::in_group(\Groups::ADMIN_GROUP_ID, intval($params['id']))
+					&& !\Sessions::in_group(\Groups::ADMIN_GROUP_ID)
+				) {
+					$this->error = \T::Framework_Errors_PermissionDenied();
+					break;
+				}
 				foreach($params as $k=>$v) {
 					if ($old_user[$k] == $v) {
 						unset($params[$k]);
@@ -294,6 +302,7 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 					?>
 				</h3></div>
 				<form class="card-body needs-validation" method="post" novalidate>
+					<?= \Csrf::field(); ?>
 					<input type="hidden" name="id" value="<?=$this->user['id'];?>"/>
 					<?php
 					echo $this->template->html_input("name", $this->user['name']??'', \T::Framework_Settings_UserProfile_Name(), true);

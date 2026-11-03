@@ -89,6 +89,39 @@ function common_build_request(string|array $param, string $arr_name='', bool $en
 	return implode('&',$t);
 }
 
+/**
+ * Absolute app base URL (scheme + host), never from Referer.
+ * Override with APP_BASE_URL env (e.g. https://example.com).
+ */
+function common_app_base_url(): string {
+	$configured = trim(strval(\Config::getInstance()->app_base_url ?? ''));
+	if ($configured !== '') {
+		return rtrim($configured, '/');
+	}
+	$https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+		|| (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+		|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower(strval($_SERVER['HTTP_X_FORWARDED_PROTO'])) === 'https');
+	$scheme = $https ? 'https' : 'http';
+	$host = strval($_SERVER['HTTP_HOST'] ?? ($_SERVER['SERVER_NAME'] ?? 'localhost'));
+	return $scheme . '://' . $host;
+}
+
+/** Absolute URL for a path starting with /. */
+function common_app_url(string $path = '/'): string {
+	if ($path === '' || $path[0] !== '/') {
+		$path = '/' . ltrim($path, '/');
+	}
+	return common_app_base_url() . $path;
+}
+
+/** True if $url is a same-origin relative path (starts with single /, not //). */
+function common_is_local_path(?string $url): bool {
+	if ($url === null || $url === '') {
+		return false;
+	}
+	return str_starts_with($url, '/') && !str_starts_with($url, '//');
+}
+
 function common_redirect(string $url='', array $param=[], bool $post=false) {
 	global $error;
 	$err = $error ? $error : ($_GET['error']??false);

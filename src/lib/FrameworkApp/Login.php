@@ -27,8 +27,12 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		if (!is_array($data)) return;
 
 		if (isset($data['token'])) {
-			$this->token = $data['token'];
-			$user = \Users::get(['email_verification_token' => $this->token]);
+			$this->token = strval($data['token']);
+			if ($this->token === '') {
+				$this->errorText = \T::Framework_SignUp_InvalidOrExpiredToken();
+				return;
+			}
+			$user = \Users::get(['email_verification_token' => $this->token], " AND `email_verification_token` != ''");
 			if (!$user) {
 				$this->errorText = \T::Framework_SignUp_InvalidOrExpiredToken();
 				$this->token = ''; // Invalidate token to show the initial form
@@ -68,10 +72,11 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		if (isset($data['action']) && $data['action'] == 'signin') {
 			if (isset($data['resendEmail'])) {
 				if (isset($data['user_id'])) {
-					$user = \Users::get(['id' => $data['user_id']]);
+					$user = \Users::get(['id' => intval($data['user_id'])]);
 					if (!$user) return;
+					if ($user['status'] != \Users::STATUS_EMAIL_VERIFICATION) return;
 					if ($user['email_verification_token']) {
-						$resetLink = strval($_SERVER['HTTP_REFERER'] ?? '').'?token=' . $user['email_verification_token'];
+						$resetLink = htmlspecialchars(common_app_url('/login/?token=' . urlencode($user['email_verification_token'])), ENT_QUOTES, 'UTF-8');
 						$subject = \T::Framework_SignUp_EmailSubject();
 						$body = \T::Framework_SignUp_EmailBody($resetLink);
 
@@ -80,7 +85,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 					}
 				}
 			} elseif (isset($data['signIn'])) {
-				$this->signIn($data['email']??'', $data['password']??'', intval($data['totp']??0));
+				$this->signIn($data['email']??'', $data['password']??'', strval($data['totp']??''), strval($data['login_pending']??''));
 			} elseif(isset($data['openID'])) {
 				$this->openIdRedirect();
 			} elseif(isset($data['oAuth'])) {
@@ -98,7 +103,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		if (!$provider_url || !$client_id || !$client_secret) return false;
 
 		$oidc = new \Jumbojett\OpenIDConnectClient($provider_url, $client_id, $client_secret);
-		$oidc->setRedirectURL(strval($_SERVER['HTTP_REFERER'] ?? '').'?oidc=true');
+		$oidc->setRedirectURL(common_app_url('/login/?oidc=true'));
 		$oidc->addScope(explode(' ', \Config::getInstance()->openidconnect_scope));
 		try{
 			$oidc->authenticate();
@@ -181,7 +186,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		if (!$provider_url || !$client_id || !$client_secret) return false;
 
 		$oidc = new \Jumbojett\OpenIDConnectClient($provider_url, $client_id, $client_secret);
-		$oidc->setRedirectURL(strval($_SERVER['HTTP_REFERER'] ?? '').'?oidc=true');
+		$oidc->setRedirectURL(common_app_url('/login/?oidc=true'));
 		$oidc->addScope(explode(' ', \Config::getInstance()->openidconnect_scope));
 		try{
 			$oidc->authenticate();
@@ -199,7 +204,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		if (!$client_id || !$client_secret) return false;
 
 		$oauth = new \OAuth($client_id, $client_secret);
-		$oauth->redirect_uri = strval($_SERVER['HTTP_REFERER'] ?? '').'?oauth=true';
+		$oauth->redirect_uri = common_app_url('/login/?oauth=true');
 		$oauth->scopes = $scopes;
 		$oauth->authorization_endpoint = \Config::getInstance()->oauth_authorization_endpoint;
 		$oauth->token_endpoint = \Config::getInstance()->oauth_token_endpoint;
@@ -208,6 +213,10 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 			$oauth->authenticate();
 			$data = $oauth->requestUserInfo();
 			if (!isset($data) || !$data) return false;
+			$emailVerified = $data['email_verified'] ?? $data['verified_email'] ?? true;
+			if ($emailVerified === false || $emailVerified === 0 || $emailVerified === '0' || $emailVerified === 'false') {
+				throw new \Exception('OAuth email not verified');
+			}
 
 			$check_user = \Users::get(['email' => $data['email']]);
 			if ($check_user) {
@@ -261,7 +270,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		if (!$client_id || !$client_secret) return false;
 
 		$oauth = new \OAuth($client_id, $client_secret);
-		$oauth->redirect_uri = strval($_SERVER['HTTP_REFERER'] ?? '').'?oauth=true';
+		$oauth->redirect_uri = common_app_url('/login/?oauth=true');
 		$oauth->scopes = $scopes;
 		$oauth->authorization_endpoint = \Config::getInstance()->oauth_authorization_endpoint;
 		$oauth->token_endpoint = \Config::getInstance()->oauth_token_endpoint;
@@ -309,23 +318,74 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 
 		]);
 		if (isset($_COOKIE['target']) && $_COOKIE['target']) {
-			$target = $_COOKIE['target'];
+			$target = urldecode(strval($_COOKIE['target']));
 			setcookie('target', '', time() + 1, '/');
 			$_COOKIE['target'] = '';
-			$target = str_replace('%2F', '/', urldecode($target));
-			common_redirect($target);
-		} else {
-			common_redirect('/');
+			if (common_is_local_path($target)) {
+				common_redirect($target);
+			}
 		}
+		common_redirect('/');
 	}
 
-	private function signIn(string $email, string $password, int $totp=0) {
+	private function loginPendingCache(): \Cache {
+		return new \Cache('login_2fa_'.md5(\Sessions::get_session_id()), 'default', true);
+	}
+
+	private function signIn(string $email, string $password, string $totp='', string $loginPending='') {
 		if (!\Config::getInstance()->app_signin_active) {
 			$this->errorText = \T::Framework_Login_SignInWithLoginAndPasswordDenied();
 			return;
 		}
 		$email = strval($email??'');
 		$password = strval($password??'');
+		$totp = preg_replace('/\D+/', '', $totp ?? '');
+		$userId = 0;
+
+		if ($loginPending !== '') {
+			$cache = $this->loginPendingCache();
+			if (!$cache->isValid()) {
+				$this->errorText = \T::Framework_Login_InvalidCredentials();
+				return;
+			}
+			$pending = json_decode(strval($cache->get()), true);
+			if (!is_array($pending) || empty($pending['user_id']) || empty($pending['token']) || !hash_equals(strval($pending['token']), $loginPending)) {
+				$this->errorText = \T::Framework_Login_InvalidCredentials();
+				return;
+			}
+			if (($pending['exp'] ?? 0) < time()) {
+				$cache->remove();
+				$this->errorText = \T::Framework_Login_InvalidCredentials();
+				return;
+			}
+			$userId = intval($pending['user_id']);
+			$user = \Users::get(['id' => $userId]);
+			if (!$user || empty($user['two_factor_secret'])) {
+				$cache->remove();
+				$this->errorText = \T::Framework_Login_InvalidCredentials();
+				return;
+			}
+			if ($totp === '' || strlen($totp) !== 6) {
+				$this->need_2fa_form = true;
+				$this->email = strval($user['email'] ?? '');
+				$this->password = '';
+				$this->token = $loginPending;
+				$this->errorText = \T::Framework_Login_InvalidTOTP();
+				return;
+			}
+			$googleAuthenticate = new \GoogleAuthenticator();
+			if (!$googleAuthenticate->checkCode($user['two_factor_secret'], $totp)) {
+				$this->need_2fa_form = true;
+				$this->email = strval($user['email'] ?? '');
+				$this->password = '';
+				$this->token = $loginPending;
+				$this->errorText = \T::Framework_Login_InvalidTOTP();
+				return;
+			}
+			$cache->remove();
+			return $this->loginUserWithId($userId);
+		}
+
 		if (!$email || !$password) {
 			$this->errorText = \T::Framework_Login_EmailAndPasswordRequired();
 			return;
@@ -340,18 +400,17 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 		}
 
 		if (isset($user['two_factor_secret']) && $user['two_factor_secret']) {
-			if ($totp) {
-				$googleAuthenticate = new \GoogleAuthenticator();
-				if (!$googleAuthenticate->checkCode($user['two_factor_secret'], $totp)) {
-					$this->errorText = \T::Framework_Login_InvalidTOTP();
-					return;
-				}
-			} else {
-				$this->need_2fa_form = true;
-				$this->email = $email;
-				$this->password = $password;
-				return true;
-			}
+			$pendingToken = bin2hex(random_bytes(32));
+			$this->loginPendingCache()->update(json_encode([
+				'user_id' => intval($user['id']),
+				'token' => $pendingToken,
+				'exp' => time() + 300,
+			]), 300);
+			$this->need_2fa_form = true;
+			$this->email = $email;
+			$this->password = '';
+			$this->token = $pendingToken;
+			return true;
 		}
 
 		return $this->loginUserWithId($userId);
@@ -366,6 +425,7 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 						<div class="card-body p-5 pt-1 text-center">
 							<form action="/login/" method="post">
 								<input type="hidden" name="action" value="signin"/>
+								<?= \Csrf::field(); ?>
 								<div class="mb-md-3 mt-md-4 pb-5">
 									<img src="/images/apple-icon-120x120.png" alt="Login" width="120" height="120" class="rounded-circle">
 									<?php if ($this->errorText) { ?>
@@ -378,15 +438,14 @@ class Login extends \Routing_Parent implements \Routing_Interface {
 											<?= htmlspecialchars($this->successText) ?>
 										</div>
 									<?php } ?>
-									<?php if ($this->need_2fa_form && $this->email && $this->password) { ?>
+									<?php if ($this->need_2fa_form && $this->token) { ?>
 										<div class="d-flex justify-content-center align-items-center mb-4">
 											<?=\T::Framework_Login_TwoFactor_Title();?>
 										</div>
 										<div class="d-flex justify-content-center align-items-center mb-4">
 											<?=\T::Framework_Login_TwoFactor_Description();?>
 										</div>
-										<input type="hidden" name="email"  value="<?=$this->email;?>">
-										<input type="hidden" name="password"  value="<?=$this->password;?>">
+										<input type="hidden" name="login_pending" value="<?=htmlspecialchars($this->token, ENT_QUOTES, 'UTF-8');?>">
 										<?php $this->template->html_totp('totp');?>
 										<button class="btn btn-outline-secondary btn-lg px-5 mb-3 signInButton" name="signIn" type="submit"><?=\T::Framework_Login_SignIn();?></button><br/>
 									<?php } elseif ($this->email_verification_user) { ?>

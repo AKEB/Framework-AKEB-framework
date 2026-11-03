@@ -6,6 +6,10 @@ class MNGR {
 	private int $start_time = 0;
 
 	public function __construct(?int $sleep_time=0, ?string $memory_limit='32M') {
+		if (PHP_SAPI !== 'cli') {
+			http_response_code(403);
+			exit('Forbidden');
+		}
 		set_time_limit(0);
 		$this->sleep_time = $sleep_time;
 		if ($memory_limit) {

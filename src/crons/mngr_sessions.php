@@ -12,4 +12,5 @@ $mngr = new \MNGR(3600, '32M');
 
 \Users::getDatabase()->execSQL("UPDATE `".(\Users::$table)."` SET `reset_token`='', `reset_token_expires`=0, `update_time`=UNIX_TIMESTAMP() WHERE `reset_token_expires` < UNIX_TIMESTAMP() - 600;");
 
-\Notifications::delete(false, ' AND `read_time` < UNIX_TIMESTAMP() - 30*86400 ');
+// Only purge read notifications; unread have read_time=0 and must not be wiped hourly
+\Notifications::delete(false, ' AND `read_time` > 0 AND `read_time` < UNIX_TIMESTAMP() - 30*86400 ');

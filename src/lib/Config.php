@@ -125,7 +125,9 @@ class Config {
 		$this->_params = [
 			// General
 			'timezone' => $this->getenv('TZ', ConfigEnvType::STRING, 'UTC'),
-			'password_salt' => $this->getenv('PASSWORD_SALT', ConfigEnvType::STRING, 'bHchLzC3B99Ss2ghc2gkDdtgCG7vKtoj'),
+			// Legacy salt for migrating old md5 hashes; new passwords use password_hash()
+			'password_salt' => $this->getenv('PASSWORD_SALT', ConfigEnvType::STRING, ''),
+			'trust_proxy' => $this->getenv('TRUST_PROXY', ConfigEnvType::BOOL, false),
 			'development' => $this->getenv('DEVELOPMENT', ConfigEnvType::BOOL, false),
 
 			// MySQL
@@ -140,6 +142,7 @@ class Config {
 			'app_signin_active' => $this->getenv('APP_SIGNIN_ACTIVE', ConfigEnvType::BOOL, true),
 			'app_signup_active' => $this->getenv('APP_SIGNUP_ACTIVE', ConfigEnvType::BOOL, true),
 			'app_debug' => $this->getenv('APP_DEBUG', ConfigEnvType::BOOL, false),
+			'app_base_url' => $this->getenv('APP_BASE_URL', ConfigEnvType::STRING, ''),
 			// SMTP
 			'smtp_host' => $this->getenv('SMTP_HOST', ConfigEnvType::STRING, ''),
 			'smtp_port' => $this->getenv('SMTP_PORT', ConfigEnvType::INT, 25),
@@ -235,10 +238,14 @@ class Config {
 	}
 
 	public function _hide_password(?string $password): string {
-		if (!$password) return '';
+		if ($password === null || $password === '') return '';
 		$len = mb_strlen($password);
-		$dont_hide_length = max(intval(($len*25/100)/2),1);
-		return substr($password, 0, $dont_hide_length) . str_repeat('*', $len - 2*$dont_hide_length) . substr($password, -$dont_hide_length, $dont_hide_length);
+		if ($len <= 4) {
+			return str_repeat('*', $len);
+		}
+		$dont_hide_length = min(2, intdiv($len, 4));
+		$middle = max(0, $len - 2 * $dont_hide_length);
+		return mb_substr($password, 0, $dont_hide_length) . str_repeat('*', $middle) . mb_substr($password, -$dont_hide_length);
 	}
 
 	public function toArray() {
@@ -249,6 +256,8 @@ class Config {
 		$params['smtp_password'] = $this->_hide_password($this->smtp_password);
 		$params['oauth_client_secret'] = $this->_hide_password($this->oauth_client_secret);
 		$params['openidconnect_client_secret'] = $this->_hide_password($this->openidconnect_client_secret);
+		$params['telegram_bot_token'] = $this->_hide_password($this->telegram_bot_token);
+		$params['telegram_proxy_password'] = $this->_hide_password($this->telegram_proxy_password);
 		return $params;
 	}
 

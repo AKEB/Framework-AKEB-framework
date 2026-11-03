@@ -9,7 +9,7 @@ class Notifications extends \Websocket_Parent implements \WebsocketWithAuth_Inte
 			if ($this->action == 'notifications') {
 				$messages = [];
 				$count = 0;
-				$data = \Notifications::data(['user_id' => $user['id']], sql_pholder(' ORDER BY create_time ASC LIMIT 20'));
+				$data = \Notifications::data(['user_id' => $user['id']], sql_pholder(' ORDER BY create_time DESC LIMIT 20'));
 				if ($data) {
 					foreach($data as $item) {
 						$item['create_time'] = date('Y-m-d H:i:s', $item['create_time']);
@@ -34,7 +34,7 @@ class Notifications extends \Websocket_Parent implements \WebsocketWithAuth_Inte
 			} else if ($this->action == 'notifications_read') {
 				$notification_id = $this->params['id'] ?? 0;
 				if ($notification_id) {
-					$notification = \Notifications::get(['id' => $notification_id]);
+					$notification = \Notifications::get(['id' => $notification_id, 'user_id' => $user['id']]);
 					if ($notification && $notification['id']) {
 						$notification_id = \Notifications::save([
 							'id' => $notification['id'],
@@ -47,7 +47,7 @@ class Notifications extends \Websocket_Parent implements \WebsocketWithAuth_Inte
 			} else if ($this->action == 'notifications_delete') {
 				$notification_id = $this->params['id'] ?? 0;
 				if ($notification_id) {
-					$notification = \Notifications::get(['id' => $notification_id]);
+					$notification = \Notifications::get(['id' => $notification_id, 'user_id' => $user['id']]);
 					if ($notification && $notification['id']) {
 						\Notifications::delete(['id' => $notification['id']]);
 					}

@@ -6,7 +6,8 @@ class Mail {
 		$mail = new \PHPMailer\PHPMailer\PHPMailer();
 		$mail->CharSet = 'utf-8';
 		$mail->Timeout = 10; // 10 seconds timeout
-		$mail->SMTPDebug = \Config::getInstance()->app_debug ? 4 : 0;
+		// Never dump AUTH/body (may contain reset tokens) to error_log
+		$mail->SMTPDebug = 0;
 		$mail->Debugoutput = function($str, $level) {
 			error_log("Mail Debug level $level; message: $str");
 		};
@@ -26,7 +27,8 @@ class Mail {
 			}
 			$mail->SMTPOptions = [
 				'ssl' => [
-					'verify_peer' => false,
+					'verify_peer' => true,
+					'verify_peer_name' => true,
 				]
 			];
 			if (\Config::getInstance()->smtp_username) {

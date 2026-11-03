@@ -17,7 +17,7 @@ class ContentSecurityPolicy  {
 
 	static public function nonceRandom(): string {
 		if (!static::$nonceRandom) {
-			static::$nonceRandom = (string) random_int(1, 10000000000);
+			static::$nonceRandom = base64_encode(random_bytes(16));
 		}
 		return static::$nonceRandom;
 	}
