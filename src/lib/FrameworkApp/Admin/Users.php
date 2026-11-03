@@ -20,6 +20,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 		$this->check_permissions();
 
 		if ($action == 'delete' && $user_id) {
+			\Csrf::requirePost();
 			$this->processDeleteAction($user_id);
 		}
 
@@ -89,6 +90,10 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 			return;
 		}
 		if (\Sessions::in_group(\Groups::ADMIN_GROUP_ID, $userId)) {
+			if (!\Sessions::in_group(\Groups::ADMIN_GROUP_ID)) {
+				$this->error = \T::Framework_Errors_PermissionDenied();
+				return;
+			}
 			$users_count = \UserGroups::count(['group_id' => \Groups::ADMIN_GROUP_ID]);
 			if ($users_count <= 1) {
 				$this->error = \T::Framework_Users_Delete_LastAdminDenied();
@@ -346,7 +351,8 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 				});
 
 				$('.impersonateUserAction').on('click', function() {
-					window.location.href = '/admin/impersonate/' + $(this).data('user-id') + '/';
+					var userId = $(this).data('user-id');
+					<?=\Csrf::jsPostToUrl("'/admin/impersonate/' + userId + '/'");?>
 				});
 
 			});
@@ -358,8 +364,7 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 				modalBody.textContent = '<?=\T::Framework_Users_Delete_Confirmation();?>'.replace('{user}', userTitle);
 
 				confirmBtn.onclick = function() {
-					window.location.href = '/admin/users/delete/' + userId + '/';
-					// window.location.href = '?action=delete&id=' + userId;
+					<?=\Csrf::jsPostToUrl("'/admin/users/delete/' + userId + '/'");?>
 				};
 
 				modal.show();

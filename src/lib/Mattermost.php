@@ -23,7 +23,7 @@ class Mattermost {
 		$this->bot_id = null;
 		$this->driver = null;
 
-		if (!$this->options["url"] && !$this->options["token"]) return false;
+		if (!$this->options["url"] || !$this->options["token"]) return false;
 
 		$container = new \Pimple\Container([
 			'driver' => [

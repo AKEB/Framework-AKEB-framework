@@ -37,12 +37,16 @@ class First_CaseTest extends PHPUnit\Framework\TestCase {
 		$this->assertEquals('admin@admin.com', $admin['email']);
 		$this->assertNotEmpty($admin['password']);
 
-		$this->assertEquals(\Users::password_hash('Admin@123'), $admin['password']);
+		// password_hash() uses bcrypt — hashes are not stable across calls
+		$this->assertTrue(\Users::is_modern_password_hash($admin['password']));
 		$this->assertTrue(\Users::password_verify('Admin@123', $admin['password']));
 		$this->assertFalse(\Users::password_verify('WrongPassword@123', $admin['password']));
 		$this->assertFalse(\Users::password_verify('', $admin['password']));
 		$this->assertFalse(\Users::password_verify('', ''));
 		$this->assertEquals(\Users::password_hash(''), '');
+		$fresh = \Users::password_hash('Admin@123');
+		$this->assertNotSame($fresh, $admin['password']);
+		$this->assertTrue(\Users::password_verify('Admin@123', $fresh));
 
 		$this->assertEquals(1, $admin['status']);
 		$this->assertEquals(1, $admin['flags']);

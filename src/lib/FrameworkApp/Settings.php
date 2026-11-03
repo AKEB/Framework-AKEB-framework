@@ -45,11 +45,57 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 	}
 
 	protected function handleGetData(array $data) {
-		// Обработка GET данных
 		if (!isset($data)) return;
-		if (isset($data['disable_2fa'])) {
-			$this->disableTwoFactor();
+		if (!empty($data['confirm_email'])) {
+			$this->confirmPendingEmail(strval($data['confirm_email']));
 		}
+	}
+
+	private function confirmPendingEmail(string $token): void {
+		if ($token === '' || !$this->currentUser || empty($this->currentUser['id'])) {
+			return;
+		}
+		$cache = new \Cache('pending_email_'.$this->currentUser['id'], 'default', true);
+		if (!$cache->isValid()) {
+			$this->errorText = \T::Framework_SignUp_InvalidOrExpiredToken();
+			return;
+		}
+		$pending = json_decode(strval($cache->get()), true);
+		if (
+			!is_array($pending)
+			|| empty($pending['email'])
+			|| empty($pending['token'])
+			|| !hash_equals(strval($pending['token']), $token)
+			|| ($pending['exp'] ?? 0) < time()
+		) {
+			$cache->remove();
+			$this->errorText = \T::Framework_SignUp_InvalidOrExpiredToken();
+			return;
+		}
+		$email = strval($pending['email']);
+		$existingUser = \Users::get(['email' => $email], sql_pholder(' AND id <> ?', $this->currentUser['id']));
+		if ($existingUser) {
+			$cache->remove();
+			$this->errorText = \T::Framework_Settings_EmailAlreadyInUse();
+			return;
+		}
+		$old_user = \Users::get(['id' => $this->currentUser['id']]);
+		\Users::save([
+			'id' => $this->currentUser['id'],
+			'email' => $email,
+			'email_verification_token' => '',
+			'update_time' => time(),
+			'_mode' => \DB\Common::CSMODE_UPDATE,
+		]);
+		$cache->remove();
+		$new_user = \Users::get(['id' => $this->currentUser['id']]);
+		\Logs::update_log(\Users::LOGS_OBJECT, $this->currentUser['id'], $old_user, $new_user, [
+			'ip' => \Sessions::client_ip(),
+			'_save_fields' => ['id'],
+		]);
+		$this->currentUser = $new_user;
+		$this->successText = \T::Framework_Settings_ProfileUpdatedSuccessfully();
+		common_redirect('/settings/');
 	}
 
 	protected function handlePostData(array $data) {
@@ -59,39 +105,46 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		if (isset($data['sendTelegram'])) {
 			$return = [];
 			$telegramId = trim($data['telegram_id']??'');
-			if (!$telegramId) {
-				$return['status'] = -1;
-				$return['error'] = \T::Framework_Telegram_TelegramIdIsRequired();
-			}
-			if (!\Config::getInstance()->telegram_bot_token) {
-				$return['status'] = -2;
-				$return['error'] = \T::Framework_Telegram_TelegramBotTokenIsRequired();
-			}
-			$telegramIds = explode(':', $telegramId);
-			$telegram_channel_id = $telegramIds[0];
-			$telegram_thread_id = 0;
-			if (isset($telegramIds[1])) {
-				$telegram_thread_id = $telegramIds[1];
-			}
-			try {
-				$bot = new \TelegramBot\Api\BotApi(\Config::getInstance()->telegram_bot_token);
-				if (\Config::getInstance()->telegram_proxy_host) {
-					$bot->setProxy((\Config::getInstance()->telegram_proxy_host).':'.(\Config::getInstance()->telegram_proxy_port), \Config::getInstance()->telegram_proxy_socks5);
-					if (\Config::getInstance()->telegram_proxy_username && \Config::getInstance()->telegram_proxy_password) {
-						$bot->setCurlOption(CURLOPT_PROXYUSERPWD, \Config::getInstance()->telegram_proxy_username.':'.\Config::getInstance()->telegram_proxy_password);
-					}
+			do {
+				if (!$telegramId) {
+					$return = ['status' => -1, 'error' => \T::Framework_Telegram_TelegramIdIsRequired()];
+					break;
 				}
-				@$bot->sendMessage(
-					$telegram_channel_id,
-					'Test Message '.date('Y-m-d H:i:s',time()).'',
-					'HTML', true, null, null, false,
-					$telegram_thread_id
-				);
-			} catch (\Exception $e) {
-				$return['status'] = -3;
-				$return['error'] = $e->getMessage();
-			}
-			$return['status'] = 0;
+				if (!\Config::getInstance()->telegram_bot_token) {
+					$return = ['status' => -2, 'error' => \T::Framework_Telegram_TelegramBotTokenIsRequired()];
+					break;
+				}
+				// Only allow testing the current user's configured telegram id
+				$allowed = trim(strval($this->currentUser['telegram_id'] ?? ''));
+				if ($allowed === '' || $telegramId !== $allowed) {
+					$return = ['status' => -1, 'error' => \T::Framework_Errors_PermissionDenied()];
+					break;
+				}
+				$telegramIds = explode(':', $telegramId);
+				$telegram_channel_id = $telegramIds[0];
+				$telegram_thread_id = 0;
+				if (isset($telegramIds[1])) {
+					$telegram_thread_id = $telegramIds[1];
+				}
+				try {
+					$bot = new \TelegramBot\Api\BotApi(\Config::getInstance()->telegram_bot_token);
+					if (\Config::getInstance()->telegram_proxy_host) {
+						$bot->setProxy((\Config::getInstance()->telegram_proxy_host).':'.(\Config::getInstance()->telegram_proxy_port), \Config::getInstance()->telegram_proxy_socks5);
+						if (\Config::getInstance()->telegram_proxy_username && \Config::getInstance()->telegram_proxy_password) {
+							$bot->setCurlOption(CURLOPT_PROXYUSERPWD, \Config::getInstance()->telegram_proxy_username.':'.\Config::getInstance()->telegram_proxy_password);
+						}
+					}
+					@$bot->sendMessage(
+						$telegram_channel_id,
+						'Test Message '.date('Y-m-d H:i:s',time()).'',
+						'HTML', true, null, null, false,
+						$telegram_thread_id
+					);
+					$return = ['status' => 0];
+				} catch (\Exception $e) {
+					$return = ['status' => -3, 'error' => $e->getMessage()];
+				}
+			} while (false);
 			echo json_encode($return);
 			exit;
 		}
@@ -101,7 +154,11 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			$this->changePassword($data['oldPassword']??'', $data['newPassword']??'', $data['confirmNewPassword']??'');
 		}
 		if (isset($data['enableTwoFactor']) && $data['enableTwoFactor'] == 'true') {
-			$this->enableTwoFactor($data['secret'], $data['totp']);
+			$this->enableTwoFactor($data['secret'] ?? '', $data['totp'] ?? '');
+			exit;
+		}
+		if (isset($data['disableTwoFactor']) && $data['disableTwoFactor'] == 'true') {
+			$this->disableTwoFactor($data['password'] ?? '');
 			exit;
 		}
 
@@ -122,7 +179,7 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			$this->passwordErrorText = \T::Framework_Settings_NewPasswordsDoNotMatch();
 			return;
 		}
-		if (!$this->currentUser || !isset($this->currentUser['id']) && !$this->currentUser['id'] < 1) {
+		if (!$this->currentUser || !isset($this->currentUser['id']) || intval($this->currentUser['id']) < 1) {
 			$this->passwordErrorText = \T::Framework_Settings_UserNotFound();
 			return;
 		}
@@ -150,15 +207,27 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		$_POST = [];
 		$this->currentUser['flags'] = $this->currentUser['flags'] & ~\Users::FLAGS_NEED_CHANGE_PASSWORD;
 		\Sessions::set_current_user($this->currentUser['id']);
+		\Users::revoke_other_sessions($this->currentUser['id'], \Sessions::get_session_id());
 		$this->passwordSuccessText = \T::Framework_Settings_PasswordChangedSuccessfully();
 	}
 
-	private function disableTwoFactor() {
-		if (!\Config::getInstance()->app_signin_active) return;
+	private function disableTwoFactor(string $password = '') {
+		if (!\Config::getInstance()->app_signin_active) {
+			echo json_encode(['error' => \T::Framework_Errors_PermissionDenied()]);
+			return;
+		}
 		$currentUser = \Sessions::currentUser();
-		if (!isset($currentUser['password']) || !$currentUser['password']) return;
+		if (!isset($currentUser['password']) || !$currentUser['password']) {
+			echo json_encode(['error' => \T::Framework_Errors_PermissionDenied()]);
+			return;
+		}
+		if (\Users::check_user_credentials($currentUser['email'], $password) != $currentUser['id']) {
+			echo json_encode(['error' => \T::Framework_Settings_OldPasswordIsIncorrect()]);
+			return;
+		}
 		$user = \Users::get(['id' => $currentUser['id']]);
 		if (!$user || !$user['id']) {
+			echo json_encode(['error' => \T::Framework_Settings_UserNotFound()]);
 			return;
 		}
 		$user_id = \Users::save([
@@ -168,23 +237,28 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		]);
 		if ($user_id) {
-			common_redirect('/settings/');
+			echo json_encode(['status' => 'true']);
+		} else {
+			echo json_encode(['error' => \T::Framework_Settings_TwoFactor_ErrorSetup()]);
 		}
-		return;
 	}
 
 	private function enableTwoFactor($secret, $totp) {
 		if (!\Config::getInstance()->app_signin_active) exit;
 		$currentUser = \Sessions::currentUser();
 		if (!isset($currentUser['password']) || !$currentUser['password']) exit;
+		$secret = strval($secret ?? '');
+		$totp = preg_replace('/\D+/', '', strval($totp ?? ''));
 		$googleAuthenticate = new \GoogleAuthenticator();
 		$check = $googleAuthenticate->checkCode($secret, $totp);
 		if (!$check) {
 			echo json_encode(['error' => \T::Framework_Login_InvalidTOTP()]);
+			exit;
 		}
 		$user = \Users::get(['id' => $currentUser['id']]);
 		if (!$user || !$user['id']) {
 			echo json_encode(['error' => \T::Framework_Settings_UserNotFound()]);
+			exit;
 		}
 		$user_id = \Users::save([
 			'id' => $user['id'],
@@ -211,26 +285,44 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			$this->errorText = \T::Framework_Settings_InvalidEmailFormat();
 			return;
 		}
-		if (!$this->currentUser || !isset($this->currentUser['id']) && !$this->currentUser['id'] < 1) {
-			$this->passwordErrorText = \T::Framework_Settings_UserNotFound();
+		if (!$this->currentUser || !isset($this->currentUser['id']) || intval($this->currentUser['id']) < 1) {
+			$this->errorText = \T::Framework_Settings_UserNotFound();
 			return;
 		}
-		// Check if email is already used by another user
-		$existingUser = \Users::get(['email' => $email], sql_pholder(' AND id <> ?', $this->currentUser['id']));
-		if ($existingUser) {
-			$this->errorText = \T::Framework_Settings_EmailAlreadyInUse();
-			return;
+		$emailChanged = strcasecmp($email, strval($this->currentUser['email'] ?? '')) !== 0;
+		if ($emailChanged) {
+			$currentPassword = strval($data['currentPassword'] ?? '');
+			if (!empty($this->currentUser['password'])) {
+				if (\Users::check_user_credentials($this->currentUser['email'], $currentPassword) != $this->currentUser['id']) {
+					$this->errorText = \T::Framework_Settings_OldPasswordIsIncorrect();
+					return;
+				}
+			}
+			// Check if email is already used by another user
+			$existingUser = \Users::get(['email' => $email], sql_pholder(' AND id <> ?', $this->currentUser['id']));
+			if ($existingUser) {
+				$this->errorText = \T::Framework_Settings_EmailAlreadyInUse();
+				return;
+			}
 		}
 
 		$params = [
 			'id' => $this->currentUser['id'],
 			'name' => $name,
 			'surname' => $surname,
-			'email' => $email,
 			'telegram_id' => $telegramId,
 			'update_time' => time(),
 			'_mode' => \DB\Common::CSMODE_UPDATE,
 		];
+		if ($emailChanged) {
+			// Do not activate new email until verified; keep current email for login
+			$verifyToken = \Users::generate_verification_token();
+			$params['email_verification_token'] = $verifyToken;
+			$cache = new \Cache('pending_email_'.$this->currentUser['id'], 'default', true);
+			$cache->update(json_encode(['email' => $email, 'token' => $verifyToken, 'exp' => time() + 86400]), 86400);
+			$verifyLink = htmlspecialchars(common_app_url('/settings/?confirm_email=' . urlencode($verifyToken)), ENT_QUOTES, 'UTF-8');
+			\Mail::send($email, \T::Framework_SignUp_EmailSubject(), \T::Framework_SignUp_EmailBody($verifyLink));
+		}
 		$old_user = \Users::get(['id' => $this->currentUser['id']]);
 		\Users::save($params);
 		$new_user = \Users::get(['id' => $this->currentUser['id']]);
@@ -238,7 +330,9 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 			'ip' => \Sessions::client_ip(),
 			'_save_fields' => ['id'],
 		]);
-		$this->successText = \T::Framework_Settings_ProfileUpdatedSuccessfully();
+		$this->successText = $emailChanged
+			? \T::Framework_Login_ResendEmailSuccess()
+			: \T::Framework_Settings_ProfileUpdatedSuccessfully();
 		$this->currentUser = \Users::get(['id' => $this->currentUser['id']]);
 	}
 
@@ -252,15 +346,16 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		<div class="card card-paddings bg-transparent col-xl-8 p-4 mt-2 mb-3">
 			<div class="card-header bg-transparent"><h3><?=\T::Framework_Settings_UserProfile_Title();?></h3></div>
 			<form class="card-body" method="post">
+				<?= \Csrf::field(); ?>
 				<?php if ($this->successText) { ?>
 					<div class="alert alert-success d-flex align-items-center fade show alert-dismissible" role="alert">
-						<div><?=$this->successText;?></div>
+						<div><?=htmlspecialchars($this->successText, ENT_QUOTES, 'UTF-8');?></div>
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
 				<?php } ?>
 				<?php if ($this->errorText) { ?>
 					<div class="alert alert-danger d-flex align-items-center fade show alert-dismissible" role="alert">
-						<div><?=$this->errorText;?></div>
+						<div><?=htmlspecialchars($this->errorText, ENT_QUOTES, 'UTF-8');?></div>
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
 				<?php } ?>
@@ -271,6 +366,12 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 					'type' => 'email',
 					'add_before' => '<i class="input-group-text bi bi-envelope"></i>',
 				]);
+				if (!empty($this->currentUser['password'])) {
+					echo $this->template->html_input("currentPassword", '', \T::Framework_Settings_OldPassword(), false, [
+						'type' => 'password',
+						'add_before' => '<i class="input-group-text bi bi-key"></i>',
+					]);
+				}
 				echo $this->template->html_input("telegram_id", $this->currentUser['telegram_id']??'', \T::Framework_Settings_UserProfile_TelegramId(), false, [
 					'type' => 'text',
 					'add_before' => '<i class="input-group-text bi bi-telegram"></i>',
@@ -294,7 +395,8 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 								dataType: "json",
 								data : {
 									telegram_id : telegramId,
-									sendTelegram : true
+									sendTelegram : true,
+									<?=json_encode(\Csrf::FIELD);?>: <?=json_encode(\Csrf::token());?>
 								},
 								success : function(d) {
 									if (!d) {
@@ -322,15 +424,16 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		<div class="card card-paddings bg-transparent col-xl-8 p-4 mt-2 mb-3">
 			<div class="card-header bg-transparent <?=$this->need_change_password ? 'text-warning' : '';?>"><h3><?=\T::Framework_Settings_ChangePassword();?></h3></div>
 			<form class="change-password-form card-body needs-validation" method="post" novalidate>
+				<?= \Csrf::field(); ?>
 				<?php if ($this->passwordSuccessText) { ?>
 					<div class="alert alert-success d-flex align-items-center fade show alert-dismissible" role="alert">
-						<div><?=$this->passwordSuccessText;?></div>
+						<div><?=htmlspecialchars($this->passwordSuccessText, ENT_QUOTES, 'UTF-8');?></div>
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
 				<?php } ?>
 				<?php if ($this->passwordErrorText) { ?>
 					<div class="alert alert-danger d-flex align-items-center fade show alert-dismissible" role="alert">
-						<div><?=$this->passwordErrorText;?></div>
+						<div><?=htmlspecialchars($this->passwordErrorText, ENT_QUOTES, 'UTF-8');?></div>
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>
 				<?php } ?>
@@ -388,24 +491,82 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 							<?=\T::Framework_Settings_TwoFactor_Enable();?>
 						</button>
 					<?php } else { ?>
-						<a href="/settings/?disable_2fa" type="button" class="btn btn-primary btn-danger">
+						<button type="button" class="btn btn-primary btn-danger" data-bs-toggle="modal" data-bs-target="#disableTwoFactorModal">
 							<?=\T::Framework_Settings_TwoFactor_Disable();?>
-						</a>
+						</button>
 					<?php } ?>
 				</div>
 			</div>
 		</div>
+		<?php if ($currentUser['two_factor_secret']) { ?>
+			<div class="modal" id="disableTwoFactorModal" tabindex="-1" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<form method="post" class="disable-two-factor-form">
+							<?= \Csrf::field(); ?>
+							<div class="modal-header">
+								<h1 class="modal-title fs-5"><?=\T::Framework_Settings_TwoFactor_Disable();?></h1>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<?php
+								echo $this->template->html_input("disable2faPassword", '', \T::Framework_Settings_OldPassword(), true, [
+									'type' => 'password',
+									'id' => 'disable2faPassword',
+								]);
+								?>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?=\T::Framework_Common_Close();?></button>
+								<button type="submit" class="btn btn-danger"><?=\T::Framework_Settings_TwoFactor_Disable();?></button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<script nonce="<?=\CSP::nonceRandom();?>">
+				$(document).ready(function(){
+					$('form.disable-two-factor-form').on('submit', function(event) {
+						event.preventDefault();
+						$.ajax({
+							type: "POST",
+							url : "?t="+Math.round((new Date()).getTime() / 1000),
+							cache: false,
+							dataType: "json",
+							data : {
+								password: $('#disable2faPassword').val(),
+								disableTwoFactor : "true",
+								<?=json_encode(\Csrf::FIELD);?>: <?=json_encode(\Csrf::token());?>
+							},
+							success : function(d) {
+								if (!d) {
+									showErrorToast('<?=\T::Framework_Settings_TwoFactor_ErrorSetup();?>');
+								} else if (d.error) {
+									showErrorToast(d.error);
+								} else {
+									window.location.href="/settings/";
+								}
+							},
+							error : function() {
+								showErrorToast('<?=\T::Framework_Settings_TwoFactor_ErrorSetup();?>');
+							}
+						});
+					});
+				});
+			</script>
+		<?php } ?>
 		<?php if (!$currentUser['two_factor_secret']) { ?>
 			<div class="modal p-0" id="twoFactorModal" tabindex="-1" role="dialog" aria-labelledby="twoFactorModalLabel" aria-modal="true">
 				<div class="modal-dialog modal-fullscreen-md-down p-0" role="document">
 					<div class="modal-content">
 						<form method="post" action="" class="enable-two-factor-form needs-validation m-0" novalidate>
+							<?= \Csrf::field(); ?>
 							<div class="modal-header">
 								<h1 class="modal-title fs-5"><?=\T::Framework_Settings_TwoFactor_Title();?></h1>
 								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 							</div>
 							<div class="modal-body">
-								<input type="hidden" name="secret" id="secret" value="<?=$secret;?>">
+								<input type="hidden" name="secret" id="secret" value="<?=htmlspecialchars($secret, ENT_QUOTES, 'UTF-8');?>">
 								<div class="d-flex justify-content-left align-items-left mb-3">
 									<?=\T::Framework_Settings_TwoFactor_Header();?>
 								</div>
@@ -455,7 +616,8 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 								data : {
 									secret: secret,
 									totp: totp,
-									enableTwoFactor : "true"
+									enableTwoFactor : "true",
+									<?=json_encode(\Csrf::FIELD);?>: <?=json_encode(\Csrf::token());?>
 								},
 								success : function(d) {
 									if (!d) {

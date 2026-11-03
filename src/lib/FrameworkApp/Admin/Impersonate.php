@@ -11,6 +11,7 @@ class Impersonate extends \Routing_Parent implements \Routing_Interface {
 		$this->user_id = intval($user_id ?? 0);
 		$this->check_auth();
 		$this->check_permissions();
+		\Csrf::requirePost();
 
 		\Sessions::start_impersonate_user($this->user_id);
 		$log_id = \Logs::log('Start_impersonate_user',\Logs::ACTION_START_IMPERSONATE,\Users::LOGS_OBJECT, \Sessions::currentUserId(),[
@@ -26,6 +27,12 @@ class Impersonate extends \Routing_Parent implements \Routing_Interface {
 		$this->can_impersonate = \Sessions::checkPermission(\Users::PERMISSION_IMPERSONATE_USER, $this->user_id, READ);
 
 		if (!$this->can_impersonate || !$this->user_id) {
+			e403();
+		}
+		if (
+			\Sessions::in_group(\Groups::ADMIN_GROUP_ID, $this->user_id)
+			&& !\Sessions::in_group(\Groups::ADMIN_GROUP_ID)
+		) {
 			e403();
 		}
 	}

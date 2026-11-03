@@ -21,8 +21,12 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 
 	protected function handleGetData(array $data) {
 		if (isset($data['token'])) {
-			$this->token = $data['token'];
-			$this->user = \Users::get(['reset_token' => $this->token], sql_pholder(' AND reset_token_expires > ?', time()));
+			$this->token = strval($data['token']);
+			if ($this->token === '') {
+				$this->errorText = \T::Framework_Forgot_InvalidOrExpiredToken();
+				return;
+			}
+			$this->user = \Users::get(['reset_token' => $this->token], sql_pholder(' AND reset_token != \'\' AND reset_token_expires > ?', time()));
 			if (!$this->user) {
 				$this->errorText = \T::Framework_Forgot_InvalidOrExpiredToken();
 				$this->token = ''; // Invalidate token to show the initial form
@@ -53,7 +57,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 			// Set token expiration (e.g., 1 hour from now)
 			$expires = time() + 1800;
 
-			$resetLink = strval($_SERVER['HTTP_REFERER'] ?? '').'?token=' . $token;
+			$resetLink = htmlspecialchars(common_app_url('/forgot/?token=' . urlencode($token)), ENT_QUOTES, 'UTF-8');
 			$subject = \T::Framework_Forgot_EmailSubject();
 			$body = \T::Framework_Forgot_EmailBody($resetLink);
 
@@ -65,10 +69,10 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 				'_mode' => \DB\Common::CSMODE_UPDATE,
 			]);
 			$new_user = \Users::get(['id' => $user['id']]);
-			\Logs::update_log(\Users::LOGS_OBJECT, $this->user['id'], $user, $new_user,[
+			\Logs::update_log(\Users::LOGS_OBJECT, $user['id'], $user, $new_user,[
 				'ip' => \Sessions::client_ip(),
 				'_save_fields' => ['id'],
-			],'',$this->user['id'],$this->user['id']);
+			],'',$user['id'],$user['id']);
 			// Assuming you have a mailer service
 			\Mail::send($user['email'], $subject, $body);
 		}
@@ -79,7 +83,11 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 
 	private function resetPassword(string $token, string $newPassword, string $confirmNewPassword) {
 		$this->token = $token;
-		$this->user = \Users::get(['reset_token' => $this->token], sql_pholder(' AND reset_token_expires > ?', time()));
+		if ($this->token === '') {
+			$this->errorText = \T::Framework_Forgot_InvalidOrExpiredToken();
+			return;
+		}
+		$this->user = \Users::get(['reset_token' => $this->token], sql_pholder(' AND reset_token != \'\' AND reset_token_expires > ?', time()));
 
 		if (!$this->user) {
 			$this->errorText = \T::Framework_Forgot_InvalidOrExpiredToken();
@@ -113,6 +121,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 			'ip' => \Sessions::client_ip(),
 			'_save_fields' => ['id'],
 		],'',$this->user['id'],$this->user['id']);
+		\Users::revoke_other_sessions($this->user['id']);
 		// Redirect to login page with a success message
 		common_redirect('/login/');
 	}
@@ -141,6 +150,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 									<!-- Reset Password Form -->
 									<p class="text-secondary-50 mb-3"><?= \T::Framework_Forgot_ResetSubtitle() ?></p>
 									<form action="/forgot/" class="change-password-form card-body needs-validation" method="post" novalidate>
+										<?= \Csrf::field(); ?>
 										<input type="hidden" name="action" value="reset_password"/>
 										<input type="hidden" name="token" value="<?= htmlspecialchars($this->token) ?>"/>
 										<?php
@@ -176,6 +186,7 @@ class Forgot extends \Routing_Parent implements \Routing_Interface {
 									<!-- Request Reset Form -->
 									<p class="text-secondary-50 mb-3"><?= \T::Framework_Forgot_Subtitle() ?></p>
 									<form action="/forgot/" method="post">
+										<?= \Csrf::field(); ?>
 										<input type="hidden" name="action" value="request_reset"/>
 										<div data-mdb-input-init class="form-outline form-secondary mb-2">
 											<label class="form-label" for="email"><?=\T::Framework_Login_Email();?></label>

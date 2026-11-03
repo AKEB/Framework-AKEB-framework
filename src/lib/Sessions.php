@@ -49,19 +49,19 @@ class Sessions extends \DB\MySQLObject{
 
 
 	static public function client_ip() {
-		if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
-			$ips = explode(',',$_SERVER['HTTP_X_REAL_IP']);
-			$ip = trim(end($ips));
-		} elseif (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-			$ips = explode(',',$_SERVER['HTTP_CLIENT_IP']);
-			$ip = trim(end($ips));
-		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-			$ips = explode(',',$_SERVER['HTTP_X_FORWARDED_FOR']);
-			$ip = trim(end($ips));
-		} else {
-			$ip=$_SERVER['REMOTE_ADDR'];
+		$remote = strval($_SERVER['REMOTE_ADDR'] ?? '');
+		if (!\Config::getInstance()->trust_proxy) {
+			return $remote;
 		}
-		return $ip;
+		if (!empty($_SERVER['HTTP_X_REAL_IP'])) {
+			$ips = explode(',', $_SERVER['HTTP_X_REAL_IP']);
+			return trim(strval(reset($ips)));
+		}
+		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+			return trim(strval(reset($ips)));
+		}
+		return $remote;
 	}
 
 	static public function set_current_user(int $userId, array $jsonData=[]) :void {
@@ -79,16 +79,28 @@ class Sessions extends \DB\MySQLObject{
 		$cache->remove();
 	}
 
+	static private function cookie_options(int $expires): array {
+		$secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+			|| (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443)
+			|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower(strval($_SERVER['HTTP_X_FORWARDED_PROTO'])) === 'https');
+		return [
+			'expires' => $expires,
+			'path' => '/',
+			'secure' => $secure,
+			'httponly' => true,
+			'samesite' => 'Lax',
+		];
+	}
+
+	static private function set_session_cookie(string $value, int $expires): void {
+		setcookie(static::$session_name, $value, static::cookie_options($expires));
+	}
+
 	static private function new_session_id(): string {
-		setcookie(static::$session_name, '', time() + 1, '/');
+		static::set_session_cookie('', time() + 1);
 		$_COOKIE[static::$session_name] = '';
-		static::$sessionId = hash('sha512', md5(
-			static::client_ip() .
-			($_SERVER['HTTP_USER_AGENT'] ?? '') .
-			microtime() .
-			random_int(100000000,999999999)
-		));
-		setcookie(static::$session_name, static::$sessionId, time() + static::$sessionLifeTime, '/');
+		static::$sessionId = bin2hex(random_bytes(32));
+		static::set_session_cookie(static::$sessionId, time() + static::$sessionLifeTime);
 		$_COOKIE[static::$session_name] = static::$sessionId;
 		return static::$sessionId;
 	}
@@ -97,7 +109,7 @@ class Sessions extends \DB\MySQLObject{
 		if (
 			!isset($_COOKIE[static::$session_name]) ||
 			!$_COOKIE[static::$session_name] ||
-			strlen($_COOKIE[static::$session_name]) < 128
+			!preg_match('/^[a-f0-9]{64}$/', strval($_COOKIE[static::$session_name]))
 		) {
 			static::new_session_id();
 		}
@@ -111,7 +123,7 @@ class Sessions extends \DB\MySQLObject{
 		if (static::$sessionId) {
 			static::delete(['id' => static::$sessionId]);
 		}
-		setcookie(static::$session_name, '', time() + 1, '/');
+		static::set_session_cookie('', time() + 1);
 		$_COOKIE[static::$session_name] = '';
 		static::$sessionId = '';
 		static::$current_user = [];
@@ -139,6 +151,10 @@ class Sessions extends \DB\MySQLObject{
 			return false;
 		}
 		if (!static::$current_user || !static::checkPermission(\Users::PERMISSION_IMPERSONATE_USER, $impersonateUserId, READ)) {
+			return false;
+		}
+		// Non-admins must not impersonate Admin-group users
+		if (static::in_group(\Groups::ADMIN_GROUP_ID, $impersonateUserId) && !static::in_group(\Groups::ADMIN_GROUP_ID)) {
 			return false;
 		}
 		if (!static::$sessionId) {
@@ -591,8 +607,11 @@ class Sessions extends \DB\MySQLObject{
 
 		if (!static::$current_user) {
 			if ($WithoutRedirect) return false;
-			setcookie('target', urlencode($_SERVER['REQUEST_URI']), time() + 86400, '/');
-			$_COOKIE['target'] = urlencode($_SERVER['REQUEST_URI']);
+			$requestUri = strval($_SERVER['REQUEST_URI'] ?? '/');
+			if (common_is_local_path($requestUri)) {
+				setcookie('target', urlencode($requestUri), static::cookie_options(time() + 86400));
+				$_COOKIE['target'] = urlencode($requestUri);
+			}
 			common_redirect('/login/');
 			return false;
 		}

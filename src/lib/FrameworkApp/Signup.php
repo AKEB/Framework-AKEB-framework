@@ -43,7 +43,8 @@ class Signup extends \Routing_Parent implements \Routing_Interface {
 		}
 		$user = \Users::get(['email' => $data['email']]);
 		if ($user) {
-			$this->errorText = \T::Framework_Settings_EmailAlreadyInUse();
+			// Do not reveal whether the email is registered
+			$this->successText = \T::Framework_SignUp_Success();
 			return;
 		}
 		$user = [
@@ -84,7 +85,7 @@ class Signup extends \Routing_Parent implements \Routing_Interface {
 			\Logs::add_tag($log_id, \Groups::LOGS_OBJECT, \Groups::DEFAULT_GROUP_ID);
 			\Logs::add_tag($log_id, \Users::LOGS_OBJECT, $user['id']);
 
-			$resetLink = strval($_SERVER['HTTP_REFERER'] ?? '').'?token=' . $user['email_verification_token'];
+			$resetLink = htmlspecialchars(common_app_url('/login/?token=' . urlencode($user['email_verification_token'])), ENT_QUOTES, 'UTF-8');
 			$subject = \T::Framework_SignUp_EmailSubject();
 			$body = \T::Framework_SignUp_EmailBody($resetLink);
 
@@ -117,6 +118,7 @@ class Signup extends \Routing_Parent implements \Routing_Interface {
 
 								<?php if (!$this->successText) { ?>
 									<form action="/signup/" method="post" class="mt-5 register-form card-body needs-validation" novalidate>
+										<?= \Csrf::field(); ?>
 										<input type="hidden" name="action" value="signup"/>
 										<?php
 										echo $this->template->html_input("name", $_POST['name']??'', \T::Framework_Settings_UserProfile_Name(), true,[

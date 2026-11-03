@@ -335,9 +335,9 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 							const endDate = picker.dates.parseInput(new Date('<?=date("Y-m-d",$this->end_time);?>'));
 							picker.dates.setValue(endDate, 1);
 						<?php } ?>
-						$('#action').selectpicker('val', ['<?=implode("','",$this->action);?>']).change();
-						$('#object').selectpicker('val', ['<?=implode("', '",$this->object);?>']).change();
-						$('#object_id').val('<?=intval($this->object_id)?>').change();
+						$('#action').selectpicker('val', <?=json_encode(array_map('strval', $this->action), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);?>).change();
+						$('#object').selectpicker('val', <?=json_encode(array_values($this->object), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);?>).change();
+						$('#object_id').val(<?=json_encode(intval($this->object_id), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);?>).change();
 					});
 				});
 			</script>

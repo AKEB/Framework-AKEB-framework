@@ -33,6 +33,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 		$this->check_permissions();
 
 		if (isset($_POST) && $_POST) {
+			\Csrf::requirePost();
 			if (isset($_POST['method']) && $_POST['method'] == 'ajaxSubjects') {
 				$this->ajaxSubjects($_POST['subjectType']);
 				exit;
@@ -46,6 +47,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 		$this->get_data();
 
 		if (isset($_POST) && $_POST) {
+			\Csrf::requirePost();
 			if (isset($_POST['action']) && $_POST['action'] && $_POST['action'] == 'save') {
 				$this->save($_POST);
 			}
@@ -160,22 +162,23 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 	}
 
 	private function save($data) {
-		$group_id = intval($data['group_id'] ?? 0);
-		$user_id = intval($data['user_id'] ?? 0);
+		// Object of permissions comes only from the URL-bound page context, never from POST
+		$group_id = intval($this->group_id ?? 0);
+		$user_id = intval($this->user_id ?? 0);
 		$subject = strval($data['subject'] ?? '');
 		$subject_id = intval($data['subject_id'] ?? 0);
 		$accessCode = strval($data['access'] ?? '');
 		$value = intval($data['value'] ?? 0);
+		$allowedAccess = [READ, WRITE, DELETE, ACCESS_READ, ACCESS_WRITE, ACCESS_CHANGE];
 		$return = [];
 		$new_id = 0;
 		do {
 			if (!$this->can_write) break;
 			if (!$group_id && !$user_id) break;
 			if ($group_id && in_array($group_id, [\Groups::ADMIN_GROUP_ID])) break;
-			if (isset($this->group_id) && $this->group_id > 0 && $this->group_id != $group_id && $group_id > 0) break;
-			if (isset($this->user_id) && $this->user_id > 0 && $this->user_id != $user_id && $user_id > 0) break;
 			if (!$subject) break;
-			if (!$accessCode) break;
+			if (!$accessCode || !in_array($accessCode, $allowedAccess, true)) break;
+			if ($value < 0 || $value > 2) break;
 			if (!\Sessions::checkPermission($subject, $subject_id, ACCESS_WRITE)) break;
 
 			if ($group_id) {
@@ -188,10 +191,12 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 				break;
 			}
 
-			if (in_array($accessCode, [READ, WRITE, DELETE])) {
+			if (in_array($accessCode, [READ, WRITE, DELETE], true)) {
 				if (!\Sessions::checkPermission($subject, $subject_id, ACCESS_WRITE)) break;
-			} elseif (in_array($accessCode, [ACCESS_READ, ACCESS_WRITE, ACCESS_CHANGE])) {
+			} elseif (in_array($accessCode, [ACCESS_READ, ACCESS_WRITE, ACCESS_CHANGE], true)) {
 				if (!\Sessions::checkPermission($subject, $subject_id, ACCESS_CHANGE)) break;
+			} else {
+				break;
 			}
 
 			$old_perm = \ObjectPermissions::get([
@@ -647,6 +652,7 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 			<div class="modal-dialog modal-fullscreen-md-down" role="document">
 				<div class="modal-content">
 					<form action="<?=$this->url;?>" class="needs-validation" method="post" novalidate>
+						<?= \Csrf::field(); ?>
 						<div class="modal-header border-secondary">
 							<h5 class="modal-title" id="createPermissionModalLabel"><?=\T::Framework_Permission_ModalTitle();?></h5>
 							<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="<?=\T::Framework_Common_Close();?>" title="<?=\T::Framework_Common_Close();?>"></button>
@@ -694,7 +700,8 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 						{
 							subjectType: selectedValue,
 							ajax:"1",
-							method: 'ajaxSubjects'
+							method: 'ajaxSubjects',
+							<?=json_encode(\Csrf::FIELD);?>: <?=json_encode(\Csrf::token());?>
 						},
 						function(response, status, xhr) {
 							$('#subject-select').val('').change();
@@ -728,15 +735,11 @@ class Permissions extends \Routing_Parent implements \Routing_Interface {
 
 						const formData = new FormData();
 						formData.append('action', 'save');
+						formData.append(<?=json_encode(\Csrf::FIELD);?>, <?=json_encode(\Csrf::token());?>);
 						formData.append('subject', subject);
 						formData.append('subject_id', subject_id);
 						formData.append('access', access);
 						formData.append('value', accessValue);
-						<?php if ($this->group_id) { ?>
-							formData.append('group_id', <?=$this->group_id?>);
-						<?php } elseif ($this->user_id) { ?>
-							formData.append('user_id', <?=$this->user_id?>);
-						<?php } ?>
 						checkbox.classList.add('spinning');
 						// Ajax Post query
 						fetch('<?=$this->url;?>', {

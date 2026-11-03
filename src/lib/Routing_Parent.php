@@ -39,6 +39,11 @@ class Routing_Parent implements \Routing_Interface {
 
 	protected function processRequest() {
 		$this->error = '';
+		$method = strtoupper(strval($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+		// CSRF for all POST mutations handled via processRequest
+		if ($method === 'POST' && !\Csrf::validate()) {
+			e403();
+		}
 		// Обработка GET параметров
 		if ($_GET) $this->handleGetData($_GET);
 		// Обработка POST параметров

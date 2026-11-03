@@ -25,6 +25,9 @@ class OAuth {
 
 	public function authenticate() {
 		if (isset($_REQUEST['code']) && isset($_REQUEST['state'])) {
+			if (!$this->validateState(strval($_REQUEST['state']))) {
+				throw new OAuthException('Invalid OAuth state');
+			}
 			$code = $_REQUEST['code'];
 			$this->requestTokens($code);
 			return;
@@ -33,13 +36,37 @@ class OAuth {
 		return;
 	}
 
+	private function stateCache(): \Cache {
+		$sessionId = \Sessions::get_session_id();
+		return new \Cache('oauth_state_'.md5($sessionId), 'default', true);
+	}
+
+	private function createState(): string {
+		$state = bin2hex(random_bytes(16));
+		$this->stateCache()->update($state, 600);
+		return $state;
+	}
+
+	private function validateState(string $state): bool {
+		if ($state === '') {
+			return false;
+		}
+		$cache = $this->stateCache();
+		if (!$cache->isValid()) {
+			return false;
+		}
+		$expected = $cache->get();
+		$cache->remove();
+		return is_string($expected) && $expected !== '' && hash_equals($expected, $state);
+	}
+
 	private function requestAuthorization() {
 		header("HTTP/1.1 301 Moved Permanently");
 		header("Location: " . $this->authorization_endpoint . '?' . common_build_request([
 			'client_id' => $this->client_id,
 			'scope' => $this->scopes,
 			'response_type' => 'code',
-			'state' => time(),
+			'state' => $this->createState(),
 			'redirect_uri' => $this->redirect_uri,
 		]));
 	}

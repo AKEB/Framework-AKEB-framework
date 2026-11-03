@@ -1,5 +1,10 @@
 <?php
 
+if (PHP_SAPI !== 'cli') {
+	http_response_code(403);
+	exit('Forbidden');
+}
+
 if (isset($_ENV['SERVER_ROOT']) && $_ENV['SERVER_ROOT']) {
 	$PWD = $_ENV['SERVER_ROOT'];
 } else {
