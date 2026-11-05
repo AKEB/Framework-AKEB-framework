@@ -36,29 +36,40 @@ class OAuth {
 		return;
 	}
 
-	private function stateCache(): \Cache {
-		$sessionId = \Sessions::get_session_id();
-		// Prefer memcached when configured so state survives multi-node round-trips
-		return new \Cache('oauth_state_'.md5($sessionId), 'default');
-	}
-
+	/**
+	 * Stateless OAuth `state`: nonce.ts.hmac(session_id).
+	 * Survives multi-node round-trips without shared Cache/Memcached.
+	 */
 	private function createState(): string {
-		$state = bin2hex(random_bytes(16));
-		$this->stateCache()->update($state, 600);
-		return $state;
+		$sessionId = \Sessions::get_session_id();
+		$nonce = bin2hex(random_bytes(16));
+		$ts = (string) time();
+		$sig = hash_hmac('sha256', $nonce.'|'.$ts.'|'.$sessionId, \Csrf::hmacSecret());
+		return $nonce.'.'.$ts.'.'.$sig;
 	}
 
 	private function validateState(string $state): bool {
 		if ($state === '') {
 			return false;
 		}
-		$cache = $this->stateCache();
-		if (!$cache->isValid()) {
+		$parts = explode('.', $state);
+		if (count($parts) !== 3) {
 			return false;
 		}
-		$expected = $cache->get();
-		$cache->remove();
-		return is_string($expected) && $expected !== '' && hash_equals($expected, $state);
+		[$nonce, $ts, $sig] = $parts;
+		if ($nonce === '' || !ctype_xdigit($nonce) || !ctype_digit($ts) || $sig === '') {
+			return false;
+		}
+		// Same TTL as the previous Cache-backed state (10 minutes)
+		if (abs(time() - intval($ts)) > 600) {
+			return false;
+		}
+		$sessionId = \Sessions::get_session_id();
+		if ($sessionId === '') {
+			return false;
+		}
+		$expected = hash_hmac('sha256', $nonce.'|'.$ts.'|'.$sessionId, \Csrf::hmacSecret());
+		return hash_equals($expected, $sig);
 	}
 
 	private function requestAuthorization() {

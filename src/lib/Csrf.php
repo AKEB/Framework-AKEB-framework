@@ -22,7 +22,7 @@ class Csrf {
 		if (isset(static::$tokenBySession[$sessionId])) {
 			return static::$tokenBySession[$sessionId];
 		}
-		$secret = static::secret();
+		$secret = static::hmacSecret();
 		if ($secret === '') {
 			return '';
 		}
@@ -70,13 +70,13 @@ class Csrf {
 			.'__csrfForm.appendChild(__csrfInput);document.body.appendChild(__csrfForm);__csrfForm.submit();';
 	}
 
-	/** Server-side secret used to bind the token to the session cookie. */
-	static private function secret(): string {
+	/** Server-side secret used to bind CSRF / OAuth state to the session cookie. */
+	static public function hmacSecret(): string {
 		$salt = strval(\Config::getInstance()->password_salt ?? '');
 		if ($salt !== '') {
 			return $salt;
 		}
-		// Keep CSRF working when PASSWORD_SALT is unset (prefer setting it in prod).
+		// Keep auth working when PASSWORD_SALT is unset (prefer setting it in prod).
 		return 'akeb-framework-csrf-v1';
 	}
 }

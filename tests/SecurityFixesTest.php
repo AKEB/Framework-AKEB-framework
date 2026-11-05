@@ -32,6 +32,25 @@ class SecurityFixesTest extends PHPUnit\Framework\TestCase {
 		$this->assertSame($token, Csrf::token());
 	}
 
+	function test_oauth_state_is_stateless_hmac() {
+		$_SERVER['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+		$_SERVER['HTTP_USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'] ?? 'phpunit';
+		\Cache::$file_cache_enable = false;
+		\Cache::$memcache_cache_enable = false;
+
+		$oauth = new \OAuth('client', 'secret');
+		$create = new \ReflectionMethod($oauth, 'createState');
+		$create->setAccessible(true);
+		$validate = new \ReflectionMethod($oauth, 'validateState');
+		$validate->setAccessible(true);
+
+		$state = $create->invoke($oauth);
+		$this->assertMatchesRegularExpression('/^[a-f0-9]+\.\d+\.[a-f0-9]+$/', $state);
+		$this->assertTrue($validate->invoke($oauth, $state));
+		$this->assertFalse($validate->invoke($oauth, 'deadbeef.'.time().'.00'));
+		$this->assertFalse($validate->invoke($oauth, ''));
+	}
+
 	function test_login_skips_csrf_for_oauth_callback() {
 		$login = new class extends \FrameworkApp\Login {
 			public function exposedShouldValidateCsrf(): bool {
