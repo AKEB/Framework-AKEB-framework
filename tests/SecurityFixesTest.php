@@ -14,7 +14,9 @@ class SecurityFixesTest extends PHPUnit\Framework\TestCase {
 		$this->assertSame('_csrf', Csrf::FIELD);
 		$_SERVER['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 		$_SERVER['HTTP_USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'] ?? 'phpunit';
-		\Cache::$file_cache_enable = true;
+		// Stateless HMAC tokens must work without Cache at all
+		\Cache::$file_cache_enable = false;
+		\Cache::$memcache_cache_enable = false;
 		$js = Csrf::jsPostToUrl("'/admin/test/' + id + '/'");
 		$this->assertStringContainsString('method="POST"', $js);
 		$this->assertStringContainsString('_csrf', $js);
@@ -26,6 +28,8 @@ class SecurityFixesTest extends PHPUnit\Framework\TestCase {
 		$this->assertGreaterThanOrEqual(32, strlen($token));
 		$this->assertTrue(Csrf::validate($token));
 		$this->assertFalse(Csrf::validate('not-the-token'));
+		// Same session → same token (no shared cache required)
+		$this->assertSame($token, Csrf::token());
 	}
 
 	function test_login_skips_csrf_for_oauth_callback() {
