@@ -411,6 +411,7 @@ function changeThemeColorPrefers() {
 function showNotifications(response) {
 	const notificationButton = $('#notificationButton');
 	const notificationBody = $('#notificationBody');
+	const notificationClearAll = $('#notificationClearAll');
 	notificationBody.empty();
 	if (response.message) {
 		if (response.message.count && response.message.count > 0) {
@@ -418,7 +419,13 @@ function showNotifications(response) {
 		} else {
 			notificationButton.removeClass('bi-bell-fill text-danger').addClass('bi-bell');
 		}
-		response.message.messages.forEach(message => {
+		const messages = response.message.messages || [];
+		if (messages.length > 0) {
+			notificationClearAll.removeClass('d-none');
+		} else {
+			notificationClearAll.addClass('d-none');
+		}
+		messages.forEach(message => {
 			if (message.read_time == '0') message.read_time = 0;
 			if (message.send_time == '0') message.send_time = 0;
 			const html = ' \
@@ -447,6 +454,8 @@ function showNotifications(response) {
 			}
 		});
 		// showSuccessToast(response.message, false, 5000);
+	} else {
+		notificationClearAll.addClass('d-none');
 	}
 }
 
@@ -555,6 +564,17 @@ $(document).ready(function() {
 		const notification_id = $(this).data('id');
 		wss.send('notifications_delete', {'id': notification_id}, function(response) {
 			$('.notification_card[data-id="'+notification_id+'"]').remove();
+			if ($('.notification_card').length === 0) {
+				$('#notificationClearAll').addClass('d-none');
+				$('#notificationButton').removeClass('bi-bell-fill text-danger').addClass('bi-bell');
+			}
+		});
+	});
+	$('body').delegate('#notificationClearAll', 'click', function(){
+		wss.send('notifications_clear', null, function(response) {
+			$('#notificationBody').empty();
+			$('#notificationClearAll').addClass('d-none');
+			$('#notificationButton').removeClass('bi-bell-fill text-danger').addClass('bi-bell');
 		});
 	});
 });

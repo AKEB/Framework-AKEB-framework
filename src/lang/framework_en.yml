@@ -110,6 +110,7 @@ Framework:
 
   Notifications:
     Title: "Notifications"
+    ClearList: "Clear list"
 
 
   Common:

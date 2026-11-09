@@ -423,6 +423,9 @@ class Template {
 						<i class="bi bi-arrow-left-circle text-info pointer" data-bs-dismiss="offcanvas" aria-label="Close"></i>
 						<?=\T::Framework_Notifications_Title();?>
 					</h5>
+					<button type="button" class="btn btn-sm btn-outline-secondary d-none" id="notificationClearAll">
+						<?=\T::Framework_Notifications_ClearList();?>
+					</button>
 				</div>
 				<div class="offcanvas-body" id="notificationBody"></div>
 			</div>

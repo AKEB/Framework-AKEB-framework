@@ -13,6 +13,7 @@ class Websocket extends \Routing_Parent implements \Routing_Interface {
 		static::addAction('notifications', '\\Websocket\\Notifications');
 		static::addAction('notifications_read', '\\Websocket\\Notifications');
 		static::addAction('notifications_delete', '\\Websocket\\Notifications');
+		static::addAction('notifications_clear', '\\Websocket\\Notifications');
 		static::addAction('getUserName', '\\Websocket\\GetUserName');
 	}
 

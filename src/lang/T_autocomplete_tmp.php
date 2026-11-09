@@ -745,6 +745,14 @@ class T {
 	public static function Framework_Notifications_Title(...$argv): string { return ''; }
 
 	/**
+	 * Framework_Notifications_ClearList
+	 * 
+	 * @return string "Clear list"
+	 * @return string "Очистить список"
+	 */
+	public static function Framework_Notifications_ClearList(...$argv): string { return ''; }
+
+	/**
 	 * Framework_Common_Cancel
 	 * 
 	 * @return string "Cancel"

@@ -108,6 +108,7 @@ Framework:
 
   Notifications:
     Title: "Уведомления"
+    ClearList: "Очистить список"
 
   Common:
     Cancel: "Отмена"

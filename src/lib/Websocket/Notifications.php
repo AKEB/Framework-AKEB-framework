@@ -53,6 +53,9 @@ class Notifications extends \Websocket_Parent implements \WebsocketWithAuth_Inte
 					}
 				}
 				return true;
+			} else if ($this->action == 'notifications_clear') {
+				\Notifications::delete(['user_id' => $user['id']]);
+				return true;
 			}
 		}
 		return ['error' => 'Unauthorized', 'status' => 401];
