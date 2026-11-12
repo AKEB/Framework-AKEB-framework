@@ -6,6 +6,8 @@
  */
 class UserTime {
 	private static ?string $timezoneCache = null;
+	private static ?\DateTimeZone $zoneCache = null;
+	private static string $zoneCacheName = '';
 
 	public static function serverTimezone(): string {
 		$tz = strval(\Config::getInstance()->timezone ?? 'UTC');
@@ -42,6 +44,8 @@ class UserTime {
 	/** Reset cached timezone (e.g. after cookie change in the same request). */
 	public static function clearCache(): void {
 		static::$timezoneCache = null;
+		static::$zoneCache = null;
+		static::$zoneCacheName = '';
 	}
 
 	public static function setTimezone(string $timezone): bool {
@@ -50,6 +54,8 @@ class UserTime {
 		}
 		\Sessions::set_server_cookie('timezone', $timezone);
 		static::$timezoneCache = $timezone;
+		static::$zoneCache = null;
+		static::$zoneCacheName = '';
 		return true;
 	}
 
@@ -62,13 +68,27 @@ class UserTime {
 		return $out;
 	}
 
+	private static function zone(): \DateTimeZone {
+		$name = static::timezone();
+		if (static::$zoneCache !== null && static::$zoneCacheName === $name) {
+			return static::$zoneCache;
+		}
+		static::$zoneCache = new \DateTimeZone($name);
+		static::$zoneCacheName = $name;
+		return static::$zoneCache;
+	}
+
 	public static function format(int $ts, string $format = 'Y-m-d H:i:s'): string {
 		if ($ts <= 0) {
 			return '';
 		}
+		$name = static::timezone();
+		// Fast path: matches PHP default timezone (typical after deploy TZ == user TZ).
+		if ($name === date_default_timezone_get()) {
+			return date($format, $ts);
+		}
 		try {
-			$dt = (new \DateTimeImmutable('@' . $ts))->setTimezone(new \DateTimeZone(static::timezone()));
-			return $dt->format($format);
+			return (new \DateTimeImmutable('@' . $ts))->setTimezone(static::zone())->format($format);
 		} catch (\Exception $e) {
 			return date($format, $ts);
 		}
@@ -84,7 +104,7 @@ class UserTime {
 			return null;
 		}
 		$formats = ['Y-m-d H:i:s', 'Y-m-d H:i', 'Y-m-d'];
-		$tz = new \DateTimeZone(static::timezone());
+		$tz = static::zone();
 		foreach ($formats as $format) {
 			$dt = \DateTimeImmutable::createFromFormat('!' . $format, $value, $tz);
 			if ($dt instanceof \DateTimeImmutable) {
@@ -102,8 +122,7 @@ class UserTime {
 		if ($ts <= 0) {
 			$ts = time();
 		}
-		$tz = new \DateTimeZone(static::timezone());
-		$dt = (new \DateTimeImmutable('@' . $ts))->setTimezone($tz)->setTime(0, 0, 0);
+		$dt = (new \DateTimeImmutable('@' . $ts))->setTimezone(static::zone())->setTime(0, 0, 0);
 		return $dt->getTimestamp();
 	}
 
@@ -111,8 +130,7 @@ class UserTime {
 		if ($ts <= 0) {
 			$ts = time();
 		}
-		$tz = new \DateTimeZone(static::timezone());
-		$dt = (new \DateTimeImmutable('@' . $ts))->setTimezone($tz)->setTime(23, 59, 59);
+		$dt = (new \DateTimeImmutable('@' . $ts))->setTimezone(static::zone())->setTime(23, 59, 59);
 		return $dt->getTimestamp();
 	}
 

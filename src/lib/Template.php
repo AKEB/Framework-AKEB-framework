@@ -217,17 +217,22 @@ class Template {
 					window.APP_TIMEZONE_MANUAL = <?=json_encode(boolval(\Sessions::get_server_cookie('timezone_manual', false)));?>;
 					(function syncBrowserTimezone() {
 						try {
-							if (!<?=json_encode((bool)\Sessions::currentUser());?>) return;
+							if (!<?=json_encode(\Sessions::currentUserId() > 0);?>) return;
 							var browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 							if (!browserTz) return;
 							window.APP_BROWSER_TIMEZONE = browserTz;
 							if (window.APP_TIMEZONE_MANUAL) return;
 							if (browserTz === window.APP_TIMEZONE) return;
-							var url = new URL(window.location.href);
-							if (url.searchParams.get('timezone') === browserTz) return;
-							url.searchParams.set('timezone', browserTz);
-							url.searchParams.set('timezone_auto', '1');
-							window.location.replace(url.toString());
+							// Persist without full page reload — reload was aborting WSS and stalling the dashboard.
+							window.APP_TIMEZONE = browserTz;
+							if (window.fetch) {
+								fetch('/?timezone=' + encodeURIComponent(browserTz) + '&timezone_auto=1', {
+									method: 'GET',
+									credentials: 'same-origin',
+									headers: { 'X-Requested-With': 'XMLHttpRequest' },
+									cache: 'no-store'
+								}).catch(function () {});
+							}
 						} catch (e) {}
 					})();
 					<?php if ($withHeader) { ?>

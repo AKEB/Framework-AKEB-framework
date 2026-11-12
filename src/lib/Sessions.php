@@ -641,6 +641,20 @@ class Sessions extends \DB\MySQLObject{
 		}
 		static::change_server_cookies();
 
+		// Lightweight browser timezone sync (see Template APP_TIMEZONE) — avoid rendering the full page.
+		if (
+			isset($_GET['timezone'], $_GET['timezone_auto'])
+			&& strval($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest'
+		) {
+			header('Content-Type: application/json; charset=utf-8');
+			header('Cache-Control: no-store');
+			echo json_encode([
+				'ok' => true,
+				'timezone' => \UserTime::timezone(),
+			], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+			exit;
+		}
+
 		if (!$WithoutRedirect && \Config::getInstance()->app_signin_active && static::$current_user['flags'] & \Users::FLAGS_NEED_CHANGE_PASSWORD) {
 			if (strpos($_SERVER['REQUEST_URI'],'/settings/') === false && strpos($_SERVER['REQUEST_URI'],'/logout/') === false) {
 				common_redirect('/settings/');
