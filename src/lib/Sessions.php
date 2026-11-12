@@ -509,6 +509,25 @@ class Sessions extends \DB\MySQLObject{
 			}
 		}
 
+		// Browser/user timezone (IANA). Auto from ?timezone= unless manually locked in Settings.
+		if (isset($_GET['timezone']) && is_string($_GET['timezone']) && $_GET['timezone'] !== '') {
+			$tz = trim($_GET['timezone']);
+			$manual = boolval(static::get_server_cookie('timezone_manual', false));
+			$auto = isset($_GET['timezone_auto']) && $_GET['timezone_auto'] !== '' && $_GET['timezone_auto'] !== '0';
+			if (\UserTime::isValidTimezone($tz) && (!$manual || !$auto)) {
+				if (static::get_server_cookie('timezone') != $tz) {
+					static::set_server_cookie('timezone', $tz);
+					\UserTime::clearCache();
+				}
+				if ($auto) {
+					// Browser sync clears manual lock only when explicitly auto
+					if ($manual && isset($_GET['force_timezone']) && $_GET['force_timezone']) {
+						static::set_server_cookie('timezone_manual', false);
+					}
+				}
+			}
+		}
+
 
 		foreach(static::$current_user['cookie'] as $key => $value) {
 			$_COOKIE[$key] = $value;

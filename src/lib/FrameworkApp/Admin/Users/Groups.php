@@ -217,7 +217,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 						$params = [
 							'id' => intval($group['id'] ?? 0),
 							'title' => htmlspecialchars(trim($group['title'] ?? '')),
-							'create_time' => isset($group['create_time']) && $group['create_time'] > 0 ? date("Y-m-d H:i:s", $group['create_time']) : '',
+							'create_time' => isset($group['create_time']) && $group['create_time'] > 0 ? \UserTime::format(intval($group['create_time'])) : '',
 						];
 						$can_delete_group = true;
 						if ($params['id'] == \Groups::DEFAULT_GROUP_ID) {

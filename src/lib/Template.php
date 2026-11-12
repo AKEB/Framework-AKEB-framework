@@ -213,6 +213,23 @@ class Template {
 				?>
 				<script nonce="<?=\CSP::nonceRandom();?>">
 					setStoredTheme('<?=static::getTheme();?>');
+					window.APP_TIMEZONE = <?=json_encode(\UserTime::timezone(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);?>;
+					window.APP_TIMEZONE_MANUAL = <?=json_encode(boolval(\Sessions::get_server_cookie('timezone_manual', false)));?>;
+					(function syncBrowserTimezone() {
+						try {
+							if (!<?=json_encode((bool)\Sessions::currentUser());?>) return;
+							var browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+							if (!browserTz) return;
+							window.APP_BROWSER_TIMEZONE = browserTz;
+							if (window.APP_TIMEZONE_MANUAL) return;
+							if (browserTz === window.APP_TIMEZONE) return;
+							var url = new URL(window.location.href);
+							if (url.searchParams.get('timezone') === browserTz) return;
+							url.searchParams.set('timezone', browserTz);
+							url.searchParams.set('timezone_auto', '1');
+							window.location.replace(url.toString());
+						} catch (e) {}
+					})();
 					<?php if ($withHeader) { ?>
 						let wss = new WSS('<?=\Sessions::get_session_id();?>');
 					<?php } ?>

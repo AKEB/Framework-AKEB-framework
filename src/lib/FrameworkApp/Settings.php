@@ -325,6 +325,13 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 		}
 		$old_user = \Users::get(['id' => $this->currentUser['id']]);
 		\Users::save($params);
+		$timezone = trim(strval($data['timezone'] ?? ''));
+		if ($timezone !== '' && \UserTime::isValidTimezone($timezone)) {
+			\UserTime::setTimezone($timezone);
+		}
+		$manual = !empty($data['timezone_manual']);
+		\Sessions::set_server_cookie('timezone_manual', $manual);
+		\UserTime::clearCache();
 		$new_user = \Users::get(['id' => $this->currentUser['id']]);
 		\Logs::update_log(\Users::LOGS_OBJECT, $this->currentUser['id'], $old_user, $new_user,[
 			'ip' => \Sessions::client_ip(),
@@ -377,7 +384,20 @@ class Settings extends \Routing_Parent implements \Routing_Interface {
 					'add_before' => '<i class="input-group-text bi bi-telegram"></i>',
 					'add_after' => (\Config::getInstance()->telegram_bot_token ? '<button class="btn btn-outline-warning sendTelegramButton" type="button">Test</button>' : ''),
 				]);
+				echo $this->template->html_select(
+					'timezone',
+					\UserTime::listTimezones(),
+					\UserTime::timezone(),
+					\T::Framework_Settings_UserProfile_Timezone(),
+					false,
+					['data-container' => 'body']
+				);
 				?>
+				<div class="mb-3 form-check">
+					<input class="form-check-input" type="checkbox" value="1" id="timezone_manual" name="timezone_manual" <?= \Sessions::get_server_cookie('timezone_manual', false) ? 'checked' : '';?>>
+					<label class="form-check-label" for="timezone_manual"><?=\T::Framework_Settings_UserProfile_TimezoneManual();?></label>
+					<div class="form-text"><?=\T::Framework_Settings_UserProfile_TimezoneHint();?></div>
+				</div>
 				<div class="d-flex flex-row-reverse">
 					<button type="submit" class="btn btn-primary" name="changeUserProfile" value="true"><?=\T::Framework_Settings_UserProfile_Change();?></button>
 				</div>

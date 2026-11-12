@@ -90,6 +90,9 @@ Framework:
       Surname: "Surname"
       Email: "Email"
       TelegramId: "Telegram ID"
+      Timezone: "Timezone"
+      TimezoneHint: "Detected from your browser. Dates and times on the site use this timezone."
+      TimezoneManual: "Keep my choice (do not auto-update from browser)"
       Change: "Change Profile"
       Create: "Create User"
     TwoFactor:

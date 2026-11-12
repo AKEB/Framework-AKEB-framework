@@ -229,7 +229,7 @@ class Groups extends \Routing_Parent implements \Routing_Interface {
 							'id' => intval($group['id'] ?? 0),
 							'title' => htmlspecialchars(trim($group['title'] ?? '')),
 							'users_count' => intval($this->groups_counts_hash[$group['id']] ?? 0),
-							'create_time' => isset($group['create_time']) && $group['create_time'] > 0 ? date("Y-m-d H:i:s", $group['create_time']) : '',
+							'create_time' => isset($group['create_time']) && $group['create_time'] > 0 ? \UserTime::format(intval($group['create_time'])) : '',
 						];
 
 						$can_read_group = \Sessions::checkPermission(\Groups::PERMISSION_MANAGE_GROUPS, $params['id'], READ);

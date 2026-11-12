@@ -258,13 +258,17 @@ class Edit extends \Routing_Parent implements \Routing_Interface {
 			return '';
 		}
 		if (is_numeric($value)) {
-			return date('Y-m-d H:i:s', (int) $value);
+			return \UserTime::format((int) $value);
 		}
 		if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $value)) {
 			return $value;
 		}
-		$timestamp = strtotime((string) $value);
-		return $timestamp !== false ? date('Y-m-d H:i:s', $timestamp) : '';
+		$timestamp = \UserTime::parse((string) $value);
+		if ($timestamp === null) {
+			$timestamp = strtotime((string) $value);
+			return $timestamp !== false ? \UserTime::format((int) $timestamp) : '';
+		}
+		return \UserTime::format($timestamp);
 	}
 
 	private function get_data() {

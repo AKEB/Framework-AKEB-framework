@@ -25,14 +25,15 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 
 		$this->start_time = 0;
 		$this->end_time = 0;
-		$start_t = explode('-', (string) $start_date);
-		$end_t = explode('-', (string) $end_date);
-		if ($start_t && $end_t && count($start_t) == 3 && count($end_t) == 3) {
-			$this->start_time = mktime(0,0,0, $start_t[1], $start_t[2], $start_t[0]);
-			$this->end_time = mktime(23, 59, 59, $end_t[1], $end_t[2], $end_t[0]);
+		$startParsed = \UserTime::parseDateStart((string) $start_date);
+		$endParsed = \UserTime::parseDateEnd((string) $end_date);
+		if ($startParsed !== null && $endParsed !== null) {
+			$this->start_time = $startParsed;
+			$this->end_time = $endParsed;
 		}
 		if (!$this->start_time || !$this->end_time) {
-			common_redirect(sprintf('/admin/logs/%s/%s/',date("Y-m-d", time()), date("Y-m-d", time())));
+			$today = \UserTime::format(time(), 'Y-m-d');
+			common_redirect(sprintf('/admin/logs/%s/%s/', $today, $today));
 		}
 		$actions = isset($_GET['action']) && $_GET['action'] ? explode(',', $_GET['action']??'') : [];
 		$this->action = $actions ? array_map('intval', $actions) : [];
@@ -99,7 +100,7 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 				'json_data' => json_decode(strval(trim($log['json_data'] ?? '{}')), true),
 				'comment' => htmlspecialchars(trim($log['comment'] ?? '')),
 				'trace' => str_replace("\n",'<br/>',htmlspecialchars(trim($log['trace'] ?? ''))),
-				'time' => isset($log['time']) && $log['time'] > 0 ? date("Y-m-d H:i:s", $log['time']) : '',
+				'time' => isset($log['time']) && $log['time'] > 0 ? \UserTime::format(intval($log['time'])) : '',
 			];
 			if ($log['object'] == \Users::LOGS_OBJECT) {
 				$user_ids[$log['object_id']] = $log['object_id'];
@@ -295,10 +296,10 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 						},
 					});
 					picker.dates.clear();
-					const startDate = picker.dates.parseInput(new Date('<?=date("Y-m-d",$this->start_time);?>'));
+					const startDate = picker.dates.parseInput('<?=\UserTime::format($this->start_time, 'Y-m-d');?>');
 					picker.dates.setValue(startDate, 0);
-					<?php if (date("Y-m-d",$this->start_time) != date("Y-m-d",$this->end_time)) { ?>
-						const endDate = picker.dates.parseInput(new Date('<?=date("Y-m-d",$this->end_time);?>'));
+					<?php if (\UserTime::format($this->start_time, 'Y-m-d') != \UserTime::format($this->end_time, 'Y-m-d')) { ?>
+						const endDate = picker.dates.parseInput('<?=\UserTime::format($this->end_time, 'Y-m-d');?>');
 						picker.dates.setValue(endDate, 1);
 					<?php } ?>
 
@@ -329,10 +330,10 @@ class Logs extends \Routing_Parent implements \Routing_Interface {
 					});
 					$('#filterButtonReset').on('click', function() {
 						picker.dates.clear();
-						const startDate = picker.dates.parseInput(new Date('<?=date("Y-m-d",$this->start_time);?>'));
+						const startDate = picker.dates.parseInput('<?=\UserTime::format($this->start_time, 'Y-m-d');?>');
 						picker.dates.setValue(startDate, 0);
-						<?php if (date("Y-m-d",$this->start_time) != date("Y-m-d",$this->end_time)) { ?>
-							const endDate = picker.dates.parseInput(new Date('<?=date("Y-m-d",$this->end_time);?>'));
+						<?php if (\UserTime::format($this->start_time, 'Y-m-d') != \UserTime::format($this->end_time, 'Y-m-d')) { ?>
+							const endDate = picker.dates.parseInput('<?=\UserTime::format($this->end_time, 'Y-m-d');?>');
 							picker.dates.setValue(endDate, 1);
 						<?php } ?>
 						$('#action').selectpicker('val', <?=json_encode(array_map('strval', $this->action), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);?>).change();

@@ -89,6 +89,9 @@ Framework:
       Surname: "Фамилия"
       Email: "Email"
       TelegramId: "Telegram ID"
+      Timezone: "Часовой пояс"
+      TimezoneHint: "Определяется из браузера. Даты и время на сайте показываются в этом поясе."
+      TimezoneManual: "Сохранить мой выбор (не обновлять автоматически из браузера)"
       Change: "Изменить профиль"
       Create: "Создать пользователя"
     TwoFactor:

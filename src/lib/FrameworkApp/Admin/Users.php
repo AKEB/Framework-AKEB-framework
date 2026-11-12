@@ -174,8 +174,8 @@ class Users extends \Routing_Parent implements \Routing_Interface {
 							'surname' => htmlspecialchars(trim($user['surname'] ?? '')),
 							'email' => htmlspecialchars(trim($user['email'] ?? '')),
 							'status' => intval($user['status'] ?? 0) == 1 ? '<i class="bi bi-check-lg fs-3 text-success"></i>':'<i class="bi bi-x-lg fs-3 text-danger"></i>',
-							'register_time' => isset($user['register_time']) && $user['register_time'] > 0 ? date("Y-m-d H:i:s", $user['register_time']) : '',
-							'login_time' => isset($user['login_time']) && $user['login_time'] > 0 ? date("Y-m-d H:i:s", $user['login_time']) : '',
+							'register_time' => isset($user['register_time']) && $user['register_time'] > 0 ? \UserTime::format(intval($user['register_time'])) : '',
+							'login_time' => isset($user['login_time']) && $user['login_time'] > 0 ? \UserTime::format(intval($user['login_time'])) : '',
 						];
 
 						$can_read_user = \Sessions::checkPermission(\Users::PERMISSION_MANAGE_USERS, $params['id'], READ);
