@@ -540,6 +540,7 @@ Object.assign(DataTable.defaults, {
 	info: true,
 	lengthChange: true,
 	responsive: true,
+	stateSave: true,
 	language: {
 		url: '/lang/framework/dataTable_'+lang+'.json'
 	}
